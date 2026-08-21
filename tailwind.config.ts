@@ -21,6 +21,30 @@ const config: Config = {
           900: "#2c3228",
           950: "#1e2420",
         },
+        mint: {
+          50: "#F2FBF9",
+          100: "#DFF6F0",
+          200: "#B6EFE5",
+          300: "#8EE7D9",
+          400: "#6DD5C4",
+          500: "#3BB2A1",
+          600: "#268D7F",
+          700: "#1C6C62",
+          800: "#16534B",
+          900: "#113E38",
+        },
+        eucalyptus: {
+          50: "#FAF8F4",
+          100: "#F4EFE6",
+          200: "#E4DDD0",
+          300: "#C7D7C3",
+          400: "#A7C4A0",
+          500: "#81A87B",
+          600: "#62875D",
+          700: "#4B6847",
+          800: "#3B5138",
+          900: "#2D3D2B",
+        },
         sand: {
           50: "#faf8f5",
           100: "#f3efe8",
@@ -55,11 +79,15 @@ const config: Config = {
       boxShadow: {
         soft: "0 2px 20px -4px rgba(44, 50, 40, 0.08), 0 1px 3px rgba(44, 50, 40, 0.04)",
         lifted: "0 8px 40px -8px rgba(44, 50, 40, 0.12), 0 2px 8px rgba(44, 50, 40, 0.06)",
-        glow: "0 0 40px rgba(184, 149, 106, 0.15)",
+        glow: "0 0 40px rgba(109, 213, 196, 0.25)",
+        eucalyptus: "0 0 35px rgba(167, 196, 160, 0.3)",
       },
       animation: {
         "fade-up": "fadeUp 0.6s ease-out forwards",
         "fade-in": "fadeIn 0.5s ease-out forwards",
+        "float": "float 4s ease-in-out infinite",
+        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "shimmer": "shimmer 2.5s linear infinite",
       },
       keyframes: {
         fadeUp: {
@@ -69,6 +97,14 @@ const config: Config = {
         fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-8px)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
         },
       },
     },

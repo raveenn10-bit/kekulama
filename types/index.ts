@@ -22,17 +22,20 @@ export interface Package {
   features: string[];
   popular?: boolean;
   timing?: string;
+  badgeColor?: string;
 }
 
 export interface Amenity {
   icon: string;
   label: string;
+  category?: string;
 }
 
 export interface GalleryImage {
   src: string;
   alt: string;
   span?: "wide" | "tall" | "large";
+  category?: string;
 }
 
 export interface Experience {
@@ -41,6 +44,7 @@ export interface Experience {
   description: string;
   distance: string;
   season: string;
+  badge?: string;
 }
 
 export interface Review {
@@ -49,6 +53,11 @@ export interface Review {
   author: string;
   country: string;
   rating: number;
+  date?: string;
+  initials?: string;
+  avatarBg?: string;
+  verified?: boolean;
+  source?: "google" | "airbnb" | "facebook";
 }
 
 export interface ContactInfo {
@@ -60,6 +69,7 @@ export interface ContactInfo {
   email: string;
   address: string;
   mapCoords: { lat: number; lng: number };
+  googleMapsUrl: string;
   social: {
     facebook: string;
     instagram: string;
@@ -95,6 +105,11 @@ export interface SiteData {
   gallery: GalleryImage[];
   experiences: Experience[];
   reviews: Review[];
+  googleRatingStats: {
+    score: number;
+    totalReviews: number;
+    recommendPercent: number;
+  };
   contact: ContactInfo;
   hours: { label: string; time: string }[];
 }

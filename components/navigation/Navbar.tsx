@@ -4,138 +4,215 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { siteData } from "@/data/siteData";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        setScrollProgress((window.scrollY / totalScroll) * 100);
+      }
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Assuming siteData.nav exists as per prompt. If not, fallback to default.
-  const navLinks = siteData?.nav || [
-    { name: "Home", href: "/" },
-    { name: "About", href: "#about" },
-    { name: "Packages", href: "#packages" },
-    { name: "Gallery", href: "#gallery" },
-    { name: "Experiences", href: "#experiences" },
-    { name: "Contact", href: "#contact" }
-  ];
+  const navLinks = siteData?.nav || [];
 
   return (
     <>
+      {/* Dynamic top scroll progress bar with Mint & Bark gradient */}
+      <div
+        className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-mint-400 via-mint-500 to-bark z-[70] transition-all duration-150"
+        style={{ width: `${scrollProgress}%` }}
+      />
+
       <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-[72px] flex items-center ${
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 h-[74px] flex items-center ${
           isScrolled
-            ? "bg-white/80 backdrop-blur-xl shadow-soft border-b border-sage-100"
-            : "bg-transparent"
+            ? "bg-white/85 backdrop-blur-2xl shadow-soft border-b border-mint-100"
+            : "bg-gradient-to-b from-forest-dark/70 to-transparent"
         }`}
       >
         <div className="container-custom w-full flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden">
-              <Image 
-                src="/images/logo.jpg" 
-                alt="Kekulama Logo" 
-                fill 
-                sizes="48px"
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-mint-300 shadow-sm group-hover:scale-105 transition-transform duration-300">
+              <Image
+                src="/images/logo.jpg"
+                alt="Kekulama Eco Cabana Logo"
+                fill
+                sizes="44px"
                 className="object-cover"
               />
             </div>
-            <span className={`font-display text-2xl ${isScrolled ? "text-sage-900" : "text-white"}`}>
-              Kekulama
-            </span>
+            <div className="flex flex-col">
+              <span
+                className={`font-display text-xl sm:text-2xl font-bold tracking-wide transition-colors ${
+                  isScrolled ? "text-forest" : "text-white"
+                }`}
+              >
+                Kekulama
+              </span>
+              <span
+                className={`text-[9px] uppercase tracking-[0.25em] font-semibold -mt-1 transition-colors ${
+                  isScrolled ? "text-mint-600" : "text-mint-200"
+                }`}
+              >
+                Eco Cabana · Galle
+              </span>
+            </div>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-8">
+          {/* Desktop Navigation Links */}
+          <div className="hidden lg:flex items-center gap-7">
             <div className="flex items-center gap-6">
-              {navLinks.map((link: any) => (
+              {navLinks.map((link) => (
                 <Link
-                  key={link.name}
+                  key={link.href}
                   href={link.href}
-                  className={`text-sm font-medium transition-colors ${
-                    isScrolled 
-                      ? "text-sage-700 hover:text-bark" 
-                      : "text-white/90 hover:text-white"
+                  className={`text-xs font-semibold uppercase tracking-[0.14em] transition-all duration-200 hover:scale-105 ${
+                    isScrolled
+                      ? "text-sage-800 hover:text-mint-600"
+                      : "text-white/90 hover:text-mint-200"
                   }`}
                 >
-                  {link.name}
+                  {link.label || link.name}
                 </Link>
               ))}
             </div>
-            <Button variant="primary" size="sm" href="https://wa.me/94756657000">
-              Book Now
+
+            <Button
+              variant="mint"
+              size="sm"
+              href="https://wa.me/94756657000"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gap-1.5 shadow-glow"
+            >
+              <span>Book via WhatsApp</span>
             </Button>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            className="lg:hidden p-2 text-sage-900"
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label="Open menu"
-          >
-            <Menu size={24} className={isScrolled ? "text-sage-900" : "text-white"} />
-          </button>
+          {/* Mobile Menu Trigger */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <a
+              href="tel:+94756657000"
+              className={`p-2 rounded-full transition-colors ${
+                isScrolled
+                  ? "bg-mint-100 text-mint-700 hover:bg-mint-200"
+                  : "bg-white/20 text-white hover:bg-white/30"
+              }`}
+              aria-label="Call Kekulama Eco Cabana"
+            >
+              <PhoneCall size={18} />
+            </a>
+
+            <button
+              className={`p-2 rounded-xl transition-colors ${
+                isScrolled
+                  ? "text-forest hover:bg-sage-100"
+                  : "text-white hover:bg-white/20"
+              }`}
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open navigation menu"
+            >
+              <Menu size={24} />
+            </button>
+          </div>
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Drawer Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[60] bg-forest-dark/95 backdrop-blur-xl flex flex-col"
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: "0%" }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-[80] bg-forest-dark/95 backdrop-blur-2xl flex flex-col p-6 text-white"
           >
-            <div className="flex items-center justify-between p-5 h-[72px]">
-              <span className="font-display text-2xl text-white">Kekulama</span>
+            <div className="flex items-center justify-between h-[64px] border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="relative w-10 h-10 rounded-full overflow-hidden border border-mint-300">
+                  <Image
+                    src="/images/logo.jpg"
+                    alt="Logo"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <span className="font-display text-xl font-bold">Kekulama</span>
+                  <span className="block text-[9px] uppercase tracking-widest text-mint-300">
+                    Eco Cabana
+                  </span>
+                </div>
+              </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 text-white/80 hover:text-white transition-colors"
-                aria-label="Close menu"
+                className="p-2 rounded-full bg-white/10 text-white/80 hover:text-white hover:bg-white/20"
+                aria-label="Close navigation menu"
               >
-                <X size={24} />
+                <X size={22} />
               </button>
             </div>
-            <div className="flex flex-col items-center justify-center flex-1 gap-8 p-8">
-              {navLinks.map((link: any, index: number) => (
+
+            <div className="flex flex-col justify-center flex-1 gap-5 py-8">
+              {navLinks.map((link, index) => (
                 <motion.div
-                  key={link.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index, duration: 0.4 }}
+                  key={link.href}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 * index, duration: 0.3 }}
                 >
                   <Link
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-2xl font-display text-white/90 hover:text-bark transition-colors"
+                    className="text-xl font-display text-white/90 hover:text-mint-300 transition-colors flex items-center justify-between py-1"
                   >
-                    {link.name}
+                    <span>{link.label || link.name}</span>
+                    <span className="text-xs text-mint-400 font-mono">0{index + 1}</span>
                   </Link>
                 </motion.div>
               ))}
+
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * navLinks.length, duration: 0.4 }}
-                className="mt-4"
+                transition={{ delay: 0.4, duration: 0.3 }}
+                className="mt-6 flex flex-col gap-3"
               >
-                <Button variant="primary" size="lg" href="https://wa.me/94756657000">
+                <Button
+                  variant="mint"
+                  size="lg"
+                  href="https://wa.me/94756657000"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full text-center justify-center shadow-glow"
+                >
                   Book via WhatsApp
                 </Button>
+                <a
+                  href="tel:+94756657000"
+                  className="w-full py-3 rounded-full text-center text-sm font-medium border border-white/20 text-white hover:bg-white/10 transition-colors"
+                >
+                  Call +94 75 665 7000
+                </a>
               </motion.div>
+            </div>
+
+            <div className="border-t border-white/10 pt-4 text-center text-xs text-sage-400">
+              Pinnaduwa, Galle, Sri Lanka · 100% Recommended
             </div>
           </motion.div>
         )}

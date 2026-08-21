@@ -14,11 +14,11 @@
   }
 
   body {
-    @apply bg-sage-50 text-sage-900 font-body;
+    @apply bg-eucalyptus-50 text-sage-900 font-body;
   }
 
   ::selection {
-    @apply bg-bark/20 text-forest-dark;
+    @apply bg-mint-200 text-forest-dark;
   }
 
   h1, h2, h3, h4 {
@@ -29,43 +29,56 @@
 
 @layer components {
   .section-padding {
-    @apply py-20 md:py-28 lg:py-32;
+    @apply py-16 md:py-24 lg:py-28;
   }
 
   .container-custom {
-    @apply max-w-7xl mx-auto px-5 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-bark to-bark-dark bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-mint-600 via-forest to-bark bg-clip-text text-transparent;
   }
 
   .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/40;
+    @apply bg-white/80 backdrop-blur-xl border border-white/60 shadow-soft;
+  }
+
+  .glass-mint {
+    @apply bg-mint-50/80 backdrop-blur-xl border border-mint-200/60 shadow-soft;
+  }
+
+  .glass-eucalyptus {
+    @apply bg-eucalyptus-100/80 backdrop-blur-xl border border-eucalyptus-200/60 shadow-soft;
   }
 
   .glass-dark {
-    @apply bg-forest-dark/80 backdrop-blur-xl border border-white/10;
+    @apply bg-forest-dark/85 backdrop-blur-xl border border-white/10;
   }
 
-  /* Scroll progress bar */
-  .scroll-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #b8956a, #8a6d4a);
-    z-index: 100;
-    transition: width 0.1s linear;
+  /* Custom horizontal mobile snap scroll container */
+  .mobile-scroll-row {
+    @apply flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .mobile-scroll-row::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+
+  .mobile-scroll-item {
+    @apply snap-start flex-shrink-0;
   }
 }
 
 @layer utilities {
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 
@@ -74,11 +87,11 @@
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-sage-100;
+  @apply bg-eucalyptus-100;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-sage-300 rounded-full;
+  @apply bg-eucalyptus-300 rounded-full;
 }
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-sage-400;
+  @apply bg-mint-400;
 }
