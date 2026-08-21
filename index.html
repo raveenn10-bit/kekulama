@@ -1,0 +1,1281 @@
+<title>Kekulama Eco Cabana</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Karla:wght@400;500;600;700&display=swap">
+
+<style>
+/* ==========================================================================
+   KEKULAMA ECO CABANA — Galle
+   Palette taken from the logo: thatch brown, canopy green, aged-paper cream.
+   ========================================================================== */
+
+:root{
+  --paper:       #F5F1E7;
+  --paper-2:     #FBF8F1;
+  --card:        #FFFFFF;
+  --ink:         #22301F;
+  --ink-2:       #47533F;
+  --muted:       #78806E;
+  --canopy:      #3B5240;
+  --canopy-deep: #2A3B2E;
+  --canopy-soft: #E2E8DC;
+  --bark:        #A0764B;
+  --bark-deep:   #855F38;
+  --bark-soft:   #F1E6D6;
+  --line:        #DFD8C7;
+  --line-soft:   #EBE5D7;
+  --on-dark:     #F2EFE4;
+  --on-dark-dim: #B9C3B3;
+  --shadow:      0 1px 2px rgba(34,48,31,.05), 0 14px 34px -14px rgba(34,48,31,.18);
+  --shadow-lg:   0 2px 6px rgba(34,48,31,.06), 0 40px 70px -30px rgba(34,48,31,.34);
+  --maxw:        1180px;
+  --gut:         clamp(20px, 5vw, 56px);
+  --r:           3px;
+
+  /* themed component values (kept as tokens so all three theme states resolve) */
+  --hero-grad:   linear-gradient(180deg, #EFEBDE 0%, var(--paper) 58%, var(--paper) 100%);
+  --scene-grad:  linear-gradient(175deg, #DDE3D6 0%, #C9D3C0 42%, #A9B99F 100%);
+  --scene-ink:   #2A3B2E;
+  --scene-ink-op:.42;
+  --scene-veil:  radial-gradient(28% 30% at 22% 18%, rgba(255,252,240,.55), transparent 64%),
+                 radial-gradient(24% 26% at 74% 30%, rgba(160,118,75,.26), transparent 66%),
+                 radial-gradient(40% 44% at 50% 96%, rgba(42,59,46,.34), transparent 70%);
+  --dapple-blend:multiply;
+  --dapple-op:   .85;
+  --fronds-op:   .5;
+  --topbar-line: transparent;
+  --band-bg:     #A0764B;
+  --band-ink:    #FFF9F1;
+  --band-em:     #2A3B2E;
+  --band-solid-bg:#2A3B2E;
+  --band-solid-ink:#F5F1E7;
+  --panel-bg:    #2A3B2E;
+  --panel-ink:   #F2EFE4;
+  --panel-dim:   #B9C3B3;
+  --panel-accent:#CB9E67;
+  --btn-solid-bg:#3B5240;
+  --btn-solid-ink:#F7F5EC;
+  --btn-solid-hov:#2A3B2E;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:       #14180F;
+    --paper-2:     #1A1F15;
+    --card:        #1F2519;
+    --ink:         #EFEBDD;
+    --ink-2:       #CBD2C0;
+    --muted:       #98A18C;
+    --canopy:      #A2C3A4;
+    --canopy-deep: #C0D8C0;
+    --canopy-soft: #263021;
+    --bark:        #D2A472;
+    --bark-deep:   #E2BC91;
+    --bark-soft:   #2C2419;
+    --line:        #333C2B;
+    --line-soft:   #29311F;
+    --on-dark:     #F0ECDF;
+    --on-dark-dim: #AEB9A7;
+    --shadow:      0 1px 2px rgba(0,0,0,.4), 0 14px 34px -14px rgba(0,0,0,.6);
+    --shadow-lg:   0 2px 6px rgba(0,0,0,.45), 0 40px 70px -30px rgba(0,0,0,.75);
+
+    --hero-grad:   linear-gradient(180deg, #10140C 0%, var(--paper) 62%);
+    --scene-grad:  linear-gradient(175deg, #2A3421 0%, #1E2718 55%, #161C12 100%);
+    --scene-ink:   #8FAE90;
+    --scene-ink-op:.34;
+    --scene-veil:  radial-gradient(28% 30% at 22% 18%, rgba(200,214,186,.14), transparent 64%),
+                   radial-gradient(24% 26% at 74% 30%, rgba(210,164,114,.18), transparent 66%),
+                   radial-gradient(40% 44% at 50% 96%, rgba(0,0,0,.42), transparent 70%);
+    --dapple-blend:screen;
+    --dapple-op:   .30;
+    --fronds-op:   .32;
+    --topbar-line: rgba(255,255,255,.07);
+    --band-bg:     #C6996A;
+    --band-ink:    #17110A;
+    --band-em:     #23301C;
+    --band-solid-bg:#1B2416;
+    --band-solid-ink:#EFEBDD;
+    --panel-bg:    #1A2116;
+    --panel-ink:   #EFEBDD;
+    --panel-dim:   #A9B4A2;
+    --panel-accent:#D2A472;
+    --btn-solid-bg:#A2C3A4;
+    --btn-solid-ink:#12170E;
+    --btn-solid-hov:#BCD6BD;
+  }
+}
+
+:root[data-theme="dark"]{
+  --paper:       #14180F;
+  --paper-2:     #1A1F15;
+  --card:        #1F2519;
+  --ink:         #EFEBDD;
+  --ink-2:       #CBD2C0;
+  --muted:       #98A18C;
+  --canopy:      #A2C3A4;
+  --canopy-deep: #C0D8C0;
+  --canopy-soft: #263021;
+  --bark:        #D2A472;
+  --bark-deep:   #E2BC91;
+  --bark-soft:   #2C2419;
+  --line:        #333C2B;
+  --line-soft:   #29311F;
+  --on-dark:     #F0ECDF;
+  --on-dark-dim: #AEB9A7;
+  --shadow:      0 1px 2px rgba(0,0,0,.4), 0 14px 34px -14px rgba(0,0,0,.6);
+  --shadow-lg:   0 2px 6px rgba(0,0,0,.45), 0 40px 70px -30px rgba(0,0,0,.75);
+
+  --hero-grad:   linear-gradient(180deg, #10140C 0%, var(--paper) 62%);
+  --scene-grad:  linear-gradient(175deg, #2A3421 0%, #1E2718 55%, #161C12 100%);
+  --scene-ink:   #8FAE90;
+  --scene-ink-op:.34;
+  --scene-veil:  radial-gradient(28% 30% at 22% 18%, rgba(200,214,186,.14), transparent 64%),
+                 radial-gradient(24% 26% at 74% 30%, rgba(210,164,114,.18), transparent 66%),
+                 radial-gradient(40% 44% at 50% 96%, rgba(0,0,0,.42), transparent 70%);
+  --dapple-blend:screen;
+  --dapple-op:   .30;
+  --fronds-op:   .32;
+  --topbar-line: rgba(255,255,255,.07);
+  --band-bg:     #C6996A;
+  --band-ink:    #17110A;
+  --band-em:     #23301C;
+  --band-solid-bg:#1B2416;
+  --band-solid-ink:#EFEBDD;
+    --panel-bg:    #1A2116;
+  --panel-ink:   #EFEBDD;
+  --panel-dim:   #A9B4A2;
+  --panel-accent:#D2A472;
+  --btn-solid-bg:#A2C3A4;
+  --btn-solid-ink:#12170E;
+  --btn-solid-hov:#BCD6BD;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Karla", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:16.5px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+
+img{ max-width:100%; display:block; }
+a{ color:inherit; }
+
+h1,h2,h3,h4{
+  font-family:"Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+  font-weight:400;
+  color:var(--ink);
+  margin:0;
+  line-height:1.08;
+  text-wrap:balance;
+  letter-spacing:-.012em;
+}
+h1{ font-size:clamp(2.6rem, 6.2vw, 4.6rem); }
+h2{ font-size:clamp(2rem, 4.4vw, 3.1rem); }
+h3{ font-size:1.32rem; line-height:1.25; }
+h2 em, h1 em{ font-style:italic; color:var(--bark); font-weight:300; }
+
+p{ margin:0; }
+
+.wrap{ width:100%; max-width:var(--maxw); margin-inline:auto; padding-inline:var(--gut); }
+
+.eyebrow{
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.20em;
+  text-transform:uppercase;
+  color:var(--bark);
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:.35rem .7rem;
+}
+.eyebrow::after{
+  content:"";
+  height:1px;
+  width:44px;
+  background:var(--bark);
+  opacity:.45;
+}
+.eyebrow.center{ justify-content:center; }
+.eyebrow.center::before{
+  content:"";
+  height:1px;
+  width:44px;
+  background:var(--bark);
+  opacity:.45;
+}
+
+.lede{ color:var(--ink-2); font-size:1.06rem; max-width:60ch; }
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.55rem;
+  padding:.86rem 1.5rem;
+  border-radius:999px;
+  font-size:.83rem;
+  font-weight:700;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  text-decoration:none;
+  border:1px solid transparent;
+  cursor:pointer;
+  transition:transform .18s ease, background .18s ease, color .18s ease, border-color .18s ease;
+}
+.btn:hover{ transform:translateY(-2px); }
+.btn:focus-visible{ outline:2px solid var(--bark); outline-offset:3px; }
+.btn-solid{ background:var(--btn-solid-bg); color:var(--btn-solid-ink); }
+.btn-solid:hover{ background:var(--btn-solid-hov); }
+.btn-bark{ background:var(--bark); color:#FFF9F1; }
+.btn-bark:hover{ background:var(--bark-deep); }
+.btn-ghost{ border-color:var(--line); color:var(--ink); background:transparent; }
+.btn-ghost:hover{ border-color:var(--canopy); color:var(--canopy); }
+.btn-ondark{ border-color:rgba(242,239,228,.42); color:var(--panel-ink); background:transparent; }
+.btn-ondark:hover{ background:var(--panel-ink); color:var(--panel-bg); border-color:var(--panel-ink); }
+.btn-sm{ padding:.62rem 1.05rem; font-size:.74rem; }
+
+/* ---------- topbar + nav ---------- */
+.topbar{
+  background:var(--panel-bg);
+  color:var(--panel-dim);
+  font-size:.76rem;
+  letter-spacing:.045em;
+}
+.topbar{ border-bottom:1px solid var(--topbar-line); }
+.topbar .wrap{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.4rem 1.6rem;
+  align-items:center;
+  justify-content:space-between;
+  min-height:38px;
+  padding-block:.35rem;
+}
+.topbar a{ color:var(--panel-ink); text-decoration:none; border-bottom:1px solid rgba(255,255,255,.28); }
+.topbar a:hover{ border-color:currentColor; }
+.topbar .tb-note{ display:flex; align-items:center; gap:.5rem; }
+.dot{ width:5px; height:5px; border-radius:50%; background:var(--bark); display:inline-block; }
+
+.nav{
+  position:sticky;
+  top:0;
+  z-index:60;
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(14px) saturate(1.2);
+  border-bottom:1px solid var(--line-soft);
+}
+.nav .wrap{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5rem;
+  min-height:76px;
+}
+.brand{ display:flex; align-items:center; gap:.7rem; text-decoration:none; }
+.brand .emblem{ width:42px; height:42px; flex:none; }
+.brand-txt{ display:flex; flex-direction:column; line-height:1; }
+.brand-name{
+  font-family:"Fraunces", serif;
+  font-size:1.18rem;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--ink);
+}
+.brand-sub{
+  font-size:.6rem;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-top:.3rem;
+}
+.links{ display:flex; align-items:center; gap:1.75rem; }
+.links a{
+  text-decoration:none;
+  font-size:.79rem;
+  font-weight:600;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--ink-2);
+  padding-block:.35rem;
+  border-bottom:1px solid transparent;
+  transition:color .16s ease, border-color .16s ease;
+}
+.links a:hover{ color:var(--canopy); border-color:var(--bark); }
+.nav-cta{ display:flex; align-items:center; gap:.75rem; }
+.burger{
+  display:none;
+  width:44px; height:44px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:transparent;
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+}
+.burger span{ display:block; width:17px; height:1.5px; background:var(--ink); position:relative; }
+.burger span::before,.burger span::after{
+  content:""; position:absolute; left:0; width:17px; height:1.5px; background:var(--ink);
+}
+.burger span::before{ top:-5px; }
+.burger span::after{ top:5px; }
+
+@media (max-width: 980px){
+  .links{
+    position:absolute;
+    top:100%; left:0; right:0;
+    background:var(--paper-2);
+    border-bottom:1px solid var(--line);
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+    padding:.5rem var(--gut) 1.2rem;
+    display:none;
+  }
+  .links.open{ display:flex; }
+  .links a{ padding:.85rem 0; border-bottom:1px solid var(--line-soft); }
+  .burger{ display:flex; }
+  .nav-cta .btn{ display:none; }
+}
+
+/* ---------- decorative canopy light ---------- */
+.canopy-light{
+  position:absolute; inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(38% 46% at 12% 8%,  rgba(59,82,64,.34), transparent 62%),
+    radial-gradient(30% 40% at 84% 4%,  rgba(59,82,64,.28), transparent 60%),
+    radial-gradient(26% 34% at 62% 22%, rgba(160,118,75,.20), transparent 66%),
+    radial-gradient(44% 40% at 30% 92%, rgba(59,82,64,.20), transparent 68%);
+  mix-blend-mode:var(--dapple-blend);
+  opacity:var(--dapple-op);
+}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;
+  overflow:hidden;
+  background:var(--hero-grad);
+  border-bottom:1px solid var(--line-soft);
+}
+.hero .wrap{
+  position:relative;
+  z-index:2;
+  padding-block:clamp(72px, 12vw, 132px) clamp(56px, 9vw, 104px);
+  display:grid;
+  gap:2rem;
+  max-width:1080px;
+}
+.hero h1{ max-width:16ch; }
+.hero .lede{ font-size:1.14rem; max-width:52ch; }
+.hero-actions{ display:flex; flex-wrap:wrap; gap:.85rem; margin-top:.4rem; }
+.hero-strip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.9rem 2.6rem;
+  margin-top:1.6rem;
+  padding-top:1.6rem;
+  border-top:1px solid var(--line);
+  font-size:.79rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:600;
+}
+.hero-strip b{ color:var(--ink); font-weight:700; }
+.fronds{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  opacity:var(--fronds-op);
+}
+.fronds svg{ position:absolute; color:var(--canopy); }
+.fr-a{ top:-40px; right:-60px; width:min(46vw, 520px); transform:rotate(8deg); }
+.fr-b{ bottom:-70px; left:-90px; width:min(34vw, 380px); transform:rotate(-166deg); }
+
+/* ---------- section frame ---------- */
+.section{ padding-block:clamp(64px, 9vw, 116px); position:relative; }
+.section-head{ display:grid; gap:1rem; max-width:64ch; margin-bottom:clamp(34px, 5vw, 60px); }
+.section-head.center{ margin-inline:auto; text-align:center; justify-items:center; }
+.section-head.center .lede{ margin-inline:auto; }
+.split-head{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:1.5rem;
+  margin-bottom:clamp(34px, 5vw, 56px);
+}
+.split-head .section-head{ margin-bottom:0; }
+
+/* ---------- welcome ---------- */
+.welcome{ background:var(--paper-2); border-block:1px solid var(--line-soft); }
+.welcome-grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(32px, 5vw, 72px); align-items:center; }
+.pillars{ display:grid; gap:1rem; }
+.pillar{
+  background:var(--card);
+  border:1px solid var(--line-soft);
+  border-left:3px solid var(--bark);
+  border-radius:var(--r);
+  padding:1.25rem 1.4rem;
+  display:flex;
+  gap:1rem;
+  align-items:flex-start;
+  box-shadow:var(--shadow);
+}
+.pillar .ic{ color:var(--canopy); flex:none; margin-top:.15rem; }
+.pillar h3{ font-size:1.08rem; margin-bottom:.3rem; }
+.pillar p{ color:var(--muted); font-size:.92rem; line-height:1.55; }
+@media (max-width: 860px){ .welcome-grid{ grid-template-columns:1fr; } }
+
+/* ---------- scenes (photo slots) ---------- */
+.scene{
+  position:relative;
+  overflow:hidden;
+  border-radius:var(--r);
+  background:var(--scene-grad);
+  isolation:isolate;
+}
+.scene::after{
+  content:"";
+  position:absolute; inset:0;
+  background:var(--scene-veil);
+}
+.scene svg{ position:absolute; color:var(--scene-ink); opacity:var(--scene-ink-op); z-index:1; }
+.scene .tag{
+  position:absolute;
+  left:14px; bottom:12px;
+  z-index:3;
+  font-size:.66rem;
+  font-weight:700;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:#F6F3E9;
+  background:rgba(34,48,31,.6);
+  backdrop-filter:blur(4px);
+  padding:.34rem .7rem;
+  border-radius:999px;
+}
+
+/* ---------- cabanas ---------- */
+.rooms{ display:grid; grid-template-columns:repeat(3, 1fr); gap:1.4rem; }
+@media (max-width: 940px){ .rooms{ grid-template-columns:1fr; max-width:520px; margin-inline:auto; } }
+.room{
+  background:var(--card);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-shadow:var(--shadow);
+  transition:transform .22s ease, box-shadow .22s ease;
+}
+.room:hover{ transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+.room .scene{ height:196px; border-radius:0; }
+.room-body{ padding:1.4rem 1.4rem 1.5rem; display:flex; flex-direction:column; gap:.9rem; flex:1; }
+.room-top{ display:flex; align-items:baseline; justify-content:space-between; gap:1rem; }
+.price{ text-align:right; flex:none; }
+.price b{
+  font-family:"Fraunces", serif;
+  font-size:1.5rem;
+  font-weight:400;
+  color:var(--bark);
+  display:block;
+  line-height:1;
+}
+.price span{ font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.room p{ color:var(--muted); font-size:.93rem; line-height:1.55; }
+.specs{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:.4rem; }
+.specs li{
+  font-size:.71rem;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  font-weight:600;
+  color:var(--ink-2);
+  background:var(--canopy-soft);
+  border-radius:999px;
+  padding:.3rem .68rem;
+}
+.room-actions{ display:flex; gap:.6rem; margin-top:auto; padding-top:.4rem; }
+
+/* ---------- restaurant ---------- */
+.dine{
+  background:var(--panel-bg);
+  color:var(--panel-ink);
+  position:relative;
+  overflow:hidden;
+}
+.dine h2, .dine h3{ color:var(--panel-ink); }
+.dine h2 em{ color:var(--panel-accent); }
+.dine .eyebrow{ color:var(--panel-accent); }
+.dine .eyebrow::after, .dine .eyebrow::before{ background:var(--panel-accent); }
+.dine .lede{ color:var(--panel-dim); }
+.dine-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(34px, 5vw, 76px); align-items:center; position:relative; z-index:2; }
+@media (max-width: 900px){ .dine-grid{ grid-template-columns:1fr; } }
+.menu-card{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(242,239,228,.16);
+  border-radius:var(--r);
+  padding:clamp(22px, 3vw, 34px);
+  backdrop-filter:blur(6px);
+}
+.menu-card h3{ font-size:1.06rem; letter-spacing:.02em; margin-bottom:1rem; }
+.menu-list{ list-style:none; margin:0 0 1.4rem; padding:0; display:grid; gap:.85rem; }
+.menu-list li{ display:grid; gap:.15rem; }
+.mrow{ display:flex; align-items:baseline; gap:.6rem; }
+.mrow .nm{ font-weight:600; font-size:.98rem; }
+.mrow .ldr{ flex:1; border-bottom:1px dotted rgba(242,239,228,.35); transform:translateY(-3px); }
+.mrow .pr{ font-variant-numeric:tabular-nums; color:var(--panel-accent); font-weight:700; font-size:.9rem; }
+.menu-list .desc{ font-size:.83rem; color:var(--panel-dim); line-height:1.45; }
+.dine .scene{ height:clamp(300px, 42vw, 460px); }
+.dine-note{
+  font-size:.74rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--panel-dim);
+  margin-top:1.2rem;
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+}
+
+/* ---------- experiences ---------- */
+.things{ display:grid; grid-template-columns:repeat(4, 1fr); gap:1.1rem; }
+@media (max-width: 1000px){ .things{ grid-template-columns:repeat(2, 1fr); } }
+@media (max-width: 560px){ .things{ grid-template-columns:1fr; } }
+.thing{
+  background:var(--card);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r);
+  padding:1.5rem 1.3rem;
+  display:grid;
+  gap:.6rem;
+  align-content:start;
+  transition:border-color .2s ease, transform .2s ease;
+}
+.thing:hover{ border-color:var(--bark); transform:translateY(-3px); }
+.thing .ic{ color:var(--bark); }
+.thing h3{ font-size:1.12rem; }
+.thing p{ color:var(--muted); font-size:.9rem; line-height:1.55; }
+.thing .when{
+  font-size:.68rem;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  font-weight:700;
+  color:var(--canopy);
+  padding-top:.4rem;
+  border-top:1px solid var(--line-soft);
+  margin-top:.3rem;
+}
+
+/* ---------- reviews ---------- */
+.reviews{ background:var(--paper-2); border-block:1px solid var(--line-soft); }
+.rating{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:1rem;
+  flex-wrap:wrap;
+  margin-bottom:2.4rem;
+}
+.rating .score{ font-family:"Fraunces", serif; font-size:2.6rem; line-height:1; color:var(--ink); }
+.stars{ color:var(--bark); letter-spacing:.16em; font-size:1rem; }
+.rating .meta{ text-align:left; }
+.rating .meta small{ display:block; color:var(--muted); font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; }
+.quotes{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; }
+@media (max-width: 900px){ .quotes{ grid-template-columns:1fr; max-width:560px; margin-inline:auto; } }
+.quote{
+  background:var(--card);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r);
+  padding:1.5rem 1.4rem;
+  display:grid;
+  gap:.9rem;
+  box-shadow:var(--shadow);
+}
+.quote p{
+  font-family:"Fraunces", serif;
+  font-style:italic;
+  font-weight:300;
+  font-size:1.06rem;
+  line-height:1.5;
+  color:var(--ink-2);
+}
+.who{ display:flex; align-items:center; gap:.7rem; padding-top:.6rem; border-top:1px solid var(--line-soft); }
+.av{
+  width:36px; height:36px; border-radius:50%;
+  background:var(--canopy-soft);
+  color:var(--canopy);
+  display:grid; place-items:center;
+  font-weight:700; font-size:.85rem;
+  flex:none;
+}
+.who b{ display:block; font-size:.9rem; }
+.who small{ color:var(--muted); font-size:.76rem; }
+.slot-chip{
+  justify-self:start;
+  font-size:.6rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--bark-deep); background:var(--bark-soft);
+  padding:.24rem .55rem; border-radius:999px;
+}
+
+/* ---------- gallery ---------- */
+.gal{ display:grid; grid-template-columns:repeat(4, 1fr); grid-auto-rows:172px; gap:.9rem; }
+.gal .scene{ width:100%; height:100%; }
+.gal .g-wide{ grid-column:span 2; }
+.gal .g-tall{ grid-row:span 2; }
+@media (max-width: 900px){
+  .gal{ grid-template-columns:repeat(2, 1fr); grid-auto-rows:150px; }
+  .gal .scene:last-child{ grid-column:span 2; }
+}
+
+/* ---------- CTA band ---------- */
+.band{
+  background:var(--band-bg);
+  color:var(--band-ink);
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.band h2{ color:inherit; }
+.band h2 em{ color:var(--band-em); }
+.band .inner{ display:grid; gap:1.4rem; justify-items:center; position:relative; z-index:2; }
+.band p{ color:inherit; opacity:.9; max-width:52ch; }
+.band .btn-solid{ background:var(--band-solid-bg); color:var(--band-solid-ink); }
+.band .btn-ghost{ border-color:color-mix(in srgb, var(--band-ink) 50%, transparent); color:inherit; }
+.band .btn-ghost:hover{ background:var(--band-ink); color:var(--band-bg); border-color:var(--band-ink); }
+.band .eyebrow::after, .band .eyebrow::before{ background:currentColor; opacity:.5; }
+
+/* ---------- footer ---------- */
+.foot{ background:var(--panel-bg); color:var(--panel-dim); padding-block:clamp(50px, 7vw, 78px) 0; }
+.foot h4{ color:var(--panel-ink); font-size:.78rem; font-family:"Karla", sans-serif; font-weight:700; letter-spacing:.16em; text-transform:uppercase; margin-bottom:1rem; }
+.foot-grid{ display:grid; grid-template-columns:1.4fr 1fr 1.2fr 1.1fr; gap:clamp(28px, 4vw, 56px); }
+@media (max-width: 900px){ .foot-grid{ grid-template-columns:1fr 1fr; } }
+@media (max-width: 540px){ .foot-grid{ grid-template-columns:1fr; } }
+.foot .brand-name, .foot .brand-sub{ color:var(--panel-ink); }
+.foot .brand-sub{ color:var(--panel-dim); }
+.foot p{ font-size:.9rem; line-height:1.6; }
+.foot ul{ list-style:none; margin:0; padding:0; display:grid; gap:.55rem; }
+.foot a{ color:var(--panel-dim); text-decoration:none; font-size:.9rem; }
+.foot a:hover{ color:var(--panel-accent); }
+.hours{ display:grid; gap:.5rem; font-size:.88rem; }
+.hours div{ display:flex; justify-content:space-between; gap:1rem; border-bottom:1px dotted rgba(242,239,228,.2); padding-bottom:.4rem; }
+.hours span:last-child{ color:var(--panel-ink); font-variant-numeric:tabular-nums; }
+.foot-bottom{
+  margin-top:clamp(36px, 5vw, 56px);
+  border-top:1px solid rgba(242,239,228,.14);
+  padding-block:1.3rem;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.6rem 1.4rem;
+  justify-content:space-between;
+  font-size:.78rem;
+}
+.socials{ display:flex; gap:.6rem; }
+.socials a{
+  width:34px; height:34px; border-radius:50%;
+  border:1px solid rgba(242,239,228,.24);
+  display:grid; place-items:center;
+  color:var(--panel-ink);
+}
+.socials a:hover{ background:var(--panel-accent); border-color:var(--panel-accent); color:#1A1409; }
+
+/* ---------- reveal ---------- */
+.rv{ opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s cubic-bezier(.22,.8,.3,1); }
+.rv.in{ opacity:1; transform:none; }
+@media (prefers-reduced-motion: reduce){
+  .rv{ opacity:1; transform:none; transition:none; }
+  .btn:hover, .room:hover, .thing:hover{ transform:none; }
+  html{ scroll-behavior:auto; }
+}
+html{ scroll-behavior:smooth; }
+:focus-visible{ outline:2px solid var(--bark); outline-offset:2px; }
+</style>
+
+<!-- ===================== SVG DEFS ===================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="frond" viewBox="0 0 240 150">
+      <path d="M6 144C64 132 140 92 234 10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+      <g fill="currentColor">
+        <path d="M22 136c6-22 22-36 44-40-8 22-24 36-44 40z"/>
+        <path d="M46 124c4-24 20-40 42-45-7 23-22 39-42 45z"/>
+        <path d="M72 110c3-25 18-42 41-48-6 24-20 41-41 48z"/>
+        <path d="M98 94c2-26 16-44 39-51-5 25-18 43-39 51z"/>
+        <path d="M124 76c1-26 14-45 37-53-4 25-16 45-37 53z"/>
+        <path d="M150 57c0-27 12-47 35-56-3 26-14 47-35 56z"/>
+        <path d="M176 37c-1-27 10-48 33-58-2 26-12 48-33 58z"/>
+        <path d="M40 152c-6-22 2-42 20-56 4 23-3 43-20 56z" opacity=".85"/>
+        <path d="M66 140c-7-22 0-43 18-58 5 23-1 44-18 58z" opacity=".85"/>
+        <path d="M92 126c-8-22-2-44 15-60 6 23 1 45-15 60z" opacity=".85"/>
+        <path d="M118 109c-9-22-4-45 13-62 7 23 2 46-13 62z" opacity=".85"/>
+        <path d="M144 90c-10-22-6-46 11-64 8 24 3 47-11 64z" opacity=".85"/>
+        <path d="M170 70c-11-22-8-47 9-66 9 24 4 48-9 66z" opacity=".85"/>
+      </g>
+    </symbol>
+
+    <symbol id="cabana" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 27 32 10l24 17"/>
+        <path d="M13 27h38v25H13z"/>
+        <path d="M26 52V38h12v14"/>
+        <path d="M4 58h56"/>
+        <path d="M13 52v6M51 52v6"/>
+      </g>
+    </symbol>
+
+    <symbol id="leaf" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M52 12C24 12 12 26 12 42c0 6 2 9 2 9s24 3 34-11c7-10 4-28 4-28z"/>
+        <path d="M46 18 14 52"/>
+      </g>
+    </symbol>
+
+    <symbol id="pot" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 26h40l-4 22a8 8 0 0 1-8 7H24a8 8 0 0 1-8-7z"/>
+        <path d="M8 26h48"/>
+        <path d="M26 18c0-4 6-4 6-8M38 18c0-4 6-4 6-8"/>
+      </g>
+    </symbol>
+
+    <symbol id="wave" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 40c6-16 18-24 32-24 10 0 18 5 22 12"/>
+        <path d="M6 50c5 4 11 4 16 0s11-4 16 0 11 4 16 0"/>
+        <path d="M28 30c6-1 12 2 14 8"/>
+      </g>
+    </symbol>
+
+    <symbol id="fort" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 54V28h8v-8h8v8h8v-8h8v8h8v-8h8v8h6v26z"/>
+        <path d="M6 54h52"/>
+        <path d="M26 54V42h12v12"/>
+      </g>
+    </symbol>
+
+    <symbol id="paddle" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 38c10 8 20 12 26 12s16-4 26-12"/>
+        <path d="M10 44c8 8 15 12 22 12s14-4 22-12"/>
+        <path d="M42 10 22 34"/>
+        <path d="M40 6c4-2 8 2 6 6l-4 4-6-6z"/>
+      </g>
+    </symbol>
+
+    <symbol id="turtle" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M32 16c11 0 19 8 19 17s-8 15-19 15-19-6-19-15 8-17 19-17z"/>
+        <path d="M13 34 4 30M51 34l9-4M20 48l-4 8M44 48l4 8M32 16v-8"/>
+        <path d="M24 30h16M32 22v18"/>
+      </g>
+    </symbol>
+
+    <symbol id="wifi" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 24c14-12 34-12 48 0"/>
+        <path d="M17 34c9-8 21-8 30 0"/>
+        <path d="M25 44c4-4 10-4 14 0"/>
+        <circle cx="32" cy="52" r="2.5" fill="currentColor" stroke="none"/>
+      </g>
+    </symbol>
+
+    <symbol id="star" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 2.5 14.9 9l7 .7-5.3 4.7 1.6 6.9L12 17.7 5.8 21.3l1.6-6.9L2.1 9.7l7-.7z"/>
+    </symbol>
+
+    <symbol id="ig" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17" cy="7" r="1.1" fill="currentColor" stroke="none"/>
+      </g>
+    </symbol>
+
+    <symbol id="fb" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M13.5 21v-8h2.7l.4-3h-3.1V8.2c0-.9.3-1.5 1.5-1.5H16.7V4.1c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.3v3H10v8z"/>
+    </symbol>
+
+    <symbol id="wa" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3zm5.1 12.6c-.2.6-1.2 1.1-1.7 1.2-.5 0-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.6-4.1-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.5c-.1.2-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.2.1.4.1.6-.1l.8-1c.2-.2.3-.2.6-.1l2 .9c.3.1.5.2.5.4s0 .8-.3 1.1z"/>
+    </symbol>
+
+    <symbol id="pin" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/>
+        <circle cx="12" cy="10" r="2.6"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ===================== TOP BAR ===================== -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="tb-note"><span class="dot"></span> Kekulama Road, Galle · Southern Province, Sri Lanka</div>
+    <div class="tb-note">Book direct and save 10% · <a href="tel:+94770000000">+94 77 000 0000</a></div>
+  </div>
+</div>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg class="emblem" viewBox="0 0 64 64" style="color:var(--bark)" aria-hidden="true"><use href="#cabana"></use></svg>
+      <span class="brand-txt">
+        <span class="brand-name">Kekulama</span>
+        <span class="brand-sub">Eco Cabana · Galle</span>
+      </span>
+    </a>
+
+    <nav class="links" id="links" aria-label="Main">
+      <a href="#about">About</a>
+      <a href="#cabanas">Cabanas</a>
+      <a href="#restaurant">Restaurant</a>
+      <a href="#experiences">Experiences</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="nav-cta">
+      <a class="btn btn-solid btn-sm" href="#book">Book a stay</a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="links"><span></span></button>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<main id="top">
+<section class="hero">
+  <div class="fronds" aria-hidden="true">
+    <svg class="fr-a" viewBox="0 0 240 150"><use href="#frond"></use></svg>
+    <svg class="fr-b" viewBox="0 0 240 150"><use href="#frond"></use></svg>
+  </div>
+  <div class="canopy-light" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <p class="eyebrow">Thatched cabanas · Galle</p>
+    <h1>Wake up under the <em>canopy</em>, ten minutes from the Fort.</h1>
+    <p class="lede">Six hand-built eco cabanas set in a working garden of coconut, cinnamon and jak. Rain-water showers, solar power, and a kitchen that cooks whatever the morning market gives us.</p>
+    <div class="hero-actions">
+      <a class="btn btn-solid" href="#book">Check availability</a>
+      <a class="btn btn-ghost" href="#restaurant">See the restaurant</a>
+    </div>
+    <div class="hero-strip">
+      <span><b>6</b> cabanas</span>
+      <span><b>2.4</b> acres of garden</span>
+      <span><b>10 min</b> to Galle Fort</span>
+      <span><b>100%</b> solar hot water</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WELCOME ===================== -->
+<section class="section welcome" id="about">
+  <div class="wrap welcome-grid">
+    <div class="section-head rv" style="margin-bottom:0">
+      <p class="eyebrow">Welcome to Kekulama</p>
+      <h2>Built from the garden it <em>sits in</em>.</h2>
+      <p class="lede">Kekulama began as a family coconut plot. The cabanas came later — timber frames, cadjan thatch, and wide verandahs raised on stilts so the breeze runs underneath. Nothing here is air-freighted: the furniture is local mahogany offcuts, the water is filtered rain, and the compost goes back into the beds that feed the kitchen.</p>
+      <p class="lede">It is quiet. That is rather the point.</p>
+      <div class="hero-actions">
+        <a class="btn btn-ghost" href="#cabanas">Meet the cabanas</a>
+      </div>
+    </div>
+
+    <div class="pillars rv">
+      <div class="pillar">
+        <svg class="ic" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><use href="#cabana"></use></svg>
+        <div>
+          <h3>Hand-built cabanas</h3>
+          <p>Cadjan roofs, mosquito-netted beds, outdoor rain showers and a verandah hammock in every one.</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <svg class="ic" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><use href="#pot"></use></svg>
+        <div>
+          <h3>Garden kitchen &amp; bar</h3>
+          <p>Rice and curry cooked over firewood, seafood from Galle harbour, and arrack sours on the deck at dusk.</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <svg class="ic" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><use href="#leaf"></use></svg>
+        <div>
+          <h3>Low-impact by habit</h3>
+          <p>Solar hot water, rain harvesting, no single-use plastic, and a garden that composts its own kitchen.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CABANAS ===================== -->
+<section class="section" id="cabanas">
+  <div class="wrap">
+    <div class="split-head rv">
+      <div class="section-head">
+        <p class="eyebrow">Where you sleep</p>
+        <h2>Our <em>cabanas</em></h2>
+        <p class="lede">Six in total, spaced far enough apart that you will hear birds before you hear neighbours. Rates include breakfast, tax and the airport-free conscience.</p>
+      </div>
+      <a class="btn btn-ghost" href="#book">All rates &amp; policies</a>
+    </div>
+
+    <div class="rooms">
+      <article class="room rv">
+        <div class="scene" aria-hidden="true">
+          <svg style="width:58%; right:-6%; bottom:-8%;" viewBox="0 0 64 64"><use href="#cabana"></use></svg>
+          <span class="tag">Photo · Garden Cabana</span>
+        </div>
+        <div class="room-body">
+          <div class="room-top">
+            <h3>Garden Cabana</h3>
+            <span class="price"><b>$45</b><span>per night</span></span>
+          </div>
+          <p>A single-room cabana under the jak trees, with a screened verandah and a rain shower open to the sky.</p>
+          <ul class="specs">
+            <li>2 guests</li><li>32 m²</li><li>Ceiling fan</li><li>Rain shower</li><li>Wi-Fi</li>
+          </ul>
+          <div class="room-actions">
+            <a class="btn btn-solid btn-sm" href="#book">Book now</a>
+            <a class="btn btn-ghost btn-sm" href="#book">Details</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="room rv">
+        <div class="scene" aria-hidden="true">
+          <svg style="width:60%; right:-8%; bottom:-10%;" viewBox="0 0 240 150"><use href="#frond"></use></svg>
+          <span class="tag">Photo · Canopy Cabana</span>
+        </div>
+        <div class="room-body">
+          <div class="room-top">
+            <h3>Canopy Cabana</h3>
+            <span class="price"><b>$65</b><span>per night</span></span>
+          </div>
+          <p>Raised on stilts into the treetops. Air-conditioned bedroom, day bed on the deck, and the best sunset in the garden.</p>
+          <ul class="specs">
+            <li>3 guests</li><li>42 m²</li><li>A/C</li><li>Minibar</li><li>Deck</li>
+          </ul>
+          <div class="room-actions">
+            <a class="btn btn-solid btn-sm" href="#book">Book now</a>
+            <a class="btn btn-ghost btn-sm" href="#book">Details</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="room rv">
+        <div class="scene" aria-hidden="true">
+          <svg style="width:56%; right:-4%; bottom:-6%;" viewBox="0 0 64 64"><use href="#leaf"></use></svg>
+          <span class="tag">Photo · Family Cabana</span>
+        </div>
+        <div class="room-body">
+          <div class="room-top">
+            <h3>Family Cabana</h3>
+            <span class="price"><b>$95</b><span>per night</span></span>
+          </div>
+          <p>Two bedrooms over two levels with a kitchenette, a long dining verandah and a garden gate to the paddy path.</p>
+          <ul class="specs">
+            <li>4 guests</li><li>60 m²</li><li>A/C</li><li>Kitchenette</li><li>2 bathrooms</li>
+          </ul>
+          <div class="room-actions">
+            <a class="btn btn-solid btn-sm" href="#book">Book now</a>
+            <a class="btn btn-ghost btn-sm" href="#book">Details</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RESTAURANT ===================== -->
+<section class="section dine" id="restaurant">
+  <div class="canopy-light" aria-hidden="true"></div>
+  <div class="wrap dine-grid">
+    <div class="rv">
+      <div class="section-head" style="margin-bottom:1.6rem">
+        <p class="eyebrow">The table</p>
+        <h2>Restaurant &amp; <em>bar</em></h2>
+        <p class="lede">One kitchen, one blackboard, and whatever came back from the market that morning. Guests eat at 7:30 and 19:30; walk-ins are welcome when there is a table free.</p>
+      </div>
+      <div class="scene" aria-hidden="true">
+        <svg style="width:46%; left:-4%; bottom:-8%;" viewBox="0 0 240 150"><use href="#frond"></use></svg>
+        <svg style="width:26%; right:8%; top:12%;" viewBox="0 0 64 64"><use href="#pot"></use></svg>
+        <span class="tag">Photo · The deck at dusk</span>
+      </div>
+    </div>
+
+    <div class="menu-card rv">
+      <h3>From the blackboard</h3>
+      <ul class="menu-list">
+        <li>
+          <div class="mrow"><span class="nm">Rice &amp; curry, seven dishes</span><span class="ldr"></span><span class="pr">Rs 2,400</span></div>
+          <span class="desc">Red rice, dhal, jackfruit, beetroot, mallung, papadam, coconut sambol.</span>
+        </li>
+        <li>
+          <div class="mrow"><span class="nm">Fish ambul thiyal</span><span class="ldr"></span><span class="pr">Rs 2,800</span></div>
+          <span class="desc">Tuna from the harbour, soured with goraka and black pepper.</span>
+        </li>
+        <li>
+          <div class="mrow"><span class="nm">Devilled prawns</span><span class="ldr"></span><span class="pr">Rs 3,200</span></div>
+          <span class="desc">Chilli, onion, curry leaf — hot unless you say otherwise.</span>
+        </li>
+        <li>
+          <div class="mrow"><span class="nm">Kottu roti</span><span class="ldr"></span><span class="pr">Rs 1,900</span></div>
+          <span class="desc">Chicken or vegetable, chopped to order after 18:00.</span>
+        </li>
+        <li>
+          <div class="mrow"><span class="nm">Egg hoppers &amp; lunu miris</span><span class="ldr"></span><span class="pr">Rs 900</span></div>
+          <span class="desc">Breakfast only, made to order at the pan.</span>
+        </li>
+        <li>
+          <div class="mrow"><span class="nm">Watalappan</span><span class="ldr"></span><span class="pr">Rs 850</span></div>
+          <span class="desc">Kithul treacle custard with cashew.</span>
+        </li>
+        <li>
+          <div class="mrow"><span class="nm">Arrack sour · king coconut</span><span class="ldr"></span><span class="pr">Rs 1,200 · 450</span></div>
+          <span class="desc">Served on the deck from 17:00.</span>
+        </li>
+      </ul>
+      <a class="btn btn-ondark btn-sm" href="#book">Reserve a table</a>
+      <p class="dine-note"><span class="dot"></span> Vegan and gluten-free plates on request — tell us the day before.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EXPERIENCES ===================== -->
+<section class="section" id="experiences">
+  <div class="wrap">
+    <div class="section-head center rv">
+      <p class="eyebrow center">Around us</p>
+      <h2>Things to <em>do</em></h2>
+      <p class="lede">Everything below is arranged at the desk, with drivers and guides we actually know. Distances are from our gate.</p>
+    </div>
+
+    <div class="things">
+      <article class="thing rv">
+        <svg class="ic" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><use href="#fort"></use></svg>
+        <h3>Galle Fort ramparts</h3>
+        <p>Dutch walls, lighthouse, and the best hour of the day for a walk. Tuk-tuk arranged in ten minutes.</p>
+        <p class="when">10 min · Year round</p>
+      </article>
+      <article class="thing rv">
+        <svg class="ic" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><use href="#wave"></use></svg>
+        <h3>Whale watching, Mirissa</h3>
+        <p>Early boat out past the shelf for blue whales and spinner dolphins. We pack breakfast for the drive.</p>
+        <p class="when">50 min · Nov – Apr</p>
+      </article>
+      <article class="thing rv">
+        <svg class="ic" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><use href="#paddle"></use></svg>
+        <h3>Koggala mangrove paddle</h3>
+        <p>Kayak the lagoon channels at first light, past cinnamon islands and the stilt fishermen.</p>
+        <p class="when">20 min · Sunrise &amp; sunset</p>
+      </article>
+      <article class="thing rv">
+        <svg class="ic" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><use href="#turtle"></use></svg>
+        <h3>Turtle hatchery, Habaraduwa</h3>
+        <p>A small conservation hatchery on the coast road — best visited late afternoon, before the release.</p>
+        <p class="when">15 min · Year round</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REVIEWS ===================== -->
+<section class="section reviews">
+  <div class="wrap">
+    <div class="section-head center rv">
+      <p class="eyebrow center">Guest book</p>
+      <h2>What guests say on <em>Google</em></h2>
+    </div>
+
+    <div class="rating rv">
+      <span class="score">4.9</span>
+      <span class="meta">
+        <span class="stars" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24"><use href="#star"></use></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24"><use href="#star"></use></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24"><use href="#star"></use></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24"><use href="#star"></use></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24"><use href="#star"></use></svg>
+        </span>
+        <small>Rating slot — connect your Google listing</small>
+      </span>
+    </div>
+
+    <div class="quotes">
+      <article class="quote rv">
+        <span class="slot-chip">Review slot 1</span>
+        <p>“Your most recent Google review appears here. Pull the live feed in, or paste three favourites when the site goes up.”</p>
+        <div class="who"><span class="av">G</span><span><b>Guest name</b><small>Country · Month 2026</small></span></div>
+      </article>
+      <article class="quote rv">
+        <span class="slot-chip">Review slot 2</span>
+        <p>“Keep each quote to two lines so the three cards stay the same height on a phone.”</p>
+        <div class="who"><span class="av">G</span><span><b>Guest name</b><small>Country · Month 2026</small></span></div>
+      </article>
+      <article class="quote rv">
+        <span class="slot-chip">Review slot 3</span>
+        <p>“Reviews mentioning the cabanas, the cooking and the garden convert best — pick one of each.”</p>
+        <div class="who"><span class="av">G</span><span><b>Guest name</b><small>Country · Month 2026</small></span></div>
+      </article>
+    </div>
+
+    <div class="hero-actions rv" style="justify-content:center; margin-top:2rem;">
+      <a class="btn btn-ghost btn-sm" href="#book">Read all reviews</a>
+      <a class="btn btn-ghost btn-sm" href="#book">Write a review</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== GALLERY ===================== -->
+<section class="section" id="gallery">
+  <div class="wrap">
+    <div class="split-head rv">
+      <div class="section-head">
+        <p class="eyebrow">Moments</p>
+        <h2>Life at <em>Kekulama</em></h2>
+      </div>
+      <a class="btn btn-ghost btn-sm" href="#book">View full gallery</a>
+    </div>
+
+    <div class="gal rv" aria-hidden="true">
+      <div class="scene g-wide g-tall">
+        <svg style="width:52%; left:4%; bottom:-6%;" viewBox="0 0 240 150"><use href="#frond"></use></svg>
+        <svg style="width:30%; right:8%; top:14%;" viewBox="0 0 64 64"><use href="#cabana"></use></svg>
+        <span class="tag">Photo · The garden at 6am</span>
+      </div>
+      <div class="scene"><svg style="width:56%; right:-2%; bottom:-4%;" viewBox="0 0 64 64"><use href="#leaf"></use></svg><span class="tag">Photo · Verandah</span></div>
+      <div class="scene"><svg style="width:52%; left:6%; bottom:-4%;" viewBox="0 0 64 64"><use href="#pot"></use></svg><span class="tag">Photo · Rice &amp; curry</span></div>
+      <div class="scene"><svg style="width:60%; right:-6%; bottom:-8%;" viewBox="0 0 240 150"><use href="#frond"></use></svg><span class="tag">Photo · Bedroom</span></div>
+      <div class="scene"><svg style="width:54%; left:4%; bottom:-2%;" viewBox="0 0 64 64"><use href="#turtle"></use></svg><span class="tag">Photo · Beach walk</span></div>
+      <div class="scene g-wide">
+        <svg style="width:34%; left:6%; bottom:-4%;" viewBox="0 0 64 64"><use href="#wave"></use></svg>
+        <svg style="width:40%; right:2%; top:-6%;" viewBox="0 0 240 150"><use href="#frond"></use></svg>
+        <span class="tag">Photo · Sunset on the deck</span>
+      </div>
+      <div class="scene g-wide"><svg style="width:30%; left:8%; bottom:-4%;" viewBox="0 0 64 64"><use href="#fort"></use></svg><svg style="width:28%; right:10%; top:10%;" viewBox="0 0 64 64"><use href="#leaf"></use></svg><span class="tag">Photo · Galle Fort day trip</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA BAND ===================== -->
+<section class="section band" id="book">
+  <div class="wrap inner">
+    <p class="eyebrow center" style="color:inherit">Direct booking</p>
+    <h2>Ready for a <em>slower</em> week?</h2>
+    <p>Message us on WhatsApp for same-day answers, or call the house. Book direct and the 10% comes off the room, not the breakfast.</p>
+    <div class="hero-actions" style="justify-content:center">
+      <a class="btn btn-solid" href="https://wa.me/94770000000">WhatsApp us</a>
+      <a class="btn btn-ghost" href="tel:+94770000000">+94 77 000 0000</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="foot" id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#top" style="margin-bottom:1rem">
+          <svg class="emblem" viewBox="0 0 64 64" style="color:var(--panel-accent)" aria-hidden="true"><use href="#cabana"></use></svg>
+          <span class="brand-txt">
+            <span class="brand-name">Kekulama</span>
+            <span class="brand-sub">Eco Cabana · Galle</span>
+          </span>
+        </a>
+        <p>Six thatched cabanas and a garden kitchen, ten minutes from Galle Fort. Family-run since 2019.</p>
+        <div class="socials" style="margin-top:1.2rem">
+          <a href="#book" aria-label="Instagram"><svg width="17" height="17" viewBox="0 0 24 24"><use href="#ig"></use></svg></a>
+          <a href="#book" aria-label="Facebook"><svg width="17" height="17" viewBox="0 0 24 24"><use href="#fb"></use></svg></a>
+          <a href="https://wa.me/94770000000" aria-label="WhatsApp"><svg width="17" height="17" viewBox="0 0 24 24"><use href="#wa"></use></svg></a>
+        </div>
+      </div>
+
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#about">About us</a></li>
+          <li><a href="#cabanas">Cabanas</a></li>
+          <li><a href="#restaurant">Restaurant</a></li>
+          <li><a href="#experiences">Experiences</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Find us</h4>
+        <ul>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:-2px" aria-hidden="true"><use href="#pin"></use></svg> Kekulama Road, Galle 80000</li>
+          <li><a href="tel:+94770000000">+94 77 000 0000</a></li>
+          <li><a href="mailto:stay@kekulamaecocabana.lk">stay@kekulamaecocabana.lk</a></li>
+          <li><a href="https://wa.me/94770000000">WhatsApp the house</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Hours</h4>
+        <div class="hours">
+          <div><span>Breakfast</span><span>07:00 – 10:00</span></div>
+          <div><span>Restaurant</span><span>12:00 – 22:30</span></div>
+          <div><span>Check-in</span><span>from 14:00</span></div>
+          <div><span>Check-out</span><span>by 11:00</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <span>© 2026 Kekulama Eco Cabana, Galle. All rights reserved.</span>
+      <span>Design concept · replace placeholder text, rates and photos before launch.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var burger = document.getElementById('burger');
+  var links  = document.getElementById('links');
+
+  burger.addEventListener('click', function(){
+    var open = links.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  links.addEventListener('click', function(e){
+    if (e.target.tagName === 'A') {
+      links.classList.remove('open');
+      burger.setAttribute('aria-expanded','false');
+    }
+  });
+
+  var reveals = document.querySelectorAll('.rv');
+  if (!('IntersectionObserver' in window) ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  reveals.forEach(function(el, i){
+    el.style.transitionDelay = (Math.min(i, 4) * 60) + 'ms';
+    io.observe(el);
+  });
+})();
+</script>
