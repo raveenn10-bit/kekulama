@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -53,7 +52,7 @@ export function Hero() {
       id="home"
       className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-center pt-24 sm:pt-28 pb-14 sm:pb-16"
     >
-      {/* Background Image with Quiet Slow Ambient Movement */}
+      {/* Cinematic Drone Video Background */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <motion.div
           initial={{ scale: 1.06, opacity: 0 }}
@@ -64,14 +63,16 @@ export function Hero() {
           }}
           className="relative w-full h-full"
         >
-          <Image
-            src="/images/hero.jpg"
-            alt="Kekulama Eco Cabana Nature Panorama"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/images/hero.jpg"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          >
+            <source src="/videos/hero-drone.mp4" type="video/mp4" />
+          </video>
         </motion.div>
         {/* Luxury Nature Atmospheric Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-forest-dark/85 via-forest/65 to-forest-dark/90" />
