@@ -6,11 +6,13 @@ import { Check, Sparkles, ArrowRight } from "lucide-react";
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 export default function Packages() {
   const { packages } = siteData;
   const [activeTab, setActiveTab] = useState<"all" | "day" | "night" | "meals">("all");
   const shouldReduceMotion = useReducedMotion();
+  const scrollRef = useAutoScroll({ interval: 3500, mobileBreakpoint: 640 });
 
   const dayPackages = packages.filter((p) => p.name.includes("Day Out"));
   const nightPackages = packages.filter((p) => p.name.includes("Night Stay"));
@@ -80,6 +82,7 @@ export default function Packages() {
 
         {/* Mobile Horizontal Snap Row / Desktop Grid */}
         <motion.div
+          ref={scrollRef}
           layout
           className="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-6 pt-2 px-1 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:overflow-visible sm:pb-0 no-scrollbar"
         >

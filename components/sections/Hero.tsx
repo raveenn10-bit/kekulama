@@ -74,9 +74,9 @@ export function Hero() {
             <source src="/videos/hero-drone.mp4" type="video/mp4" />
           </video>
         </motion.div>
-        {/* Luxury Nature Atmospheric Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-forest-dark/85 via-forest/65 to-forest-dark/90" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-mint-500/20 via-transparent to-transparent pointer-events-none" />
+        {/* Lighter Overlay — Let the Drone Video Shine Through */}
+        <div className="absolute inset-0 bg-gradient-to-b from-forest-dark/50 via-forest/30 to-forest-dark/60" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-mint-500/10 via-transparent to-transparent pointer-events-none" />
       </div>
 
       <div className="container-custom relative z-10 flex flex-col justify-center my-auto">

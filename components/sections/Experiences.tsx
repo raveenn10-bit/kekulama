@@ -6,12 +6,14 @@ import { Landmark, Mountain, Waves, Turtle, MapPin, Calendar } from "lucide-reac
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 const iconMap: Record<string, any> = { Landmark, Mountain, Waves, Turtle };
 
 export default function Experiences() {
   const { experiences } = siteData;
   const shouldReduceMotion = useReducedMotion();
+  const scrollRef = useAutoScroll({ interval: 3500 });
 
   return (
     <section id="experiences" className="bg-forest section-padding relative overflow-hidden text-white">
@@ -30,7 +32,10 @@ export default function Experiences() {
         </div>
 
         {/* Mobile Horizontal Snap Row / Desktop 2-Col Grid */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-6 pt-2 px-1 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 no-scrollbar">
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-6 pt-2 px-1 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 no-scrollbar"
+        >
           {experiences.map((exp: any, index: number) => {
             const Icon = iconMap[exp.icon] || Landmark;
             return (

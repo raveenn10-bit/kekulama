@@ -6,10 +6,12 @@ import { Star, CheckCircle, ExternalLink } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { siteData } from "@/data/siteData";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 export default function Reviews() {
   const { reviews, googleRatingStats, contact } = siteData;
   const shouldReduceMotion = useReducedMotion();
+  const scrollRef = useAutoScroll({ interval: 4000 });
 
   return (
     <section id="reviews" className="section-padding bg-gradient-to-b from-white via-eucalyptus-50/50 to-mint-50/40 relative overflow-hidden">
@@ -84,7 +86,10 @@ export default function Reviews() {
         </motion.div>
 
         {/* Mobile Horizontal Snap Row / Desktop 3-Col Grid */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-6 pt-2 px-1 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:pb-0 no-scrollbar">
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-6 pt-2 px-1 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:pb-0 no-scrollbar"
+        >
           {reviews.map((review, index) => (
             <motion.div
               key={index}

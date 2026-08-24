@@ -17,6 +17,7 @@ import {
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 const iconMap: Record<string, any> = {
   Bath,
@@ -34,6 +35,7 @@ const iconMap: Record<string, any> = {
 export default function Amenities() {
   const { amenities } = siteData;
   const shouldReduceMotion = useReducedMotion();
+  const scrollRef = useAutoScroll({ interval: 2500, mobileBreakpoint: 640 });
 
   return (
     <section id="amenities" className="bg-white section-padding relative overflow-hidden">
@@ -46,7 +48,10 @@ export default function Amenities() {
         />
 
         {/* Mobile Horizontal Snap Row / Desktop 5-Col Grid */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-5 pt-2 px-1 sm:grid sm:grid-cols-3 md:grid-cols-5 sm:overflow-visible sm:pb-0 no-scrollbar">
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-5 pt-2 px-1 sm:grid sm:grid-cols-3 md:grid-cols-5 sm:overflow-visible sm:pb-0 no-scrollbar"
+        >
           {amenities.map((amenity, index) => {
             const Icon = iconMap[amenity.icon] || TreePine;
             return (

@@ -7,12 +7,14 @@ import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Maximize2, X } from "lucide-react";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 export default function Gallery() {
   const { gallery } = siteData;
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const shouldReduceMotion = useReducedMotion();
+  const scrollRef = useAutoScroll({ interval: 3000 });
 
   // Handle escape key and scroll lock
   useEffect(() => {
@@ -97,6 +99,7 @@ export default function Gallery() {
 
         {/* Mobile Horizontal Snap Row / Desktop Masonry Grid */}
         <motion.div
+          ref={scrollRef}
           layout
           className="flex overflow-x-auto snap-x snap-mandatory gap-3.5 pb-5 pt-2 px-1 md:grid md:grid-cols-3 lg:grid-cols-4 md:auto-rows-[220px] lg:auto-rows-[240px] md:overflow-visible md:pb-0 no-scrollbar"
         >
