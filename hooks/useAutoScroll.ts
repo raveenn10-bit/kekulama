@@ -3,60 +3,64 @@
 import { useEffect, useRef, useCallback } from "react";
 
 interface UseAutoScrollOptions {
-  /** Time between auto-scrolls in ms (default: 3000) */
+  /** Time between auto-scroll steps in ms (default: 3000) */
   interval?: number;
-  /** Pause duration after user interaction in ms (default: 5000) */
+  /** Pause duration after user touch/drag interaction in ms (default: 4000) */
   pauseAfterInteraction?: number;
-  /** Only auto-scroll below this viewport width (default: 768 for mobile) */
-  mobileBreakpoint?: number;
 }
 
 export function useAutoScroll({
   interval = 3000,
-  pauseAfterInteraction = 5000,
-  mobileBreakpoint = 768,
+  pauseAfterInteraction = 4000,
 }: UseAutoScrollOptions = {}) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isPausedRef = useRef(false);
+  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scrollToNext = useCallback(() => {
     const el = scrollRef.current;
     if (!el || isPausedRef.current) return;
-    if (window.innerWidth >= mobileBreakpoint) return;
 
-    const children = Array.from(el.children) as HTMLElement[];
-    if (children.length === 0) return;
+    // Only scroll if content horizontally overflows the viewport
+    if (el.scrollWidth <= el.clientWidth + 10) return;
 
-    // Find the current snap child closest to scroll position
-    const scrollLeft = el.scrollLeft;
-    const containerWidth = el.clientWidth;
-    let currentIndex = 0;
-    let minDist = Infinity;
+    const children = Array.from(el.children).filter(
+      (child) => child instanceof HTMLElement && child.offsetWidth > 0
+    ) as HTMLElement[];
 
-    children.forEach((child, i) => {
-      const dist = Math.abs(child.offsetLeft - scrollLeft);
-      if (dist < minDist) {
-        minDist = dist;
-        currentIndex = i;
+    if (children.length <= 1) return;
+
+    const containerRect = el.getBoundingClientRect();
+    const currentScroll = el.scrollLeft;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+
+    // If near the end (within 20px), loop back to the beginning smoothly
+    if (currentScroll >= maxScroll - 20) {
+      el.scrollTo({ left: 0, behavior: "smooth" });
+      return;
+    }
+
+    // Find the next child element to bring into view
+    let targetLeft = -1;
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      const childRect = child.getBoundingClientRect();
+      const childAbsoluteLeft = childRect.left - containerRect.left + currentScroll;
+
+      // Find the first child that starts at least 25px after current scroll position
+      if (childAbsoluteLeft > currentScroll + 25) {
+        const paddingLeft = parseFloat(window.getComputedStyle(el).paddingLeft) || 0;
+        targetLeft = Math.max(0, childAbsoluteLeft - paddingLeft);
+        break;
       }
-    });
+    }
 
-    const nextIndex = currentIndex + 1;
-
-    if (nextIndex < children.length) {
-      // Scroll to next item
-      children[nextIndex].scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "start",
-      });
+    if (targetLeft >= 0 && targetLeft <= maxScroll + 50) {
+      el.scrollTo({ left: Math.min(targetLeft, maxScroll), behavior: "smooth" });
     } else {
-      // Loop back to the first item
       el.scrollTo({ left: 0, behavior: "smooth" });
     }
-  }, [mobileBreakpoint]);
+  }, []);
 
   const pauseAutoScroll = useCallback(() => {
     isPausedRef.current = true;
@@ -70,28 +74,57 @@ export function useAutoScroll({
     const el = scrollRef.current;
     if (!el) return;
 
-    // Start auto-scroll interval
-    timerRef.current = setInterval(scrollToNext, interval);
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+    let isVisible = true;
 
-    // Pause on user touch/scroll interaction
-    const handleInteraction = () => pauseAutoScroll();
+    const startTimer = () => {
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(() => {
+        if (isVisible && !isPausedRef.current) {
+          scrollToNext();
+        }
+      }, interval);
+    };
 
-    el.addEventListener("touchstart", handleInteraction, { passive: true });
-    el.addEventListener("wheel", handleInteraction, { passive: true });
-    el.addEventListener("mousedown", handleInteraction);
+    const stopTimer = () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    };
 
-    // Respect prefers-reduced-motion
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (mediaQuery.matches) {
-      if (timerRef.current) clearInterval(timerRef.current);
+    // Intersection Observer to scroll only when section is in viewport
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isVisible = entry.isIntersecting;
+          });
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(el);
     }
 
+    startTimer();
+
+    // Pause on user interactions (touch or pointer)
+    const handleInteraction = () => {
+      pauseAutoScroll();
+    };
+
+    el.addEventListener("touchstart", handleInteraction, { passive: true });
+    el.addEventListener("pointerdown", handleInteraction, { passive: true });
+    el.addEventListener("wheel", handleInteraction, { passive: true });
+
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      stopTimer();
       if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+      if (observer) observer.disconnect();
       el.removeEventListener("touchstart", handleInteraction);
+      el.removeEventListener("pointerdown", handleInteraction);
       el.removeEventListener("wheel", handleInteraction);
-      el.removeEventListener("mousedown", handleInteraction);
     };
   }, [scrollToNext, interval, pauseAutoScroll]);
 

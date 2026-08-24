@@ -35,7 +35,7 @@ const iconMap: Record<string, any> = {
 export default function Amenities() {
   const { amenities } = siteData;
   const shouldReduceMotion = useReducedMotion();
-  const scrollRef = useAutoScroll({ interval: 2500, mobileBreakpoint: 640 });
+  const scrollRef = useAutoScroll({ interval: 2600 });
 
   return (
     <section id="amenities" className="bg-white section-padding relative overflow-hidden">

@@ -12,7 +12,7 @@ export default function Packages() {
   const { packages } = siteData;
   const [activeTab, setActiveTab] = useState<"all" | "day" | "night" | "meals">("all");
   const shouldReduceMotion = useReducedMotion();
-  const scrollRef = useAutoScroll({ interval: 3500, mobileBreakpoint: 640 });
+  const scrollRef = useAutoScroll({ interval: 3200 });
 
   const dayPackages = packages.filter((p) => p.name.includes("Day Out"));
   const nightPackages = packages.filter((p) => p.name.includes("Night Stay"));
