@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Check, Sparkles, ArrowRight } from "lucide-react";
+import { Check, Sparkles, ArrowRight, ShieldCheck, Zap } from "lucide-react";
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
@@ -44,7 +44,7 @@ export default function Packages() {
         />
 
         {/* Filter Pills with Liquid Slider Pill Animation */}
-        <div className="flex items-center justify-center gap-2.5 mb-12 overflow-x-auto no-scrollbar pb-2">
+        <div className="flex items-center justify-center gap-2.5 mb-12 2xl:mb-16 overflow-x-auto no-scrollbar pb-2">
           {[
             { id: "all", label: "All Packages" },
             { id: "day", label: "Day Out" },
@@ -56,7 +56,7 @@ export default function Packages() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`relative px-5 py-2.5 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] transition-colors duration-300 whitespace-nowrap cursor-pointer z-10 ${
+                className={`relative px-5 py-2.5 2xl:px-6 2xl:py-3 rounded-full font-body text-xs 2xl:text-sm font-semibold uppercase tracking-[0.14em] transition-colors duration-300 whitespace-nowrap cursor-pointer z-10 ${
                   isActive ? "text-white" : "text-sage-700 hover:text-forest"
                 }`}
               >
@@ -72,7 +72,7 @@ export default function Packages() {
                   />
                 )}
                 {!isActive && (
-                  <div className="absolute inset-0 bg-white/90 border border-sage-200/80 rounded-full -z-20 shadow-sm" />
+                  <div className="absolute inset-0 bg-white/95 border border-sage-200/80 rounded-full -z-20 shadow-sm" />
                 )}
                 {tab.label}
               </button>
@@ -84,7 +84,7 @@ export default function Packages() {
         <motion.div
           ref={scrollRef}
           layout
-          className="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-6 pt-2 px-1 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:overflow-visible sm:pb-0 no-scrollbar"
+          className="flex overflow-x-auto snap-x snap-mandatory gap-5 2xl:gap-7 pb-6 pt-2 px-1 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 sm:overflow-visible sm:pb-0 no-scrollbar"
         >
           <AnimatePresence mode="popLayout">
             {displayedPackages.map((pkg, index) => (
@@ -127,55 +127,61 @@ function PackageCard({
         ease: LUXURY_EASING.quintOut,
         delay: index * 0.04,
       }}
-      whileHover={shouldReduceMotion ? {} : { y: -5 }}
-      className={`snap-center flex-shrink-0 w-[84vw] sm:w-auto bg-white/95 backdrop-blur-sm rounded-3xl p-7 shadow-soft hover:shadow-glow transition-all duration-300 relative flex flex-col justify-between border ${
+      whileHover={shouldReduceMotion ? {} : { y: -6 }}
+      className={`snap-center flex-shrink-0 w-[84vw] sm:w-auto bg-white/95 backdrop-blur-md rounded-3xl p-7 2xl:p-8 shadow-soft hover:shadow-glow transition-all duration-300 relative flex flex-col justify-between border ${
         pkg.popular
-          ? "border-mint-400 ring-2 ring-mint-300/60 bg-gradient-to-b from-mint-50/60 via-white to-white"
+          ? "border-mint-400 ring-2 ring-mint-300/60 bg-gradient-to-b from-mint-50/70 via-white to-white shadow-glow"
           : "border-eucalyptus-200/80 hover:border-mint-300"
       }`}
     >
       <div>
         {/* Popular Highlight Badge */}
         {pkg.popular && (
-          <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-mint-500 to-mint-600 text-white font-eyebrow text-[10px] uppercase tracking-[0.22em] px-3.5 py-1 rounded-full shadow-md flex items-center gap-1.5">
+          <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-mint-500 via-mint-600 to-mint-500 text-white font-eyebrow text-[10px] 2xl:text-xs uppercase tracking-[0.22em] px-3.5 py-1 rounded-full shadow-md flex items-center gap-1.5 animate-pulse">
             <Sparkles size={11} />
             <span>Most Popular</span>
           </div>
         )}
 
         <div className="mb-4">
-          <span className="font-eyebrow text-[10px] uppercase tracking-[0.26em] text-mint-700 font-normal">
+          <span className="font-eyebrow text-[10px] 2xl:text-xs uppercase tracking-[0.26em] text-mint-700 font-normal">
             {pkg.timing ? "Overnight Experience" : "Day / Night Stay"}
           </span>
-          <h3 className="font-display text-2xl sm:text-[26px] text-forest font-normal mt-1 leading-snug">
+          <h3 className="font-display text-2xl sm:text-[26px] 2xl:text-3xl text-forest font-normal mt-1 leading-snug">
             {pkg.name}
           </h3>
         </div>
 
         {/* Price Tag with Luxury Cormorant Numerals and Space Grotesk Currency */}
-        <div className="bg-eucalyptus-50/90 rounded-2xl p-4 mb-5 border border-eucalyptus-200/70">
+        <div className="bg-eucalyptus-50/90 rounded-2xl p-4 2xl:p-5 mb-5 border border-eucalyptus-200/70">
           <div className="flex items-baseline gap-1.5">
-            <span className="font-mono text-xs font-bold tracking-[0.16em] uppercase text-mint-700">LKR</span>
-            <span className="font-display text-3xl sm:text-4xl font-normal text-forest tracking-tight">
+            <span className="font-mono text-xs 2xl:text-sm font-bold tracking-[0.16em] uppercase text-mint-700">LKR</span>
+            <span className="font-display text-3xl sm:text-4xl 2xl:text-5xl font-normal text-forest tracking-tight">
               {pkg.price}
             </span>
-            <span className="font-body text-xs text-sage-600 font-light ml-1">
+            <span className="font-body text-xs 2xl:text-sm text-sage-600 font-light ml-1">
               / {pkg.unit}
             </span>
           </div>
-          {pkg.timing && (
-            <span className="inline-flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-wider text-mint-900 font-medium bg-mint-100/90 px-2.5 py-0.5 rounded-md mt-2">
-              <span>⏱</span>
-              <span>{pkg.timing}</span>
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            {pkg.timing && (
+              <span className="inline-flex items-center gap-1 font-mono text-[10.5px] 2xl:text-xs uppercase tracking-wider text-mint-900 font-medium bg-mint-100/90 px-2.5 py-0.5 rounded-md">
+                <span>⏱</span>
+                <span>{pkg.timing}</span>
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1 font-eyebrow text-[9.5px] 2xl:text-[10.5px] uppercase tracking-wider text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-md font-medium">
+              <ShieldCheck size={11} className="text-emerald-700" />
+              <span>Direct Rate</span>
             </span>
-          )}
+          </div>
         </div>
 
         {/* Features Checklist */}
-        <ul className="space-y-2.5 mb-6">
+        <ul className="space-y-2.5 2xl:space-y-3 mb-6 2xl:mb-8">
           {pkg.features.map((feature: string, i: number) => (
-            <li key={i} className="flex items-start gap-2.5 font-body text-xs sm:text-[13px] text-sage-700 leading-normal">
-              <div className="w-4 h-4 rounded-full bg-mint-100 text-mint-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <li key={i} className="flex items-start gap-2.5 font-body text-xs sm:text-[13px] 2xl:text-sm text-sage-700 leading-normal">
+              <div className="w-4 h-4 2xl:w-5 2xl:h-5 rounded-full bg-mint-100 text-mint-700 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <Check size={11} strokeWidth={2.5} />
               </div>
               <span>{feature}</span>
@@ -192,7 +198,7 @@ function PackageCard({
         target="_blank"
         rel="noopener noreferrer"
         whileTap={{ scale: 0.98 }}
-        className={`w-full py-3.5 px-5 rounded-full text-center font-body text-xs uppercase tracking-[0.15em] font-semibold transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
+        className={`w-full py-3.5 2xl:py-4 px-5 rounded-full text-center font-body text-xs 2xl:text-sm uppercase tracking-[0.15em] font-semibold transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
           pkg.popular
             ? "bg-gradient-to-r from-mint-500 to-mint-600 text-white shadow-glow hover:from-mint-600 hover:to-mint-700"
             : "bg-sage-100/90 text-forest hover:bg-mint-500 hover:text-white border border-sage-200/80"
