@@ -97,6 +97,12 @@ const jsonLd = {
     "reviewCount": "19",
     "bestRating": "5"
   },
+  "sameAs": [
+    "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html",
+    "https://maps.app.goo.gl/SjnALMB1tAHYKzkM6",
+    "https://www.facebook.com/Kekulamaecocabanagalle",
+    "https://instagram.com/kekulamaecocabanagalle"
+  ],
   "amenityFeature": [
     { "@type": "LocationFeatureSpecification", "name": "45-inch Smart TV", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "JBL Speaker", "value": true },

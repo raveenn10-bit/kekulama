@@ -291,11 +291,15 @@ export const siteData: SiteData = {
     address: "416/1, Pinnaduwa, Galle, Sri Lanka 800034",
     mapCoords: { lat: 6.0779352, lng: 80.2623579 },
     googleMapsUrl: "https://maps.app.goo.gl/SjnALMB1tAHYKzkM6",
+    tripadvisorUrl:
+      "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html",
     social: {
       facebook: "https://www.facebook.com/Kekulamaecocabanagalle",
       instagram: "https://instagram.com/kekulamaecocabanagalle",
       tiktok: "https://tiktok.com/@kekulama.eco.caba1",
       airbnb: "https://www.airbnb.com/rooms/1549628955214353080",
+      tripadvisor:
+        "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html",
     },
   },
 

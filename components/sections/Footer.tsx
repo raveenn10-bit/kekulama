@@ -96,12 +96,32 @@ export function Footer() {
           </span>
         </motion.div>
 
-        {/* Circular Social Media Buttons */}
-        <div className="flex items-center justify-center gap-2.5 sm:gap-3 mb-8 sm:mb-10">
+        {/* Circular Social & Review Platform Buttons */}
+        <div className="flex items-center justify-center gap-2.5 sm:gap-3 mb-8 sm:mb-10 flex-wrap">
+          <motion.a
+            href={contact.social.tripadvisor || "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html"}
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.25, ease: LUXURY_EASING.quintOut }}
+            className="h-10 px-3.5 rounded-full bg-[#00AA6C]/10 border border-[#00AA6C]/30 text-[#00875A] hover:text-white hover:bg-[#00AA6C] hover:border-[#00AA6C] flex items-center gap-1.5 shadow-sm transition-colors active:scale-95 text-xs font-semibold uppercase tracking-wider"
+            aria-label="TripAdvisor"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="11" fill="currentColor" />
+              <circle cx="8" cy="12" r="2.8" fill="white" />
+              <circle cx="8" cy="12" r="1.4" fill="#00AA6C" />
+              <circle cx="16" cy="12" r="2.8" fill="white" />
+              <circle cx="16" cy="12" r="1.4" fill="#00AA6C" />
+              <path d="M12 9.5l-1.8 2.5h3.6l-1.8-2.5z" fill="white" />
+            </svg>
+            <span>TripAdvisor</span>
+          </motion.a>
+
           {[
             { href: contact.social.facebook, icon: Facebook, label: "Facebook" },
             { href: contact.social.instagram, icon: Instagram, label: "Instagram" },
-            { href: contact.social.tiktok, icon: Music2, label: "TikTok" },
             { href: contact.social.airbnb, icon: Home, label: "Airbnb" },
           ].map((soc, idx) => {
             const Icon = soc.icon;

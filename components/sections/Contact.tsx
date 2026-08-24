@@ -76,10 +76,27 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* Social Channels */}
-              <div className="pt-2.5 border-t border-sage-100 flex items-center justify-between">
-                <span className="font-eyebrow text-xs uppercase tracking-wider text-sage-600">Social Channels:</span>
-                <div className="flex gap-2">
+              {/* Social & Review Channels */}
+              <div className="pt-2.5 border-t border-sage-100 flex items-center justify-between flex-wrap gap-2">
+                <span className="font-eyebrow text-xs uppercase tracking-wider text-sage-600">Review & Social:</span>
+                <div className="flex gap-2 items-center">
+                  <a
+                    href={contact.social.tripadvisor || "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="h-9 px-3 rounded-full bg-[#00AA6C]/15 text-[#00875A] hover:bg-[#00AA6C] hover:text-white flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase transition-all active:scale-95 border border-[#00AA6C]/30"
+                    aria-label="TripAdvisor"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="11" fill="currentColor" />
+                      <circle cx="8" cy="12" r="2.8" fill="white" />
+                      <circle cx="8" cy="12" r="1.4" fill="#00AA6C" />
+                      <circle cx="16" cy="12" r="2.8" fill="white" />
+                      <circle cx="16" cy="12" r="1.4" fill="#00AA6C" />
+                      <path d="M12 9.5l-1.8 2.5h3.6l-1.8-2.5z" fill="white" />
+                    </svg>
+                    <span>TripAdvisor</span>
+                  </a>
                   <a
                     href={contact.social.facebook}
                     target="_blank"
@@ -97,15 +114,6 @@ export default function Contact() {
                     aria-label="Instagram"
                   >
                     <Instagram size={16} />
-                  </a>
-                  <a
-                    href={contact.social.tiktok}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-9 h-9 rounded-full bg-sage-100 text-forest hover:bg-mint-500 hover:text-white flex items-center justify-center transition-all active:scale-95"
-                    aria-label="TikTok"
-                  >
-                    <Music2 size={16} />
                   </a>
                   <a
                     href={contact.social.airbnb}

@@ -22,68 +22,119 @@ export default function Reviews() {
       <div className="container-custom relative z-10">
         <SectionHeading
           badge="Verified Guest Feedback"
-          title="Google Maps"
+          title="Google & TripAdvisor"
           highlight="Reviews"
           subtitle="Authentic impressions from global travellers who found serenity at Kekulama Eco Cabana."
         />
 
-        {/* Google Maps Score Summary Card */}
-        <motion.div
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: LUXURY_DURATION.medium, ease: LUXURY_EASING.quintOut }}
-          className="max-w-2xl mx-auto -mt-4 mb-12 bg-white/90 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-soft border border-mint-100 flex flex-wrap items-center justify-between gap-4"
-        >
-          <div className="flex items-center gap-4">
-            {/* Google G Logo Badge */}
-            <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-sage-200 flex items-center justify-center p-2 flex-shrink-0">
-              <svg className="w-7 h-7" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                />
-              </svg>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-3xl font-display font-normal text-forest">
-                  {googleRatingStats.score.toFixed(1)}
-                </span>
-                <div className="flex items-center gap-0.5 text-amber-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={16} fill="currentColor" />
-                  ))}
-                </div>
-              </div>
-              <span className="font-eyebrow text-[10.5px] uppercase tracking-[0.2em] text-sage-600 font-normal">
-                Official Google Maps Rating · 100% Recommended
-              </span>
-            </div>
-          </div>
-
-          <a
-            href={contact.googleMapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-mint-100/90 text-mint-900 hover:bg-mint-500 hover:text-white transition-all font-body text-xs font-semibold uppercase tracking-[0.12em] shadow-sm"
+        {/* Dual Authority Badges: Google Maps & TripAdvisor */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto -mt-4 mb-12">
+          {/* Google Maps Score Summary Card */}
+          <motion.div
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: LUXURY_DURATION.medium, ease: LUXURY_EASING.quintOut }}
+            className="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-soft border border-mint-100 flex flex-wrap items-center justify-between gap-4 hover:shadow-glow transition-all"
           >
-            <span>Read on Google</span>
-            <ExternalLink size={12} />
-          </a>
-        </motion.div>
+            <div className="flex items-center gap-3.5">
+              {/* Google G Logo Badge */}
+              <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-sage-200 flex items-center justify-center p-2 flex-shrink-0">
+                <svg className="w-7 h-7" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-3xl font-display font-normal text-forest">
+                    {googleRatingStats.score.toFixed(1)}
+                  </span>
+                  <div className="flex items-center gap-0.5 text-amber-400">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={15} fill="currentColor" />
+                    ))}
+                  </div>
+                </div>
+                <span className="font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-600 font-normal">
+                  Google Maps · 100% Recommended
+                </span>
+              </div>
+            </div>
+
+            <a
+              href={contact.googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-mint-100 text-mint-900 hover:bg-mint-500 hover:text-white transition-all font-body text-xs font-semibold uppercase tracking-[0.12em] shadow-sm ml-auto"
+            >
+              <span>Google</span>
+              <ExternalLink size={12} />
+            </a>
+          </motion.div>
+
+          {/* TripAdvisor Score Summary Card */}
+          <motion.div
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: LUXURY_DURATION.medium, ease: LUXURY_EASING.quintOut, delay: 0.1 }}
+            className="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-soft border border-[#00AA6C]/30 flex flex-wrap items-center justify-between gap-4 hover:shadow-glow transition-all"
+          >
+            <div className="flex items-center gap-3.5">
+              {/* TripAdvisor Logo Badge */}
+              <div className="w-12 h-12 rounded-2xl bg-[#00AA6C]/10 border border-[#00AA6C]/30 flex items-center justify-center p-2 flex-shrink-0">
+                <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="11" fill="#00AA6C" />
+                  <circle cx="8" cy="12" r="2.8" fill="white" />
+                  <circle cx="8" cy="12" r="1.4" fill="#00AA6C" />
+                  <circle cx="16" cy="12" r="2.8" fill="white" />
+                  <circle cx="16" cy="12" r="1.4" fill="#00AA6C" />
+                  <path d="M12 9.5l-1.8 2.5h3.6l-1.8-2.5z" fill="white" />
+                  <path d="M5 8.5c1.8-1 3.5-1 5 0M14 8.5c1.8-1 3.5-1 5 0" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-3xl font-display font-normal text-forest">5.0</span>
+                  {/* TripAdvisor 5 Green Bubbles */}
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="w-3 h-3 rounded-full bg-[#00AA6C] inline-block shadow-sm" />
+                    ))}
+                  </div>
+                </div>
+                <span className="font-eyebrow text-[10px] uppercase tracking-[0.2em] text-[#00875A] font-semibold">
+                  TripAdvisor · Top Rated Eco Stay
+                </span>
+              </div>
+            </div>
+
+            <a
+              href={contact.tripadvisorUrl || "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#00AA6C] text-white hover:bg-[#00875A] transition-all font-body text-xs font-semibold uppercase tracking-[0.12em] shadow-sm ml-auto"
+            >
+              <span>TripAdvisor</span>
+              <ExternalLink size={12} />
+            </a>
+          </motion.div>
+        </div>
 
         {/* Mobile Horizontal Snap Row / Desktop 3-Col Grid */}
         <div

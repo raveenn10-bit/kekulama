@@ -110,6 +110,22 @@ export function Hero() {
               <Sparkles size={11} className="text-mint-300" />
               Tea Estate Stay
             </span>
+            <a
+              href="https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-eyebrow text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-emerald-300 px-3 py-1 rounded-full bg-[#00AA6C]/20 hover:bg-[#00AA6C]/35 backdrop-blur-sm border border-[#00AA6C]/40 transition-all hover:scale-105"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#00AA6C" />
+                <circle cx="8" cy="12" r="2.8" fill="white" />
+                <circle cx="8" cy="12" r="1.4" fill="#00AA6C" />
+                <circle cx="16" cy="12" r="2.8" fill="white" />
+                <circle cx="16" cy="12" r="1.4" fill="#00AA6C" />
+                <path d="M12 9.5l-1.8 2.5h3.6l-1.8-2.5z" fill="white" />
+              </svg>
+              <span>TripAdvisor 5.0 ★</span>
+            </a>
           </motion.div>
 
           {/* Monumental Luxury Headline */}

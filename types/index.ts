@@ -70,11 +70,13 @@ export interface ContactInfo {
   address: string;
   mapCoords: { lat: number; lng: number };
   googleMapsUrl: string;
+  tripadvisorUrl?: string;
   social: {
     facebook: string;
     instagram: string;
     tiktok: string;
     airbnb: string;
+    tripadvisor?: string;
   };
 }
 
