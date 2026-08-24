@@ -42,7 +42,7 @@ export default function Hero() {
     >
       {/* ── High-Definition Zero-Lag Video Background ── */}
       <div className="absolute inset-0 z-0 overflow-hidden bg-forest-dark">
-        {/* Mobile Portrait Video (Hardware-Accelerated, Direct Stream) */}
+        {/* Portrait Video — Shown in Portrait orientation & Mobile views */}
         <video
           autoPlay
           muted
@@ -50,7 +50,7 @@ export default function Hero() {
           playsInline
           preload="auto"
           poster="/images/hero.jpg"
-          className="absolute inset-0 w-full h-full object-cover object-center md:hidden"
+          className="absolute inset-0 w-full h-full object-cover object-center portrait:block landscape:hidden max-md:block md:landscape:hidden"
           style={{
             transform: "translate3d(0,0,0)",
             backfaceVisibility: "hidden",
@@ -60,7 +60,7 @@ export default function Hero() {
           <source src="/videos/hero-portrait.mp4" type="video/mp4" />
         </video>
 
-        {/* Desktop Landscape Drone Video (Hardware-Accelerated, Direct Stream) */}
+        {/* Landscape Drone Video — Shown in Landscape orientation & Desktop views */}
         <video
           autoPlay
           muted
@@ -68,7 +68,7 @@ export default function Hero() {
           playsInline
           preload="auto"
           poster="/images/hero.jpg"
-          className="absolute inset-0 w-full h-full object-cover object-center hidden md:block"
+          className="absolute inset-0 w-full h-full object-cover object-center hidden landscape:block portrait:hidden md:portrait:hidden md:landscape:block"
           style={{
             transform: "translate3d(0,0,0)",
             backfaceVisibility: "hidden",
