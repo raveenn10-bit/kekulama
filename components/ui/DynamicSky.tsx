@@ -68,16 +68,22 @@ export default function DynamicSky() {
     updateTime();
     const timer = setInterval(updateTime, 30000);
 
-    // Subtle 3D Parallax on pointer move
+    // Subtle 3D Parallax on pointer move with requestAnimationFrame throttle
+    let rAF: number | null = null;
     const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 20;
-      const y = (e.clientY / window.innerHeight - 0.5) * 15;
-      setMouseOffset({ x, y });
+      if (rAF) return;
+      rAF = requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 16;
+        const y = (e.clientY / window.innerHeight - 0.5) * 12;
+        setMouseOffset({ x, y });
+        rAF = null;
+      });
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => {
       clearInterval(timer);
+      if (rAF) cancelAnimationFrame(rAF);
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
