@@ -7,10 +7,12 @@ import Experiences from "@/components/sections/Experiences";
 import Reviews from "@/components/sections/Reviews";
 import CTA from "@/components/sections/CTA";
 import Contact from "@/components/sections/Contact";
+import DynamicSky from "@/components/ui/DynamicSky";
 
 export default function Home() {
   return (
     <>
+      <DynamicSky />
       <Hero />
       <About />
       <Packages />

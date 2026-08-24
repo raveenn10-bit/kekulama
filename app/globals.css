@@ -149,3 +149,9 @@
 ::-webkit-scrollbar-thumb {
   @apply bg-eucalyptus-300/70 rounded-full hover:bg-mint-500 transition-colors;
 }
+
+/* Dynamic Sky – Star twinkle animation */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.3); }
+}
