@@ -21,6 +21,13 @@ const AmbientAudioPlayer = dynamic(
   }
 );
 
+const Sanctuary3D = dynamic(
+  () => import("@/components/sections/Sanctuary3D"),
+  {
+    ssr: false,
+  }
+);
+
 export default function Home() {
   return (
     <>
@@ -28,6 +35,7 @@ export default function Home() {
       <AmbientAudioPlayer />
       <Hero />
       <About />
+      <Sanctuary3D />
       <Packages />
       <Amenities />
       <Gallery />
