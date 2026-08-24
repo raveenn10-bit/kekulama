@@ -6,12 +6,12 @@ import { Volume2, VolumeX, Trees } from "lucide-react";
 import { LUXURY_EASING } from "@/lib/motion";
 
 export default function AmbientAudioPlayer() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const [volume, setVolume] = useState(0.4); // soothing luxury default volume
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [volume, setVolume] = useState(0.45); // soothing luxury ambient volume
   const [showNotification, setShowNotification] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fadeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasStartedRef = useRef(false);
 
   // Smooth volume fade helper
   const fadeVolume = useCallback((targetVol: number, durationMs = 800, onComplete?: () => void) => {
@@ -49,10 +49,11 @@ export default function AmbientAudioPlayer() {
       playPromise
         .then(() => {
           setIsPlaying(true);
-          fadeVolume(volume, 1000);
+          hasStartedRef.current = true;
+          fadeVolume(volume, 1200);
         })
         .catch(() => {
-          // Autoplay blocked by browser policy until interaction
+          // Autoplay restricted by browser until first gesture
           setIsPlaying(false);
         });
     }
@@ -60,7 +61,7 @@ export default function AmbientAudioPlayer() {
 
   const pauseAudio = useCallback(() => {
     if (!audioRef.current) return;
-    fadeVolume(0, 600, () => {
+    fadeVolume(0, 500, () => {
       if (audioRef.current) {
         audioRef.current.pause();
         setIsPlaying(false);
@@ -69,7 +70,6 @@ export default function AmbientAudioPlayer() {
   }, [fadeVolume]);
 
   const togglePlay = () => {
-    setHasInteracted(true);
     setShowNotification(false);
     if (isPlaying) {
       pauseAudio();
@@ -78,32 +78,39 @@ export default function AmbientAudioPlayer() {
     }
   };
 
-  // Attempt initial gentle background play on first user interaction anywhere
+  // Immediate autoplay on mount & fallback to first interaction
   useEffect(() => {
-    const handleFirstGesture = () => {
-      if (!hasInteracted && !isPlaying) {
-        setHasInteracted(true);
+    // 1. Try immediate autoplay
+    playAudio();
+
+    // 2. Fallback: on earliest user interaction (scroll, touch, click, keydown)
+    const handleEarliestGesture = () => {
+      if (!hasStartedRef.current && audioRef.current && audioRef.current.paused) {
         playAudio();
       }
-      window.removeEventListener("click", handleFirstGesture);
-      window.removeEventListener("touchstart", handleFirstGesture);
     };
 
-    window.addEventListener("click", handleFirstGesture, { once: true });
-    window.addEventListener("touchstart", handleFirstGesture, { once: true });
+    window.addEventListener("click", handleEarliestGesture, { passive: true });
+    window.addEventListener("touchstart", handleEarliestGesture, { passive: true });
+    window.addEventListener("pointerdown", handleEarliestGesture, { passive: true });
+    window.addEventListener("scroll", handleEarliestGesture, { passive: true, once: true });
+    window.addEventListener("keydown", handleEarliestGesture, { passive: true });
 
     return () => {
-      window.removeEventListener("click", handleFirstGesture);
-      window.removeEventListener("touchstart", handleFirstGesture);
+      window.removeEventListener("click", handleEarliestGesture);
+      window.removeEventListener("touchstart", handleEarliestGesture);
+      window.removeEventListener("pointerdown", handleEarliestGesture);
+      window.removeEventListener("scroll", handleEarliestGesture);
+      window.removeEventListener("keydown", handleEarliestGesture);
       if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
     };
-  }, [hasInteracted, isPlaying, playAudio]);
+  }, [playAudio]);
 
-  // Hide initial helper tooltip after 7 seconds
+  // Hide helper toast after 6 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowNotification(false);
-    }, 7000);
+    }, 6000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -112,6 +119,7 @@ export default function AmbientAudioPlayer() {
       <audio
         ref={audioRef}
         src="/audio/forest-ambience.mp3"
+        autoPlay
         loop
         preload="auto"
         playsInline
@@ -193,7 +201,7 @@ export default function AmbientAudioPlayer() {
             >
               <Trees size={14} className="text-mint-300" />
               <span className="font-body text-[11px] text-eucalyptus-100">
-                Tap to hear Ceylon forest sounds
+                Tap anywhere to hear Ceylon forest sounds
               </span>
             </motion.div>
           )}
