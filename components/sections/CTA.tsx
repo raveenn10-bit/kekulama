@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { siteData } from "@/data/siteData";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
+import { Sparkles, MessageCircle, Phone } from "lucide-react";
 
 export default function CTA() {
   const { contact } = siteData;
@@ -22,6 +23,13 @@ export default function CTA() {
         <div className="absolute inset-0 bg-forest-dark/85 backdrop-blur-[2px]"></div>
       </div>
 
+      {/* Atmospheric Soft Light Pulse */}
+      <motion.div
+        animate={shouldReduceMotion ? {} : { opacity: [0.15, 0.35, 0.15], scale: [0.95, 1.05, 0.95] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-mint-400/20 rounded-full blur-3xl pointer-events-none"
+      />
+
       <div className="relative z-10 py-18 sm:py-24 md:py-28 px-5 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 22 }}
@@ -30,34 +38,47 @@ export default function CTA() {
           transition={{ duration: LUXURY_DURATION.slow, ease: LUXURY_EASING.editorial }}
           className="text-center max-w-3xl mx-auto"
         >
-          <span className="font-eyebrow text-xs uppercase tracking-[0.28em] text-mint-300 mb-3.5 block font-normal">
-            Escape the Ordinary
+          <span className="font-eyebrow text-xs uppercase tracking-[0.28em] text-mint-300 mb-3.5 inline-flex items-center gap-2 font-normal">
+            <Sparkles size={13} className="text-mint-300 animate-pulse" />
+            <span>Escape the Ordinary</span>
+            <Sparkles size={13} className="text-mint-300 animate-pulse" />
           </span>
-          <h2 className="font-display text-3xl sm:text-5xl md:text-6xl text-white font-normal leading-[1.08] tracking-lux-tight">
-            Ready to reconnect with <span className="italic font-normal bg-gradient-to-r from-mint-200 to-eucalyptus-200 bg-clip-text text-transparent underline decoration-mint-400/40 decoration-wavy decoration-1 underline-offset-8">nature</span>?
+
+          <h2 className="font-display text-3xl sm:text-5xl md:text-6xl 2xl:text-7xl text-white font-normal leading-[1.08] tracking-lux-tight">
+            Ready to reconnect with{" "}
+            <span className="italic font-normal bg-gradient-to-r from-mint-200 to-eucalyptus-200 bg-clip-text text-transparent underline decoration-mint-400/40 decoration-wavy decoration-1 underline-offset-8">
+              nature
+            </span>
+            ?
           </h2>
-          <p className="font-body font-light text-sm sm:text-base md:text-lg text-eucalyptus-100/90 mt-4 max-w-lg mx-auto leading-lux-relaxed">
+          <p className="font-body font-light text-sm sm:text-base md:text-lg 2xl:text-xl text-eucalyptus-100/90 mt-4 max-w-lg 2xl:max-w-xl mx-auto leading-lux-relaxed">
             Reserve your private eco-cabana directly via WhatsApp for guaranteed best rates, instant confirmation, and personalized hospitality.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-8 sm:mt-10">
+            {/* Shimmering Magnetic WhatsApp CTA */}
             <motion.a
               href={`https://wa.me/${contact.whatsappRaw}?text=Hello%20Kekulama%20Eco%20Cabana,%20I%20would%20like%20to%20reserve%20a%20stay.`}
               target="_blank"
               rel="noreferrer"
-              whileHover={shouldReduceMotion ? {} : { y: -1, scale: 1.012 }}
+              whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full px-8 py-3.5 hover:from-mint-600 hover:to-mint-700 transition-all font-body font-semibold text-xs uppercase tracking-[0.15em] shadow-glow w-full sm:w-auto text-center"
+              className="relative overflow-hidden bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full px-8 py-3.5 sm:py-4 hover:from-mint-600 hover:to-mint-700 transition-all font-body font-semibold text-xs 2xl:text-sm uppercase tracking-[0.15em] shadow-glow w-full sm:w-auto text-center flex items-center justify-center gap-2 group cursor-pointer"
             >
-              Book via WhatsApp
+              {/* Metallic Light Sheen Passing Across */}
+              <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out pointer-events-none" />
+              <MessageCircle size={15} />
+              <span>Book via WhatsApp</span>
             </motion.a>
+
             <motion.a
               href={`tel:${contact.phoneRaw}`}
-              whileHover={shouldReduceMotion ? {} : { y: -1, scale: 1.012 }}
+              whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="border border-white/30 text-white hover:bg-white/10 rounded-full px-8 py-3.5 transition-colors font-body font-semibold text-xs uppercase tracking-[0.15em] w-full sm:w-auto text-center backdrop-blur-sm"
+              className="border border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-full px-8 py-3.5 sm:py-4 transition-all font-body font-semibold text-xs 2xl:text-sm uppercase tracking-[0.15em] w-full sm:w-auto text-center backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer"
             >
-              Call Directly
+              <Phone size={14} />
+              <span>Call Directly</span>
             </motion.a>
           </div>
         </motion.div>

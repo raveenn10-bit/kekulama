@@ -184,3 +184,34 @@
   }
 }
 
+/* Floating Spore / Firefly Particle Animation */
+@keyframes floatSpore {
+  0% {
+    transform: translateY(0px) translateX(0px) scale(0.9);
+    opacity: 0.2;
+  }
+  30% {
+    transform: translateY(-40px) translateX(25px) scale(1.15);
+    opacity: 0.8;
+  }
+  65% {
+    transform: translateY(-85px) translateX(-20px) scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-130px) translateX(15px) scale(0.85);
+    opacity: 0;
+  }
+}
+
+/* Card Metallic Shimmer Sheen */
+@keyframes shimmerSheen {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(25deg);
+  }
+}
+
+

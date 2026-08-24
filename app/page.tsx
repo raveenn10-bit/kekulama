@@ -14,6 +14,13 @@ const DynamicSky = dynamic(() => import("@/components/ui/DynamicSky"), {
   ssr: false,
 });
 
+const AmbientParticles = dynamic(
+  () => import("@/components/ui/AmbientParticles"),
+  {
+    ssr: false,
+  }
+);
+
 const AmbientAudioPlayer = dynamic(
   () => import("@/components/ui/AmbientAudioPlayer"),
   {
@@ -25,6 +32,7 @@ export default function Home() {
   return (
     <>
       <DynamicSky />
+      <AmbientParticles />
       <AmbientAudioPlayer />
       <Hero />
       <About />
