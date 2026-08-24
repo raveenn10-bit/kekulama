@@ -39,7 +39,7 @@ export default function Amenities() {
     <section id="amenities" className="bg-white section-padding relative overflow-hidden">
       <div className="container-custom">
         <SectionHeading
-          badge="Property Amenities"
+          badge="Property Appointments"
           title="Comforts designed for"
           highlight="nature living"
           subtitle="From 45' Smart TV and JBL audio to hot water pressure pump and kitchenette — thoughtful appointments for an effortless retreat."
@@ -61,20 +61,20 @@ export default function Amenities() {
                   delay: index * 0.035,
                 }}
                 whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                className="snap-center flex-shrink-0 w-[44vw] sm:w-auto bg-gradient-to-b from-mint-50/50 via-white to-eucalyptus-50/40 rounded-3xl p-5 text-center shadow-soft hover:shadow-glow transition-all duration-300 border border-mint-100 hover:border-mint-300 flex flex-col items-center justify-center group"
+                className="snap-center flex-shrink-0 w-[44vw] sm:w-auto bg-gradient-to-b from-mint-50/40 via-white to-eucalyptus-50/30 rounded-3xl p-5 sm:p-6 text-center shadow-soft hover:shadow-glow transition-all duration-300 border border-eucalyptus-200/80 hover:border-mint-300 flex flex-col items-center justify-center group"
               >
                 <motion.div
                   whileHover={shouldReduceMotion ? {} : { scale: 1.08 }}
                   transition={{ duration: 0.25, ease: LUXURY_EASING.quintOut }}
-                  className="w-13 h-13 rounded-2xl bg-mint-100/80 text-mint-700 flex items-center justify-center mb-3.5 group-hover:bg-mint-500 group-hover:text-white transition-colors duration-300 shadow-sm"
+                  className="w-12 h-12 rounded-2xl bg-mint-100/90 text-mint-700 flex items-center justify-center mb-3.5 group-hover:bg-mint-500 group-hover:text-white transition-colors duration-300 shadow-sm"
                 >
-                  <Icon size={26} strokeWidth={1.5} />
+                  <Icon size={24} strokeWidth={1.5} />
                 </motion.div>
-                <span className="font-body text-xs sm:text-[13.5px] font-semibold text-forest group-hover:text-mint-700 transition-colors">
+                <span className="font-body text-xs sm:text-[13px] font-semibold text-forest group-hover:text-mint-700 transition-colors">
                   {amenity.label}
                 </span>
                 {amenity.category && (
-                  <span className="font-eyebrow text-[9.5px] uppercase tracking-[0.22em] text-sage-400 font-normal mt-1">
+                  <span className="font-eyebrow text-[9.5px] uppercase tracking-[0.22em] text-sage-400 font-normal mt-1.5">
                     {amenity.category}
                   </span>
                 )}

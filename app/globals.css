@@ -5,6 +5,7 @@
 @layer base {
   * {
     box-sizing: border-box;
+    border-color: rgba(228, 221, 208, 0.6);
   }
 
   html {
@@ -17,34 +18,39 @@
 
   body {
     @apply bg-eucalyptus-50 text-sage-900 font-body font-normal leading-lux-body tracking-lux-normal;
+    text-wrap: pretty;
   }
 
   ::selection {
-    @apply bg-mint-200 text-forest-dark;
+    @apply bg-mint-200/80 text-forest-dark;
   }
 
-  h1, h2, h3, h4 {
+  h1, h2, h3, h4, h5, h6 {
     @apply font-display text-forest font-normal tracking-lux-tight;
     text-wrap: balance;
   }
 
   /* Specific Heading Typography Defaults */
   h1 {
-    @apply leading-[1.08] tracking-[-0.025em];
+    @apply leading-[1.06] tracking-[-0.025em];
   }
 
   h2 {
-    @apply leading-[1.14] tracking-[-0.02em];
+    @apply leading-[1.12] tracking-[-0.02em];
   }
 
   h3 {
-    @apply leading-[1.2] tracking-[-0.015em];
+    @apply leading-[1.18] tracking-[-0.015em];
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
 
 @layer components {
   .section-padding {
-    @apply py-16 md:py-24 lg:py-32;
+    @apply py-20 md:py-28 lg:py-32;
   }
 
   .container-custom {
@@ -60,30 +66,30 @@
   }
 
   .glass {
-    @apply bg-white/80 backdrop-blur-xl border border-white/60 shadow-soft;
+    @apply bg-white/85 backdrop-blur-2xl border border-white/60 shadow-soft;
   }
 
   .glass-mint {
-    @apply bg-mint-50/80 backdrop-blur-xl border border-mint-200/60 shadow-soft;
+    @apply bg-mint-50/85 backdrop-blur-2xl border border-mint-200/60 shadow-soft;
   }
 
   .glass-eucalyptus {
-    @apply bg-eucalyptus-100/80 backdrop-blur-xl border border-eucalyptus-200/60 shadow-soft;
+    @apply bg-eucalyptus-100/85 backdrop-blur-2xl border border-eucalyptus-200/60 shadow-soft;
   }
 
   .glass-dark {
-    @apply bg-forest-dark/85 backdrop-blur-xl border border-white/10;
+    @apply bg-forest-dark/85 backdrop-blur-2xl border border-white/10;
   }
 
   /* Custom horizontal mobile snap scroll container */
   .mobile-scroll-row {
     @apply flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
   }
 
   .mobile-scroll-row::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Edge */
+    display: none;
   }
 
   .mobile-scroll-item {
@@ -112,7 +118,7 @@
   .animate-marquee {
     display: flex;
     width: max-content;
-    animation: marquee 38s linear infinite;
+    animation: marquee 40s linear infinite;
     will-change: transform;
   }
 
@@ -123,14 +129,12 @@
 
 /* Custom luxury scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-eucalyptus-100;
+  @apply bg-eucalyptus-100/80;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-eucalyptus-300/80 rounded-full;
-}
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-mint-500;
+  @apply bg-eucalyptus-300/70 rounded-full hover:bg-mint-500 transition-colors;
 }

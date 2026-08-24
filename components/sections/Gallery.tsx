@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { siteData } from "@/data/siteData";
@@ -13,6 +13,25 @@ export default function Gallery() {
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const shouldReduceMotion = useReducedMotion();
+
+  // Handle escape key and scroll lock
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxImage(null);
+    };
+
+    if (lightboxImage) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [lightboxImage]);
 
   const filters = ["All", "Exterior", "Interior", "Garden", "Nature"];
 
@@ -68,7 +87,7 @@ export default function Gallery() {
                   />
                 )}
                 {!isActive && (
-                  <div className="absolute inset-0 bg-white border border-sage-200 rounded-full -z-20" />
+                  <div className="absolute inset-0 bg-white border border-sage-200/80 rounded-full -z-20" />
                 )}
                 {filter}
               </button>
@@ -95,7 +114,7 @@ export default function Gallery() {
                   delay: index * 0.03,
                 }}
                 onClick={() => setLightboxImage(image.src)}
-                className={`snap-center flex-shrink-0 w-[78vw] h-[280px] md:w-auto md:h-auto rounded-2xl overflow-hidden relative group cursor-pointer border border-mint-100 shadow-soft hover:shadow-lifted transition-all ${getSpanClass(
+                className={`snap-center flex-shrink-0 w-[78vw] h-[280px] md:w-auto md:h-auto rounded-3xl overflow-hidden relative group cursor-pointer border border-mint-100 shadow-soft hover:shadow-lifted transition-all ${getSpanClass(
                   image.span
                 )}`}
               >
@@ -107,7 +126,7 @@ export default function Gallery() {
                   className="object-cover group-hover:scale-106 transition-transform duration-700 ease-out"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-4 text-white">
+                <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-5 text-white">
                   <span className="font-eyebrow text-xs uppercase tracking-wider font-normal drop-shadow-sm">{image.alt}</span>
                   <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                     <Maximize2 size={14} />
@@ -124,7 +143,7 @@ export default function Gallery() {
         </div>
       </div>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox Modal with Keyboard Escape & Scroll Lock */}
       <AnimatePresence>
         {lightboxImage && (
           <motion.div
@@ -132,13 +151,13 @@ export default function Gallery() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35, ease: LUXURY_EASING.quintOut }}
-            className="fixed inset-0 z-[100] bg-forest-dark/95 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8"
+            className="fixed inset-0 z-[100] bg-forest-dark/95 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-8"
             onClick={() => setLightboxImage(null)}
           >
             <button
               onClick={() => setLightboxImage(null)}
               className="absolute top-6 right-6 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-10 cursor-pointer"
-              aria-label="Close photo preview"
+              aria-label="Close photo preview (Escape)"
             >
               <X size={24} />
             </button>

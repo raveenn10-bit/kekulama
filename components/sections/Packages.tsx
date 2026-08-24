@@ -42,7 +42,7 @@ export default function Packages() {
         />
 
         {/* Filter Pills with Liquid Slider Pill Animation */}
-        <div className="flex items-center justify-center gap-2.5 mb-10 overflow-x-auto no-scrollbar pb-2">
+        <div className="flex items-center justify-center gap-2.5 mb-12 overflow-x-auto no-scrollbar pb-2">
           {[
             { id: "all", label: "All Packages" },
             { id: "day", label: "Day Out" },
@@ -54,7 +54,7 @@ export default function Packages() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`relative px-5 py-2 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] transition-colors duration-300 whitespace-nowrap cursor-pointer z-10 ${
+                className={`relative px-5 py-2.5 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] transition-colors duration-300 whitespace-nowrap cursor-pointer z-10 ${
                   isActive ? "text-white" : "text-sage-700 hover:text-forest"
                 }`}
               >
@@ -70,7 +70,7 @@ export default function Packages() {
                   />
                 )}
                 {!isActive && (
-                  <div className="absolute inset-0 bg-white/80 border border-sage-200/80 rounded-full -z-20" />
+                  <div className="absolute inset-0 bg-white/90 border border-sage-200/80 rounded-full -z-20 shadow-sm" />
                 )}
                 {tab.label}
               </button>
@@ -134,7 +134,7 @@ function PackageCard({
       <div>
         {/* Popular Highlight Badge */}
         {pkg.popular && (
-          <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-mint-500 to-mint-600 text-white font-eyebrow text-[10px] uppercase tracking-[0.22em] px-4 py-1 rounded-full shadow-md flex items-center gap-1.5">
+          <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-mint-500 to-mint-600 text-white font-eyebrow text-[10px] uppercase tracking-[0.22em] px-3.5 py-1 rounded-full shadow-md flex items-center gap-1.5">
             <Sparkles size={11} />
             <span>Most Popular</span>
           </div>
@@ -144,7 +144,7 @@ function PackageCard({
           <span className="font-eyebrow text-[10px] uppercase tracking-[0.26em] text-mint-700 font-normal">
             {pkg.timing ? "Overnight Experience" : "Day / Night Stay"}
           </span>
-          <h3 className="font-display text-2xl sm:text-3xl text-forest font-normal mt-1.5 leading-snug">
+          <h3 className="font-display text-2xl sm:text-[26px] text-forest font-normal mt-1 leading-snug">
             {pkg.name}
           </h3>
         </div>
@@ -161,8 +161,9 @@ function PackageCard({
             </span>
           </div>
           {pkg.timing && (
-            <span className="inline-block font-mono text-[10.5px] uppercase tracking-wider text-mint-900 font-medium bg-mint-100/90 px-2.5 py-0.5 rounded-md mt-2">
-              ⏱ {pkg.timing}
+            <span className="inline-flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-wider text-mint-900 font-medium bg-mint-100/90 px-2.5 py-0.5 rounded-md mt-2">
+              <span>⏱</span>
+              <span>{pkg.timing}</span>
             </span>
           )}
         </div>
@@ -188,7 +189,7 @@ function PackageCard({
         target="_blank"
         rel="noopener noreferrer"
         whileTap={{ scale: 0.98 }}
-        className={`w-full py-3 px-5 rounded-full text-center font-body text-xs uppercase tracking-[0.15em] font-semibold transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
+        className={`w-full py-3.5 px-5 rounded-full text-center font-body text-xs uppercase tracking-[0.15em] font-semibold transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
           pkg.popular
             ? "bg-gradient-to-r from-mint-500 to-mint-600 text-white shadow-glow hover:from-mint-600 hover:to-mint-700"
             : "bg-sage-100/90 text-forest hover:bg-mint-500 hover:text-white border border-sage-200/80"
