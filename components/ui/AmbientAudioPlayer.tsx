@@ -121,7 +121,7 @@ export default function AmbientAudioPlayer() {
         src="/audio/forest-ambience.mp3"
         autoPlay
         loop
-        preload="auto"
+        preload="none"
         playsInline
       />
 

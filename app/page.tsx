@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Packages from "@/components/sections/Packages";
@@ -7,8 +8,18 @@ import Experiences from "@/components/sections/Experiences";
 import Reviews from "@/components/sections/Reviews";
 import CTA from "@/components/sections/CTA";
 import Contact from "@/components/sections/Contact";
-import DynamicSky from "@/components/ui/DynamicSky";
-import AmbientAudioPlayer from "@/components/ui/AmbientAudioPlayer";
+
+// Dynamically imported background systems for lightning-fast initial page paint
+const DynamicSky = dynamic(() => import("@/components/ui/DynamicSky"), {
+  ssr: false,
+});
+
+const AmbientAudioPlayer = dynamic(
+  () => import("@/components/ui/AmbientAudioPlayer"),
+  {
+    ssr: false,
+  }
+);
 
 export default function Home() {
   return (

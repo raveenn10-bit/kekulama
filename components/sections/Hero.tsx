@@ -62,26 +62,17 @@ export function Hero() {
           }}
           className="relative w-full h-full"
         >
-          {/* Portrait video — mobile only */}
+          {/* Responsive adaptive background video */}
           <video
             autoPlay
             muted
             loop
             playsInline
+            preload="metadata"
             poster="/images/hero.jpg"
-            className="absolute inset-0 w-full h-full object-cover object-center md:hidden"
+            className="absolute inset-0 w-full h-full object-cover object-center"
           >
-            <source src="/videos/hero-portrait.mp4" type="video/mp4" />
-          </video>
-          {/* Drone video — desktop only */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="/images/hero.jpg"
-            className="absolute inset-0 w-full h-full object-cover object-center hidden md:block"
-          >
+            <source src="/videos/hero-portrait.mp4" type="video/mp4" media="(max-width: 767px)" />
             <source src="/videos/hero-drone.mp4" type="video/mp4" />
           </video>
         </motion.div>
