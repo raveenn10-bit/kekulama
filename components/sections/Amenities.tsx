@@ -13,7 +13,6 @@ import {
   CookingPot,
   Wind,
   TreePine,
-  Sparkles,
 } from "lucide-react";
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -41,11 +40,11 @@ export default function Amenities() {
           badge="Property Amenities"
           title="Comforts designed for"
           highlight="nature living"
-          subtitle="From 45' Smart TV and JBL audio to hot water pressure pump and kitchenette — everything you need for a restful stay."
+          subtitle="From 45' Smart TV and JBL audio to hot water pressure pump and kitchenette — thoughtful appointments for an effortless retreat."
         />
 
         {/* Mobile Horizontal Snap Row / Desktop 5-Col Grid */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-3.5 pb-5 pt-2 px-1 sm:grid sm:grid-cols-3 md:grid-cols-5 sm:overflow-visible sm:pb-0 no-scrollbar">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-5 pt-2 px-1 sm:grid sm:grid-cols-3 md:grid-cols-5 sm:overflow-visible sm:pb-0 no-scrollbar">
           {amenities.map((amenity, index) => {
             const Icon = iconMap[amenity.icon] || TreePine;
             return (
@@ -60,16 +59,16 @@ export default function Amenities() {
                   delay: index * 0.04,
                 }}
                 whileHover={{ y: -5 }}
-                className="snap-center flex-shrink-0 w-[42vw] sm:w-auto bg-gradient-to-b from-mint-50/50 via-white to-eucalyptus-50/40 rounded-3xl p-5 text-center shadow-soft hover:shadow-glow transition-all duration-300 border border-mint-100 hover:border-mint-300 flex flex-col items-center justify-center group"
+                className="snap-center flex-shrink-0 w-[44vw] sm:w-auto bg-gradient-to-b from-mint-50/50 via-white to-eucalyptus-50/40 rounded-3xl p-5 text-center shadow-soft hover:shadow-glow transition-all duration-300 border border-mint-100 hover:border-mint-300 flex flex-col items-center justify-center group"
               >
-                <div className="w-13 h-13 rounded-2xl bg-mint-100/80 text-mint-600 flex items-center justify-center mb-3 group-hover:bg-mint-500 group-hover:text-white group-hover:scale-110 transition-all duration-300 shadow-sm">
-                  <Icon size={26} strokeWidth={1.75} />
+                <div className="w-13 h-13 rounded-2xl bg-mint-100/80 text-mint-700 flex items-center justify-center mb-3.5 group-hover:bg-mint-500 group-hover:text-white group-hover:scale-110 transition-all duration-300 shadow-sm">
+                  <Icon size={26} strokeWidth={1.5} />
                 </div>
-                <span className="text-xs sm:text-sm font-bold text-forest group-hover:text-mint-700 transition-colors">
+                <span className="font-body text-xs sm:text-[13.5px] font-semibold text-forest group-hover:text-mint-700 transition-colors">
                   {amenity.label}
                 </span>
                 {amenity.category && (
-                  <span className="text-[10px] uppercase tracking-wider text-sage-400 font-semibold mt-1">
+                  <span className="font-eyebrow text-[9.5px] uppercase tracking-[0.22em] text-sage-400 font-normal mt-1">
                     {amenity.category}
                   </span>
                 )}
@@ -79,8 +78,8 @@ export default function Amenities() {
         </div>
 
         {/* Mobile Swipe Hint */}
-        <div className="flex sm:hidden items-center justify-center gap-1 text-xs text-sage-400 mt-2">
-          <span>👈 Swipe horizontally to see all 10 amenities 👉</span>
+        <div className="flex sm:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] uppercase tracking-[0.2em] text-sage-400 mt-3">
+          <span>👈 Swipe horizontally for all amenities 👉</span>
         </div>
       </div>
     </section>

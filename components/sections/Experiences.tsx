@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Landmark, Mountain, Waves, Turtle, MapPin, Calendar, Compass } from "lucide-react";
+import { Landmark, Mountain, Waves, Turtle, MapPin, Calendar } from "lucide-react";
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
@@ -20,10 +20,10 @@ export default function Experiences() {
       <div className="container-custom relative z-10">
         <div className="[&_h2]:text-white [&_p]:text-eucalyptus-200 [&_.badge]:bg-mint-400/20 [&_.badge]:text-mint-200 [&_.badge]:border-mint-400/30">
           <SectionHeading
-            badge="Local Adventures"
-            title="Things to do around"
+            badge="Southern Adventures"
+            title="Curated excursions around"
             highlight="Galle"
-            subtitle="From rolling estate pathways right at your doorstep to historic Dutch fort ramparts and southern surfing beaches."
+            subtitle="From rolling tea plantation walks right from your verandah to UNESCO world heritage bastions and southern surf breaks."
           />
         </div>
 
@@ -39,36 +39,36 @@ export default function Experiences() {
                 viewport={{ once: true, amount: 0.15 }}
                 transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: index * 0.08 }}
                 whileHover={{ y: -5 }}
-                className="snap-center flex-shrink-0 w-[84vw] md:w-auto bg-white/10 backdrop-blur-md border border-white/15 rounded-3xl p-6 sm:p-7 hover:bg-white/15 hover:border-mint-400/40 transition-all duration-300 flex flex-col justify-between"
+                className="snap-center flex-shrink-0 w-[84vw] md:w-auto bg-white/10 backdrop-blur-md border border-white/15 rounded-3xl p-7 hover:bg-white/15 hover:border-mint-400/40 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 rounded-2xl bg-mint-400/20 text-mint-300 flex items-center justify-center border border-mint-400/30 shadow-sm">
-                      <Icon size={24} strokeWidth={1.75} />
+                      <Icon size={24} strokeWidth={1.5} />
                     </div>
                     {exp.badge && (
-                      <span className="text-[10px] uppercase tracking-wider font-bold bg-mint-500/20 text-mint-200 border border-mint-400/30 px-3 py-1 rounded-full">
+                      <span className="font-eyebrow text-[10px] uppercase tracking-[0.24em] font-normal bg-mint-500/20 text-mint-200 border border-mint-400/30 px-3.5 py-1 rounded-full">
                         {exp.badge}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-xl font-display font-bold text-white mb-2">
+                  <h3 className="font-display text-2xl sm:text-3xl text-white font-normal mb-2 leading-snug">
                     {exp.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-eucalyptus-100/90 leading-relaxed">
+                  <p className="font-body font-light text-xs sm:text-sm text-eucalyptus-100/90 leading-lux-relaxed">
                     {exp.description}
                   </p>
                 </div>
 
                 <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10 text-xs text-eucalyptus-200">
-                  <div className="flex items-center gap-1.5 font-medium">
-                    <MapPin size={14} className="text-mint-300" />
+                  <div className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-mint-300">
+                    <MapPin size={13} className="text-mint-300" />
                     <span>{exp.distance}</span>
                   </div>
                   {exp.season && (
-                    <div className="flex items-center gap-1.5 font-medium text-mint-200">
-                      <Calendar size={14} />
+                    <div className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-mint-200">
+                      <Calendar size={13} />
                       <span>{exp.season}</span>
                     </div>
                   )}
@@ -79,8 +79,8 @@ export default function Experiences() {
         </div>
 
         {/* Mobile Swipe Hint */}
-        <div className="flex md:hidden items-center justify-center gap-1 text-xs text-mint-200/60 mt-2">
-          <span>👈 Swipe to view all nearby adventures 👉</span>
+        <div className="flex md:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] uppercase tracking-[0.2em] text-mint-200/60 mt-3">
+          <span>👈 Swipe for all nearby excursions 👉</span>
         </div>
       </div>
     </section>

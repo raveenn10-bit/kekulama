@@ -32,20 +32,20 @@ export function Navbar() {
     <>
       {/* Dynamic top scroll progress bar with Mint & Bark gradient */}
       <div
-        className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-mint-400 via-mint-500 to-bark z-[70] transition-all duration-150"
+        className="fixed top-0 left-0 h-[2.5px] bg-gradient-to-r from-mint-400 via-mint-500 to-bark z-[70] transition-all duration-150"
         style={{ width: `${scrollProgress}%` }}
       />
 
       <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 h-[74px] flex items-center ${
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 h-[76px] flex items-center ${
           isScrolled
-            ? "bg-white/85 backdrop-blur-2xl shadow-soft border-b border-mint-100"
-            : "bg-gradient-to-b from-forest-dark/70 to-transparent"
+            ? "bg-white/90 backdrop-blur-2xl shadow-soft border-b border-mint-100/80"
+            : "bg-gradient-to-b from-forest-dark/80 via-forest-dark/40 to-transparent"
         }`}
       >
         <div className="container-custom w-full flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-mint-300 shadow-sm group-hover:scale-105 transition-transform duration-300">
+          <Link href="/" className="flex items-center gap-3.5 group">
+            <div className="relative w-11 h-11 rounded-full overflow-hidden border border-mint-300/80 shadow-sm group-hover:scale-105 transition-transform duration-300">
               <Image
                 src="/images/logo.jpg"
                 alt="Kekulama Eco Cabana Logo"
@@ -56,15 +56,15 @@ export function Navbar() {
             </div>
             <div className="flex flex-col">
               <span
-                className={`font-display text-xl sm:text-2xl font-bold tracking-wide transition-colors ${
+                className={`font-display text-xl sm:text-2xl font-normal tracking-[0.16em] uppercase transition-colors ${
                   isScrolled ? "text-forest" : "text-white"
                 }`}
               >
                 Kekulama
               </span>
               <span
-                className={`text-[9px] uppercase tracking-[0.25em] font-semibold -mt-1 transition-colors ${
-                  isScrolled ? "text-mint-600" : "text-mint-200"
+                className={`font-eyebrow text-[9px] uppercase tracking-[0.32em] font-normal -mt-0.5 transition-colors ${
+                  isScrolled ? "text-mint-700" : "text-mint-200"
                 }`}
               >
                 Eco Cabana · Galle
@@ -73,16 +73,16 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center gap-7">
-            <div className="flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-8">
+            <div className="flex items-center gap-7">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-xs font-semibold uppercase tracking-[0.14em] transition-all duration-200 hover:scale-105 ${
+                  className={`font-body text-[11.5px] font-medium uppercase tracking-[0.18em] transition-all duration-200 hover:text-mint-500 hover:scale-105 ${
                     isScrolled
-                      ? "text-sage-800 hover:text-mint-600"
-                      : "text-white/90 hover:text-mint-200"
+                      ? "text-sage-800"
+                      : "text-white/90"
                   }`}
                 >
                   {link.label || link.name}
@@ -108,7 +108,7 @@ export function Navbar() {
               href="tel:+94756657000"
               className={`p-2 rounded-full transition-colors ${
                 isScrolled
-                  ? "bg-mint-100 text-mint-700 hover:bg-mint-200"
+                  ? "bg-mint-100 text-mint-800 hover:bg-mint-200"
                   : "bg-white/20 text-white hover:bg-white/30"
               }`}
               aria-label="Call Kekulama Eco Cabana"
@@ -152,9 +152,9 @@ export function Navbar() {
                   />
                 </div>
                 <div>
-                  <span className="font-display text-xl font-bold">Kekulama</span>
-                  <span className="block text-[9px] uppercase tracking-widest text-mint-300">
-                    Eco Cabana
+                  <span className="font-display text-xl font-normal tracking-[0.16em] uppercase">Kekulama</span>
+                  <span className="block font-eyebrow text-[9px] uppercase tracking-[0.3em] text-mint-300">
+                    Eco Sanctuary
                   </span>
                 </div>
               </div>
@@ -178,10 +178,10 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-xl font-display text-white/90 hover:text-mint-300 transition-colors flex items-center justify-between py-1"
+                    className="font-display text-2xl font-normal text-white/90 hover:text-mint-300 transition-colors flex items-center justify-between py-1 tracking-wide"
                   >
                     <span>{link.label || link.name}</span>
-                    <span className="text-xs text-mint-400 font-mono">0{index + 1}</span>
+                    <span className="font-mono text-xs text-mint-400">0{index + 1}</span>
                   </Link>
                 </motion.div>
               ))}
@@ -204,14 +204,14 @@ export function Navbar() {
                 </Button>
                 <a
                   href="tel:+94756657000"
-                  className="w-full py-3 rounded-full text-center text-sm font-medium border border-white/20 text-white hover:bg-white/10 transition-colors"
+                  className="w-full py-3 rounded-full text-center font-body text-xs uppercase tracking-[0.15em] font-semibold border border-white/20 text-white hover:bg-white/10 transition-colors"
                 >
                   Call +94 75 665 7000
                 </a>
               </motion.div>
             </div>
 
-            <div className="border-t border-white/10 pt-4 text-center text-xs text-sage-400">
+            <div className="border-t border-white/10 pt-4 text-center font-eyebrow text-[10px] uppercase tracking-[0.25em] text-sage-400">
               Pinnaduwa, Galle, Sri Lanka · 100% Recommended
             </div>
           </motion.div>

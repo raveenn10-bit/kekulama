@@ -34,9 +34,9 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-center pt-24 pb-16"
+      className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-center pt-28 pb-16"
     >
-      {/* Background Image with Parallax & Soft Gradient Overlay */}
+      {/* Background Image with Subtle Atmospheric Zoom */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/hero.jpg"
@@ -44,10 +44,10 @@ export function Hero() {
           fill
           priority
           sizes="100vw"
-          className="object-cover scale-105 animate-float duration-[10s]"
+          className="object-cover scale-105 animate-float duration-[12s]"
         />
-        {/* Soft Multi-tone Nature Overlay: Mint Lagoon into Eucalyptus Forest */}
-        <div className="absolute inset-0 bg-gradient-to-b from-forest-dark/80 via-forest/65 to-forest-dark/90" />
+        {/* Luxury Nature Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-forest-dark/85 via-forest/65 to-forest-dark/90" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-mint-500/20 via-transparent to-transparent pointer-events-none" />
       </div>
 
@@ -56,38 +56,38 @@ export function Hero() {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="max-w-3xl"
+          className="max-w-4xl"
         >
-          {/* Badge with pulse dot */}
-          <motion.div variants={itemVariants} className="mb-6 inline-flex items-center gap-2">
+          {/* Eyebrow badge with inscriptional tracking */}
+          <motion.div variants={itemVariants} className="mb-6 inline-flex items-center gap-2.5 flex-wrap">
             <Badge dot variant="mint" className="bg-mint-100/20 text-mint-200 border-mint-400/40 backdrop-blur-md">
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 font-eyebrow tracking-[0.22em]">
                 <MapPin size={12} className="text-mint-300" />
                 {hero.badge}
               </span>
             </Badge>
-            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-eucalyptus-200 font-medium px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-sm">
+            <span className="inline-flex items-center gap-1.5 font-eyebrow text-[11px] uppercase tracking-[0.24em] text-eucalyptus-200 px-3 py-0.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
               <Sparkles size={11} className="text-mint-300" />
               Direct Tea Estate Stay
             </span>
           </motion.div>
 
-          {/* Heading with Mint & Eucalyptus highlighted typography */}
+          {/* Monumental Luxury Headline in Cormorant Garamond */}
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display text-white leading-[1.1] mb-6 tracking-tight"
+            className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-normal leading-[1.04] tracking-lux-tight mb-7"
           >
             {hero.headline}{" "}
-            <span className="italic bg-gradient-to-r from-mint-300 via-mint-200 to-eucalyptus-300 bg-clip-text text-transparent underline decoration-mint-400/30 decoration-wavy decoration-1 underline-offset-8">
+            <span className="italic font-normal bg-gradient-to-r from-mint-200 via-white to-eucalyptus-200 bg-clip-text text-transparent underline decoration-mint-400/40 decoration-wavy decoration-1 underline-offset-8">
               {hero.highlightWord}
             </span>{" "}
-            Eco Cabana
+            <span className="block sm:inline font-light">Eco Cabana</span>
           </motion.h1>
 
-          {/* Subtitle */}
+          {/* Lead Description in Plus Jakarta Sans */}
           <motion.p
             variants={itemVariants}
-            className="text-base sm:text-lg md:text-xl text-eucalyptus-100 max-w-2xl mb-8 sm:mb-10 leading-relaxed"
+            className="font-body font-light text-base sm:text-lg md:text-xl text-eucalyptus-100 max-w-2xl mb-10 leading-lux-relaxed"
           >
             {hero.subtitle}
           </motion.p>
@@ -95,7 +95,7 @@ export function Hero() {
           {/* Dual Action Buttons */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-wrap items-center gap-4 mb-12"
+            className="flex flex-wrap items-center gap-4 mb-14"
           >
             <Button
               variant="mint"
@@ -117,17 +117,17 @@ export function Hero() {
             </Button>
           </motion.div>
 
-          {/* Horizontal Stats Row with Micro-Glow on Mobile */}
+          {/* Luxury Stats Strip */}
           <motion.div
             variants={itemVariants}
-            className="border-t border-white/15 pt-6 flex flex-wrap items-center gap-8 sm:gap-14"
+            className="border-t border-white/15 pt-7 flex flex-wrap items-center gap-8 sm:gap-16"
           >
             {hero.stats.map((stat, i) => (
               <div key={i} className="flex flex-col">
-                <span className="text-2xl sm:text-3xl font-display text-mint-200 font-bold tracking-tight">
+                <span className="font-display text-3xl sm:text-4xl text-mint-200 font-normal tracking-tight">
                   {stat.value}
                 </span>
-                <span className="text-xs sm:text-sm text-eucalyptus-200 font-medium mt-0.5">
+                <span className="font-eyebrow text-[11px] sm:text-xs text-eucalyptus-200/90 uppercase tracking-[0.22em] mt-0.5">
                   {stat.label}
                 </span>
               </div>
@@ -138,13 +138,13 @@ export function Hero() {
 
       {/* Down arrow scroll hint */}
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
+        initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.8, repeat: Infinity, repeatType: "reverse" }}
         className="absolute bottom-6 left-1/2 -translate-x-1/2 text-mint-200/60 hidden sm:flex flex-col items-center gap-1"
       >
-        <span className="text-[10px] uppercase tracking-widest text-mint-300/80">Scroll to Explore</span>
-        <ChevronDown size={18} />
+        <span className="font-eyebrow text-[9px] uppercase tracking-[0.3em] text-mint-300/80">Scroll to Explore</span>
+        <ChevronDown size={16} />
       </motion.div>
     </section>
   );

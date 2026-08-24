@@ -8,47 +8,50 @@ export default function CTA() {
   const { contact } = siteData;
 
   return (
-    <section className="relative w-full">
+    <section className="relative w-full overflow-hidden">
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/cabana-trees.jpg"
-          alt="Lush trees at Kekulama Eco Cabana"
+          alt="Lush nature canopy at Kekulama Eco Cabana"
           fill
-          className="object-cover"
+          className="object-cover scale-105"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-forest-dark/85"></div>
+        <div className="absolute inset-0 bg-forest-dark/85 backdrop-blur-[2px]"></div>
       </div>
 
-      <div className="relative z-10 py-20 px-5 sm:px-6 lg:px-8">
+      <div className="relative z-10 py-24 sm:py-28 px-5 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto"
         >
-          <h2 className="text-3xl md:text-4xl font-display text-white">
-            Ready to reconnect with <span className="italic text-bark">nature</span>?
+          <span className="font-eyebrow text-xs uppercase tracking-[0.28em] text-mint-300 mb-4 block font-normal">
+            Escape the Ordinary
+          </span>
+          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-white font-normal leading-[1.08] tracking-lux-tight">
+            Ready to reconnect with <span className="italic font-normal bg-gradient-to-r from-mint-200 to-eucalyptus-200 bg-clip-text text-transparent underline decoration-mint-400/40 decoration-wavy decoration-1 underline-offset-8">nature</span>?
           </h2>
-          <p className="text-lg text-sage-300 mt-4 max-w-lg mx-auto">
-            Book your stay directly via WhatsApp for the best rates and personalized service.
+          <p className="font-body font-light text-base sm:text-lg text-eucalyptus-100/90 mt-5 max-w-lg mx-auto leading-lux-relaxed">
+            Reserve your private eco-cabana directly via WhatsApp for guaranteed best rates, instant confirmation, and personalized hospitality.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-10">
             <a
-              href={`https://wa.me/${contact.whatsappRaw}`}
+              href={`https://wa.me/${contact.whatsappRaw}?text=Hello%20Kekulama%20Eco%20Cabana,%20I%20would%20like%20to%20reserve%20a%20stay.`}
               target="_blank"
               rel="noreferrer"
-              className="bg-bark text-white rounded-full px-8 py-3.5 hover:bg-bark-dark transition-colors font-medium shadow-lifted w-full sm:w-auto text-center"
+              className="bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full px-8 py-3.5 hover:from-mint-600 hover:to-mint-700 transition-all font-body font-semibold text-xs uppercase tracking-[0.15em] shadow-glow w-full sm:w-auto text-center"
             >
               Book via WhatsApp
             </a>
             <a
               href={`tel:${contact.phoneRaw}`}
-              className="border border-white/30 text-white rounded-full px-8 py-3.5 hover:bg-white/10 transition-colors font-medium w-full sm:w-auto text-center"
+              className="border border-white/30 text-white hover:bg-white/10 rounded-full px-8 py-3.5 transition-colors font-body font-semibold text-xs uppercase tracking-[0.15em] w-full sm:w-auto text-center backdrop-blur-sm"
             >
-              Call Us
+              Call Directly
             </a>
           </div>
         </motion.div>

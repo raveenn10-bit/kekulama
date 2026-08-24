@@ -1,43 +1,57 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, DM_Sans } from "next/font/google";
+import { Cormorant_Garamond, Marcellus, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/sections/Footer";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 
-const displayFont = DM_Serif_Display({
+const luxuryDisplay = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-display",
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-luxury-display",
   display: "swap",
 });
 
-const bodyFont = DM_Sans({
+const luxuryEyebrow = Marcellus({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-luxury-eyebrow",
+  display: "swap",
+});
+
+const luxuryBody = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-body",
+  variable: "--font-luxury-body",
+  display: "swap",
+});
+
+const luxuryMono = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-luxury-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kekulamaecocabana.com"),
-  title: "Kekulama Eco Cabana — Eco Retreat in Galle, Sri Lanka",
+  title: "Kekulama Eco Cabana — Luxury Nature Sanctuary in Galle, Sri Lanka",
   description:
-    "Your sustainable escape in nature's lap. Eco-friendly cabanas nestled among tea estates in Pinnaduwa, Galle. Book your stay & reconnect with the wild.",
+    "Your exclusive sanctuary in nature's lap. Eco-luxury cabanas crafted from natural timbers amidst the emerald tea estates of Pinnaduwa, Galle. Reconnect with tranquility.",
   keywords: [
-    "eco cabana",
-    "galle",
-    "sri lanka",
-    "eco retreat",
-    "tea estate",
-    "pinnaduwa",
-    "nature stay",
+    "luxury eco cabana",
+    "galle boutique hotel",
+    "sri lanka luxury retreat",
+    "eco resort galle",
+    "tea estate villa",
+    "pinnaduwa sanctuary",
     "kekulama",
   ],
   openGraph: {
-    title: "Kekulama Eco Cabana — Eco Retreat in Galle, Sri Lanka",
+    title: "Kekulama Eco Cabana — Luxury Nature Sanctuary in Galle",
     description:
-      "Eco-friendly cabanas nestled among tea estates in Pinnaduwa, Galle. Disconnect & recharge.",
+      "Eco-luxury cabanas nestled among rolling tea estates in Pinnaduwa, Galle. Sculptural timber architecture & pure serenity.",
     url: "https://kekulamaecocabana.com",
     siteName: "Kekulama Eco Cabana",
     locale: "en_US",
@@ -46,8 +60,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kekulama Eco Cabana",
-    description: "Eco-friendly cabanas among tea estates in Galle, Sri Lanka.",
+    title: "Kekulama Eco Cabana — Luxury Nature Sanctuary",
+    description: "Eco-luxury timber cabanas among tea estates in Galle, Sri Lanka.",
   },
   icons: {
     icon: "/images/logo.jpg",
@@ -63,10 +77,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${displayFont.variable} ${bodyFont.variable}`}
+      className={`${luxuryDisplay.variable} ${luxuryEyebrow.variable} ${luxuryBody.variable} ${luxuryMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="font-body antialiased bg-sage-50 text-sage-900 overflow-x-hidden">
+      <body className="font-body antialiased bg-eucalyptus-50 text-sage-900 overflow-x-hidden selection:bg-mint-200 selection:text-forest-dark">
         <Navbar />
         <main>{children}</main>
         <Footer />

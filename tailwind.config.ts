@@ -69,8 +69,24 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "serif"],
-        body: ["var(--font-body)", "sans-serif"],
+        display: ["var(--font-luxury-display)", "Cormorant Garamond", "Georgia", "serif"],
+        eyebrow: ["var(--font-luxury-eyebrow)", "Marcellus", "Trajan Pro", "serif"],
+        body: ["var(--font-luxury-body)", "Plus Jakarta Sans", "system-ui", "sans-serif"],
+        mono: ["var(--font-luxury-mono)", "Space Grotesk", "monospace"],
+      },
+      letterSpacing: {
+        'lux-tight': '-0.025em',
+        'lux-snug': '-0.015em',
+        'lux-normal': '0.01em',
+        'lux-wide': '0.12em',
+        'lux-wider': '0.20em',
+        'lux-widest': '0.28em',
+      },
+      lineHeight: {
+        'lux-display': '1.05',
+        'lux-heading': '1.15',
+        'lux-body': '1.70',
+        'lux-relaxed': '1.85',
       },
       borderRadius: {
         "2xl": "1rem",

@@ -11,10 +11,12 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "liga" 1, "calt" 1, "kern" 1;
   }
 
   body {
-    @apply bg-eucalyptus-50 text-sage-900 font-body;
+    @apply bg-eucalyptus-50 text-sage-900 font-body font-normal leading-lux-body tracking-lux-normal;
   }
 
   ::selection {
@@ -22,14 +24,27 @@
   }
 
   h1, h2, h3, h4 {
-    @apply font-display text-forest;
+    @apply font-display text-forest font-normal tracking-lux-tight;
     text-wrap: balance;
+  }
+
+  /* Specific Heading Typography Defaults */
+  h1 {
+    @apply leading-[1.08] tracking-[-0.025em];
+  }
+
+  h2 {
+    @apply leading-[1.14] tracking-[-0.02em];
+  }
+
+  h3 {
+    @apply leading-[1.2] tracking-[-0.015em];
   }
 }
 
 @layer components {
   .section-padding {
-    @apply py-16 md:py-24 lg:py-28;
+    @apply py-16 md:py-24 lg:py-32;
   }
 
   .container-custom {
@@ -38,6 +53,10 @@
 
   .text-gradient {
     @apply bg-gradient-to-r from-mint-600 via-forest to-bark bg-clip-text text-transparent;
+  }
+
+  .luxury-eyebrow {
+    @apply font-eyebrow text-xs uppercase tracking-[0.25em] text-mint-700 font-normal;
   }
 
   .glass {
@@ -82,16 +101,16 @@
   }
 }
 
-/* Custom scrollbar */
+/* Custom luxury scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
   @apply bg-eucalyptus-100;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-eucalyptus-300 rounded-full;
+  @apply bg-eucalyptus-300/80 rounded-full;
 }
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-mint-400;
+  @apply bg-mint-500;
 }

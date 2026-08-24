@@ -20,7 +20,7 @@ export default function Reviews() {
           badge="Verified Guest Feedback"
           title="Google Maps"
           highlight="Reviews"
-          subtitle="Real reviews from guests who experienced the tranquility of Kekulama Eco Cabana."
+          subtitle="Authentic impressions from global travellers who found serenity at Kekulama Eco Cabana."
         />
 
         {/* Google Maps Score Summary Card */}
@@ -28,7 +28,7 @@ export default function Reviews() {
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-2xl mx-auto -mt-4 mb-10 bg-white/90 backdrop-blur-md rounded-3xl p-5 shadow-soft border border-mint-100 flex flex-wrap items-center justify-between gap-4"
+          className="max-w-2xl mx-auto -mt-4 mb-12 bg-white/90 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-soft border border-mint-100 flex flex-wrap items-center justify-between gap-4"
         >
           <div className="flex items-center gap-4">
             {/* Google G Logo Badge */}
@@ -54,7 +54,7 @@ export default function Reviews() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold font-display text-forest">
+                <span className="text-3xl font-display font-normal text-forest">
                   {googleRatingStats.score.toFixed(1)}
                 </span>
                 <div className="flex items-center gap-0.5 text-amber-400">
@@ -63,8 +63,8 @@ export default function Reviews() {
                   ))}
                 </div>
               </div>
-              <span className="text-xs text-sage-600 font-medium">
-                Based on Google Maps Reviews · 100% Recommended
+              <span className="font-eyebrow text-[10.5px] uppercase tracking-[0.2em] text-sage-600 font-normal">
+                Official Google Maps Rating · 100% Recommended
               </span>
             </div>
           </div>
@@ -73,9 +73,9 @@ export default function Reviews() {
             href={contact.googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-mint-100/80 text-mint-800 hover:bg-mint-500 hover:text-white transition-all text-xs font-bold shadow-sm"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-mint-100/90 text-mint-900 hover:bg-mint-500 hover:text-white transition-all font-body text-xs font-semibold uppercase tracking-[0.12em] shadow-sm"
           >
-            <span>View on Google Maps</span>
+            <span>Read on Google</span>
             <ExternalLink size={12} />
           </a>
         </motion.div>
@@ -94,7 +94,7 @@ export default function Reviews() {
                 ease: [0.16, 1, 0.3, 1],
               }}
               whileHover={{ y: -5 }}
-              className="snap-center flex-shrink-0 w-[84vw] md:w-auto bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-7 shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col justify-between border border-mint-100 hover:border-mint-300"
+              className="snap-center flex-shrink-0 w-[84vw] md:w-auto bg-white/95 backdrop-blur-md rounded-3xl p-7 shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col justify-between border border-mint-100 hover:border-mint-300"
             >
               <div>
                 {/* Header: Avatar, Name, Rating & Google Icon */}
@@ -103,20 +103,20 @@ export default function Reviews() {
                     <div
                       className={`w-11 h-11 rounded-full ${
                         review.avatarBg || "bg-mint-500"
-                      } text-white font-bold flex items-center justify-center text-sm shadow-sm flex-shrink-0`}
+                      } text-white font-display text-base font-normal flex items-center justify-center shadow-sm flex-shrink-0`}
                     >
                       {review.initials || review.author.substring(0, 2).toUpperCase()}
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-sm font-bold text-forest">
+                        <span className="font-body text-sm font-semibold text-forest">
                           {review.author}
                         </span>
                         {review.verified && (
-                          <CheckCircle size={13} className="text-mint-500" />
+                          <CheckCircle size={13} className="text-mint-600" />
                         )}
                       </div>
-                      <span className="text-[11px] text-sage-500 block">
+                      <span className="font-body font-light text-[11px] text-sage-500 block">
                         {review.country} {review.date ? `· ${review.date}` : ""}
                       </span>
                     </div>
@@ -146,29 +146,29 @@ export default function Reviews() {
                 </div>
 
                 {/* Stars */}
-                <div className="flex items-center gap-1 mb-3 text-amber-400">
+                <div className="flex items-center gap-1 mb-3.5 text-amber-400">
                   {[...Array(review.rating || 5)].map((_, i) => (
                     <Star key={i} fill="currentColor" size={15} />
                   ))}
                 </div>
 
-                {/* Quote Text */}
-                <blockquote className="text-sage-700 leading-relaxed text-xs sm:text-sm italic">
+                {/* Quote Text in Cormorant Garamond */}
+                <blockquote className="font-display italic text-base sm:text-lg text-sage-800 leading-lux-relaxed font-normal">
                   &#x201C;{review.quote || review.text}&#x201D;
                 </blockquote>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-sage-100 flex items-center justify-between text-[11px] text-sage-400">
+              <div className="mt-6 pt-3.5 border-t border-sage-100 flex items-center justify-between font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-400">
                 <span>Verified Google Review</span>
-                <span className="text-mint-600 font-semibold">5.0 Star Stay</span>
+                <span className="text-mint-700 font-semibold">5.0 Star Experience</span>
               </div>
             </motion.div>
           ))}
         </div>
 
         {/* Mobile Swipe Hint */}
-        <div className="flex md:hidden items-center justify-center gap-1 text-xs text-sage-400 mt-2">
-          <span>👈 Swipe to read all Google reviews 👉</span>
+        <div className="flex md:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] uppercase tracking-[0.2em] text-sage-400 mt-3">
+          <span>👈 Swipe for all Google reviews 👉</span>
         </div>
       </div>
     </section>

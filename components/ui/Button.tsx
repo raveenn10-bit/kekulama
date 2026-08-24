@@ -20,7 +20,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "inline-flex items-center justify-center font-medium transition-all duration-300 active:scale-[0.97] cursor-pointer";
+    "inline-flex items-center justify-center font-body font-semibold uppercase tracking-[0.15em] transition-all duration-300 active:scale-[0.97] cursor-pointer";
 
   const variants = {
     primary:
@@ -28,16 +28,16 @@ export function Button({
     mint:
       "bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full hover:from-mint-600 hover:to-mint-700 shadow-glow hover:scale-[1.02]",
     outline:
-      "border-2 border-mint-500 text-mint-700 bg-white/80 backdrop-blur-sm rounded-full hover:bg-mint-100 hover:border-mint-600 shadow-sm",
-    ghost: "text-sage-700 hover:text-mint-600 rounded-full hover:bg-mint-50/50",
+      "border border-mint-500/70 text-mint-800 bg-white/90 backdrop-blur-sm rounded-full hover:bg-mint-100 hover:border-mint-600 shadow-sm",
+    ghost: "text-sage-700 hover:text-mint-700 rounded-full hover:bg-mint-50/60",
     glass:
-      "bg-white/20 backdrop-blur-md text-white border border-white/40 hover:bg-white/30 rounded-full shadow-soft",
+      "bg-white/15 backdrop-blur-md text-white border border-white/30 hover:bg-white/25 rounded-full shadow-soft",
   };
 
   const sizes = {
-    sm: "px-4 py-2 text-sm",
-    md: "px-6 py-3 text-base",
-    lg: "px-8 py-3.5 text-base md:text-lg font-semibold",
+    sm: "px-4 py-2 text-[11px]",
+    md: "px-6 py-2.5 text-xs",
+    lg: "px-8 py-3.5 text-xs sm:text-sm",
   };
 
   const classes = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;

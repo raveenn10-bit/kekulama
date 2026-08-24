@@ -14,8 +14,8 @@ export function Badge({
   className = "",
 }: BadgeProps) {
   const variantStyles = {
-    mint: "bg-mint-100/90 text-mint-800 border-mint-300/60 shadow-sm",
-    eucalyptus: "bg-eucalyptus-100/90 text-eucalyptus-800 border-eucalyptus-300/60 shadow-sm",
+    mint: "bg-mint-100/90 text-mint-900 border-mint-300/70 shadow-sm",
+    eucalyptus: "bg-eucalyptus-100/90 text-eucalyptus-900 border-eucalyptus-300/70 shadow-sm",
     bark: "bg-sand-100 text-bark-dark border-bark/30 shadow-sm",
     forest: "bg-forest-light/20 text-forest-dark border-forest/20 shadow-sm",
   };
@@ -29,11 +29,11 @@ export function Badge({
 
   return (
     <span
-      className={`inline-flex items-center text-xs font-semibold uppercase tracking-wider px-3.5 py-1 rounded-full border ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center font-eyebrow text-[11px] sm:text-xs uppercase tracking-[0.22em] px-4 py-1 rounded-full border ${variantStyles[variant]} ${className}`}
     >
       {dot && (
         <span
-          className={`w-2 h-2 rounded-full mr-2 flex-shrink-0 animate-pulse ${dotColors[variant]}`}
+          className={`w-1.5 h-1.5 rounded-full mr-2.5 flex-shrink-0 animate-pulse ${dotColors[variant]}`}
         />
       )}
       {children}

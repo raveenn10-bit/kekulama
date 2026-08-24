@@ -26,7 +26,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-sand-50/70 border-t border-sage-200/80 text-sage-900 overflow-hidden">
+    <footer className="bg-sand-50/80 border-t border-sage-200/80 text-sage-900 overflow-hidden">
       {/* Visual Photography Strip */}
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-1 p-1 bg-sage-100/50">
         {photoStrip.map((photo, i) => (
@@ -39,17 +39,17 @@ export function Footer() {
               alt={photo.alt}
               fill
               sizes="(max-width: 640px) 33vw, 16vw"
-              className="object-cover group-hover:scale-110 transition-transform duration-500"
+              className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
             />
             <div className="absolute inset-0 bg-forest-dark/20 group-hover:bg-forest-dark/0 transition-colors" />
           </div>
         ))}
       </div>
 
-      <div className="container-custom py-16 md:py-20 flex flex-col items-center text-center">
-        {/* Brand Logo & Name */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="relative w-16 h-16 rounded-full overflow-hidden shadow-soft mb-4 border-2 border-bark/30">
+      <div className="container-custom py-16 md:py-24 flex flex-col items-center text-center">
+        {/* Brand Logo & Luxury Name */}
+        <div className="flex flex-col items-center mb-9">
+          <div className="relative w-16 h-16 rounded-full overflow-hidden shadow-soft mb-4 border border-mint-300/80">
             <Image
               src="/images/logo.jpg"
               alt="Kekulama Eco Cabana Logo"
@@ -57,11 +57,11 @@ export function Footer() {
               className="object-cover"
             />
           </div>
-          <h2 className="font-display text-2xl md:text-3xl tracking-[0.2em] text-forest font-semibold uppercase">
+          <h2 className="font-display text-3xl sm:text-4xl tracking-[0.22em] text-forest font-normal uppercase">
             Kekulama
           </h2>
-          <span className="text-xs uppercase tracking-[0.3em] text-bark font-medium mt-1">
-            Eco Cabana · Galle
+          <span className="font-eyebrow text-xs uppercase tracking-[0.34em] text-mint-700 font-normal mt-1.5">
+            Eco Sanctuary · Galle
           </span>
         </div>
 
@@ -71,37 +71,37 @@ export function Footer() {
             href={contact.social.facebook}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-bark hover:border-bark flex items-center justify-center shadow-sm hover:shadow transition-all hover:scale-105"
+            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-mint-500 hover:border-mint-500 flex items-center justify-center shadow-sm hover:shadow transition-all hover:scale-105"
             aria-label="Facebook"
           >
-            <Facebook size={18} strokeWidth={1.5} />
+            <Facebook size={17} strokeWidth={1.5} />
           </a>
           <a
             href={contact.social.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-bark hover:border-bark flex items-center justify-center shadow-sm hover:shadow transition-all hover:scale-105"
+            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-mint-500 hover:border-mint-500 flex items-center justify-center shadow-sm hover:shadow transition-all hover:scale-105"
             aria-label="Instagram"
           >
-            <Instagram size={18} strokeWidth={1.5} />
+            <Instagram size={17} strokeWidth={1.5} />
           </a>
           <a
             href={contact.social.tiktok}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-bark hover:border-bark flex items-center justify-center shadow-sm hover:shadow transition-all hover:scale-105"
+            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-mint-500 hover:border-mint-500 flex items-center justify-center shadow-sm hover:shadow transition-all hover:scale-105"
             aria-label="TikTok"
           >
-            <Music2 size={18} strokeWidth={1.5} />
+            <Music2 size={17} strokeWidth={1.5} />
           </a>
           <a
             href={contact.social.airbnb}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-bark hover:border-bark flex items-center justify-center shadow-sm hover:shadow transition-all hover:scale-105"
+            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-mint-500 hover:border-mint-500 flex items-center justify-center shadow-sm hover:shadow transition-all hover:scale-105"
             aria-label="Airbnb"
           >
-            <Home size={18} strokeWidth={1.5} />
+            <Home size={17} strokeWidth={1.5} />
           </a>
           <a
             href={`https://wa.me/${contact.whatsappRaw}`}
@@ -117,12 +117,12 @@ export function Footer() {
         </div>
 
         {/* Navigation Links in Minimalist Horizontal Row */}
-        <nav className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 mb-8 text-xs font-semibold uppercase tracking-[0.18em] text-sage-800">
+        <nav className="flex flex-wrap items-center justify-center gap-6 sm:gap-9 mb-8 font-body text-[11.5px] font-semibold uppercase tracking-[0.18em] text-sage-800">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="hover:text-bark transition-colors py-1"
+              className="hover:text-mint-600 transition-colors py-1"
             >
               {item.label || item.name}
             </Link>
@@ -130,7 +130,7 @@ export function Footer() {
         </nav>
 
         {/* Sub-highlights bulleted list */}
-        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-sage-500 mb-12 max-w-2xl">
+        <div className="flex flex-wrap items-center justify-center gap-x-3.5 gap-y-1.5 font-body font-light text-xs text-sage-500 mb-12 max-w-2xl">
           {highlights.map((item, idx) => (
             <React.Fragment key={idx}>
               <span>{item}</span>
@@ -143,27 +143,27 @@ export function Footer() {
 
         {/* Get in Touch CTA Block */}
         <div className="flex flex-col items-center mb-12">
-          <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-bark mb-3">
-            Get in Touch!
+          <span className="font-eyebrow text-[11px] font-normal uppercase tracking-[0.28em] text-bark-dark mb-3">
+            Get in Touch
           </span>
           <a
             href={`tel:${contact.phoneRaw}`}
-            className="text-2xl sm:text-3xl font-display font-semibold text-forest hover:text-bark transition-colors mb-2 tracking-wide"
+            className="font-display text-3xl sm:text-4xl text-forest hover:text-mint-600 transition-colors mb-2 tracking-wide font-normal"
           >
             {contact.phoneDisplay || contact.phone}
           </a>
-          <div className="flex items-center justify-center gap-1.5 text-xs text-sage-600 mt-1">
-            <MapPin size={14} className="text-bark" />
+          <div className="flex items-center justify-center gap-1.5 font-body font-light text-xs text-sage-600 mt-1">
+            <MapPin size={13} className="text-mint-600" />
             <span>Address: {contact.address}</span>
           </div>
         </div>
 
         {/* Divider & Copyright */}
-        <div className="w-full max-w-4xl border-t border-sage-200/80 pt-8 mt-2 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-xs text-sage-500 gap-3">
+        <div className="w-full max-w-4xl border-t border-sage-200/80 pt-8 mt-2 flex flex-col sm:flex-row items-center justify-center sm:justify-between font-body text-xs text-sage-500 gap-3">
           <p>
             Copyright &copy; {new Date().getFullYear()} Kekulama Eco Cabana. All Rights Reserved.
           </p>
-          <div className="flex items-center gap-1 text-sage-400">
+          <div className="flex items-center gap-1 font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-400">
             <Lock size={12} />
             <span>Private Eco Retreat · Galle</span>
           </div>
