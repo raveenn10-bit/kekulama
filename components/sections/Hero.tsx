@@ -2,51 +2,78 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { siteData } from "@/data/siteData";
 import { Sparkles, MapPin, ChevronDown } from "lucide-react";
+import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 
 export function Hero() {
+  const shouldReduceMotion = useReducedMotion();
+  const { hero } = siteData;
+
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.12,
         delayChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 28 },
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
     show: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+      transition: {
+        duration: LUXURY_DURATION.medium,
+        ease: LUXURY_EASING.quintOut,
+      },
     },
   };
 
-  const { hero } = siteData;
+  const headlineVariants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 24 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: LUXURY_DURATION.slow,
+        ease: LUXURY_EASING.editorial,
+      },
+    },
+  };
 
   return (
     <section
       id="home"
       className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-center pt-28 pb-16"
     >
-      {/* Background Image with Subtle Atmospheric Zoom */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/hero.jpg"
-          alt="Kekulama Eco Cabana Nature Panorama"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover scale-105 animate-float duration-[12s]"
-        />
-        {/* Luxury Nature Overlay */}
+      {/* Background Image with Quiet Slow Ambient Movement */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <motion.div
+          initial={{ scale: 1.08, opacity: 0 }}
+          animate={{ scale: 1.02, opacity: 1 }}
+          transition={{
+            duration: 2.2,
+            ease: LUXURY_EASING.editorial,
+          }}
+          className="relative w-full h-full"
+        >
+          <Image
+            src="/images/hero.jpg"
+            alt="Kekulama Eco Cabana Nature Panorama"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </motion.div>
+        {/* Luxury Nature Atmospheric Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-forest-dark/85 via-forest/65 to-forest-dark/90" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-mint-500/20 via-transparent to-transparent pointer-events-none" />
       </div>
@@ -74,7 +101,7 @@ export function Hero() {
 
           {/* Monumental Luxury Headline in Cormorant Garamond */}
           <motion.h1
-            variants={itemVariants}
+            variants={headlineVariants}
             className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white font-normal leading-[1.04] tracking-lux-tight mb-7"
           >
             {hero.headline}{" "}
@@ -137,15 +164,17 @@ export function Hero() {
       </div>
 
       {/* Down arrow scroll hint */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.2, duration: 0.8, repeat: Infinity, repeatType: "reverse" }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-mint-200/60 hidden sm:flex flex-col items-center gap-1"
-      >
-        <span className="font-eyebrow text-[9px] uppercase tracking-[0.3em] text-mint-300/80">Scroll to Explore</span>
-        <ChevronDown size={16} />
-      </motion.div>
+      {!shouldReduceMotion && (
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 4 }}
+          transition={{ duration: 1.8, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 text-mint-200/60 hidden sm:flex flex-col items-center gap-1"
+        >
+          <span className="font-eyebrow text-[9px] uppercase tracking-[0.3em] text-mint-300/80">Scroll to Explore</span>
+          <ChevronDown size={16} />
+        </motion.div>
+      )}
     </section>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Bath,
   Shirt,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 
 const iconMap: Record<string, any> = {
   Bath,
@@ -32,6 +33,7 @@ const iconMap: Record<string, any> = {
 
 export default function Amenities() {
   const { amenities } = siteData;
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section id="amenities" className="bg-white section-padding relative overflow-hidden">
@@ -50,20 +52,24 @@ export default function Amenities() {
             return (
               <motion.div
                 key={amenity.label}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.15 }}
                 transition={{
-                  duration: 0.45,
-                  ease: [0.16, 1, 0.3, 1],
-                  delay: index * 0.04,
+                  duration: LUXURY_DURATION.medium,
+                  ease: LUXURY_EASING.quintOut,
+                  delay: index * 0.035,
                 }}
-                whileHover={{ y: -5 }}
+                whileHover={shouldReduceMotion ? {} : { y: -4 }}
                 className="snap-center flex-shrink-0 w-[44vw] sm:w-auto bg-gradient-to-b from-mint-50/50 via-white to-eucalyptus-50/40 rounded-3xl p-5 text-center shadow-soft hover:shadow-glow transition-all duration-300 border border-mint-100 hover:border-mint-300 flex flex-col items-center justify-center group"
               >
-                <div className="w-13 h-13 rounded-2xl bg-mint-100/80 text-mint-700 flex items-center justify-center mb-3.5 group-hover:bg-mint-500 group-hover:text-white group-hover:scale-110 transition-all duration-300 shadow-sm">
+                <motion.div
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.08 }}
+                  transition={{ duration: 0.25, ease: LUXURY_EASING.quintOut }}
+                  className="w-13 h-13 rounded-2xl bg-mint-100/80 text-mint-700 flex items-center justify-center mb-3.5 group-hover:bg-mint-500 group-hover:text-white transition-colors duration-300 shadow-sm"
+                >
                   <Icon size={26} strokeWidth={1.5} />
-                </div>
+                </motion.div>
                 <span className="font-body text-xs sm:text-[13.5px] font-semibold text-forest group-hover:text-mint-700 transition-colors">
                   {amenity.label}
                 </span>

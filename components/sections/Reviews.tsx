@@ -1,13 +1,15 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Star, CheckCircle, ExternalLink } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { siteData } from "@/data/siteData";
+import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 
 export default function Reviews() {
   const { reviews, googleRatingStats, contact } = siteData;
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section id="reviews" className="section-padding bg-gradient-to-b from-white via-eucalyptus-50/50 to-mint-50/40 relative overflow-hidden">
@@ -25,9 +27,10 @@ export default function Reviews() {
 
         {/* Google Maps Score Summary Card */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: LUXURY_DURATION.medium, ease: LUXURY_EASING.quintOut }}
           className="max-w-2xl mx-auto -mt-4 mb-12 bg-white/90 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-soft border border-mint-100 flex flex-wrap items-center justify-between gap-4"
         >
           <div className="flex items-center gap-4">
@@ -85,15 +88,15 @@ export default function Reviews() {
           {reviews.map((review, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{
-                duration: 0.5,
+                duration: LUXURY_DURATION.medium,
                 delay: index * 0.05,
-                ease: [0.16, 1, 0.3, 1],
+                ease: LUXURY_EASING.quintOut,
               }}
-              whileHover={{ y: -5 }}
+              whileHover={shouldReduceMotion ? {} : { y: -4 }}
               className="snap-center flex-shrink-0 w-[84vw] md:w-auto bg-white/95 backdrop-blur-md rounded-3xl p-7 shadow-soft hover:shadow-glow transition-all duration-300 flex flex-col justify-between border border-mint-100 hover:border-mint-300"
             >
               <div>

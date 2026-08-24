@@ -1,14 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Check, Sparkles, ArrowRight } from "lucide-react";
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 
 export default function Packages() {
   const { packages } = siteData;
   const [activeTab, setActiveTab] = useState<"all" | "day" | "night" | "meals">("all");
+  const shouldReduceMotion = useReducedMotion();
 
   const dayPackages = packages.filter((p) => p.name.includes("Day Out"));
   const nightPackages = packages.filter((p) => p.name.includes("Night Stay"));
@@ -39,34 +41,59 @@ export default function Packages() {
           subtitle="All prices in Sri Lankan Rupees (LKR). Direct booking via WhatsApp with instant confirmation and personalized service."
         />
 
-        {/* Filter Pills */}
+        {/* Filter Pills with Liquid Slider Pill Animation */}
         <div className="flex items-center justify-center gap-2.5 mb-10 overflow-x-auto no-scrollbar pb-2">
           {[
             { id: "all", label: "All Packages" },
             { id: "day", label: "Day Out" },
             { id: "night", label: "Night Stay" },
             { id: "meals", label: "Meal Plans (B&B / FB)" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`px-5 py-2 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] transition-all duration-300 whitespace-nowrap cursor-pointer ${
-                activeTab === tab.id
-                  ? "bg-mint-500 text-white shadow-glow scale-105"
-                  : "bg-white/80 text-sage-700 hover:bg-mint-100/70 border border-sage-200/80"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`relative px-5 py-2 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] transition-colors duration-300 whitespace-nowrap cursor-pointer z-10 ${
+                  isActive ? "text-white" : "text-sage-700 hover:text-forest"
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activePackageTab"
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 35,
+                    }}
+                    className="absolute inset-0 bg-gradient-to-r from-mint-500 to-mint-600 rounded-full shadow-glow -z-10"
+                  />
+                )}
+                {!isActive && (
+                  <div className="absolute inset-0 bg-white/80 border border-sage-200/80 rounded-full -z-20" />
+                )}
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Mobile Horizontal Snap Row / Desktop Grid */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-6 pt-2 px-1 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:overflow-visible sm:pb-0 no-scrollbar">
-          {displayedPackages.map((pkg, index) => (
-            <PackageCard key={pkg.name} pkg={pkg} index={index} />
-          ))}
-        </div>
+        <motion.div
+          layout
+          className="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-6 pt-2 px-1 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:overflow-visible sm:pb-0 no-scrollbar"
+        >
+          <AnimatePresence mode="popLayout">
+            {displayedPackages.map((pkg, index) => (
+              <PackageCard
+                key={pkg.name}
+                pkg={pkg}
+                index={index}
+                shouldReduceMotion={shouldReduceMotion}
+              />
+            ))}
+          </AnimatePresence>
+        </motion.div>
 
         {/* Mobile Swipe Hint Indicator */}
         <div className="flex sm:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] uppercase tracking-[0.2em] text-sage-500 mt-3">
@@ -77,14 +104,27 @@ export default function Packages() {
   );
 }
 
-function PackageCard({ pkg, index }: { pkg: any; index: number }) {
+function PackageCard({
+  pkg,
+  index,
+  shouldReduceMotion,
+}: {
+  pkg: any;
+  index: number;
+  shouldReduceMotion: boolean | null;
+}) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: index * 0.05 }}
-      whileHover={{ y: -6 }}
+      layout
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.96 }}
+      transition={{
+        duration: LUXURY_DURATION.medium,
+        ease: LUXURY_EASING.quintOut,
+        delay: index * 0.04,
+      }}
+      whileHover={shouldReduceMotion ? {} : { y: -5 }}
       className={`snap-center flex-shrink-0 w-[84vw] sm:w-auto bg-white/95 backdrop-blur-sm rounded-3xl p-7 shadow-soft hover:shadow-glow transition-all duration-300 relative flex flex-col justify-between border ${
         pkg.popular
           ? "border-mint-400 ring-2 ring-mint-300/60 bg-gradient-to-b from-mint-50/60 via-white to-white"
@@ -141,12 +181,13 @@ function PackageCard({ pkg, index }: { pkg: any; index: number }) {
       </div>
 
       {/* CTA Button */}
-      <a
+      <motion.a
         href={`https://wa.me/94756657000?text=Hello%20Kekulama%20Eco%20Cabana,%20I%20am%20interested%20in%20booking%20the%20${encodeURIComponent(
           pkg.name
         )}%20package.`}
         target="_blank"
         rel="noopener noreferrer"
+        whileTap={{ scale: 0.98 }}
         className={`w-full py-3 px-5 rounded-full text-center font-body text-xs uppercase tracking-[0.15em] font-semibold transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
           pkg.popular
             ? "bg-gradient-to-r from-mint-500 to-mint-600 text-white shadow-glow hover:from-mint-600 hover:to-mint-700"
@@ -155,7 +196,7 @@ function PackageCard({ pkg, index }: { pkg: any; index: number }) {
       >
         <span>Reserve Package</span>
         <ArrowRight size={13} />
-      </a>
+      </motion.a>
     </motion.div>
   );
 }

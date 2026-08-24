@@ -3,15 +3,17 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Menu, X, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { siteData } from "@/data/siteData";
+import { LUXURY_EASING } from "@/lib/motion";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,7 +24,7 @@ export function Navbar() {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -30,7 +32,7 @@ export function Navbar() {
 
   return (
     <>
-      {/* Dynamic top scroll progress bar with Mint & Bark gradient */}
+      {/* Dynamic top scroll progress bar */}
       <div
         className="fixed top-0 left-0 h-[2.5px] bg-gradient-to-r from-mint-400 via-mint-500 to-bark z-[70] transition-all duration-150"
         style={{ width: `${scrollProgress}%` }}
@@ -45,7 +47,11 @@ export function Navbar() {
       >
         <div className="container-custom w-full flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3.5 group">
-            <div className="relative w-11 h-11 rounded-full overflow-hidden border border-mint-300/80 shadow-sm group-hover:scale-105 transition-transform duration-300">
+            <motion.div
+              whileHover={shouldReduceMotion ? {} : { scale: 1.04 }}
+              transition={{ duration: 0.3, ease: LUXURY_EASING.quintOut }}
+              className="relative w-11 h-11 rounded-full overflow-hidden border border-mint-300/80 shadow-sm"
+            >
               <Image
                 src="/images/logo.jpg"
                 alt="Kekulama Eco Cabana Logo"
@@ -53,17 +59,17 @@ export function Navbar() {
                 sizes="44px"
                 className="object-cover"
               />
-            </div>
+            </motion.div>
             <div className="flex flex-col">
               <span
-                className={`font-display text-xl sm:text-2xl font-normal tracking-[0.16em] uppercase transition-colors ${
+                className={`font-display text-xl sm:text-2xl font-normal tracking-[0.16em] uppercase transition-colors duration-300 ${
                   isScrolled ? "text-forest" : "text-white"
                 }`}
               >
                 Kekulama
               </span>
               <span
-                className={`font-eyebrow text-[9px] uppercase tracking-[0.32em] font-normal -mt-0.5 transition-colors ${
+                className={`font-eyebrow text-[9px] uppercase tracking-[0.32em] font-normal -mt-0.5 transition-colors duration-300 ${
                   isScrolled ? "text-mint-700" : "text-mint-200"
                 }`}
               >
@@ -79,13 +85,15 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`font-body text-[11.5px] font-medium uppercase tracking-[0.18em] transition-all duration-200 hover:text-mint-500 hover:scale-105 ${
+                  className={`relative font-body text-[11.5px] font-medium uppercase tracking-[0.18em] transition-colors duration-300 group py-1 ${
                     isScrolled
-                      ? "text-sage-800"
-                      : "text-white/90"
+                      ? "text-sage-800 hover:text-mint-600"
+                      : "text-white/90 hover:text-mint-300"
                   }`}
                 >
-                  {link.label || link.name}
+                  <span>{link.label || link.name}</span>
+                  {/* Subtle underline trace on hover */}
+                  <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-mint-400 transition-all duration-300 ease-out group-hover:w-full" />
                 </Link>
               ))}
             </div>
@@ -106,7 +114,7 @@ export function Navbar() {
           <div className="flex items-center gap-2 lg:hidden">
             <a
               href="tel:+94756657000"
-              className={`p-2 rounded-full transition-colors ${
+              className={`p-2 rounded-full transition-all duration-300 ${
                 isScrolled
                   ? "bg-mint-100 text-mint-800 hover:bg-mint-200"
                   : "bg-white/20 text-white hover:bg-white/30"
@@ -117,7 +125,7 @@ export function Navbar() {
             </a>
 
             <button
-              className={`p-2 rounded-xl transition-colors ${
+              className={`p-2 rounded-xl transition-colors duration-300 ${
                 isScrolled
                   ? "text-forest hover:bg-sage-100"
                   : "text-white hover:bg-white/20"
@@ -138,7 +146,7 @@ export function Navbar() {
             initial={{ opacity: 0, x: "100%" }}
             animate={{ opacity: 1, x: "0%" }}
             exit={{ opacity: 0, x: "100%" }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.45, ease: LUXURY_EASING.quintOut }}
             className="fixed inset-0 z-[80] bg-forest-dark/95 backdrop-blur-2xl flex flex-col p-6 text-white"
           >
             <div className="flex items-center justify-between h-[64px] border-b border-white/10 pb-4">
@@ -160,25 +168,25 @@ export function Navbar() {
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 rounded-full bg-white/10 text-white/80 hover:text-white hover:bg-white/20"
+                className="p-2 rounded-full bg-white/10 text-white/80 hover:text-white hover:bg-white/20 transition-colors"
                 aria-label="Close navigation menu"
               >
                 <X size={22} />
               </button>
             </div>
 
-            <div className="flex flex-col justify-center flex-1 gap-5 py-8">
+            <div className="flex flex-col justify-center flex-1 gap-4 py-8">
               {navLinks.map((link, index) => (
                 <motion.div
                   key={link.href}
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: 16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * index, duration: 0.3 }}
+                  transition={{ delay: 0.06 * index + 0.1, duration: 0.4, ease: LUXURY_EASING.quintOut }}
                 >
                   <Link
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="font-display text-2xl font-normal text-white/90 hover:text-mint-300 transition-colors flex items-center justify-between py-1 tracking-wide"
+                    className="font-display text-2xl font-normal text-white/90 hover:text-mint-300 transition-colors flex items-center justify-between py-1.5 tracking-wide"
                   >
                     <span>{link.label || link.name}</span>
                     <span className="font-mono text-xs text-mint-400">0{index + 1}</span>
@@ -189,7 +197,7 @@ export function Navbar() {
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.3 }}
+                transition={{ delay: 0.45, duration: 0.4, ease: LUXURY_EASING.quintOut }}
                 className="mt-6 flex flex-col gap-3"
               >
                 <Button

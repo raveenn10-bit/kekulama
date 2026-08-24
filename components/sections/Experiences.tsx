@@ -1,15 +1,17 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Landmark, Mountain, Waves, Turtle, MapPin, Calendar } from "lucide-react";
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 
 const iconMap: Record<string, any> = { Landmark, Mountain, Waves, Turtle };
 
 export default function Experiences() {
   const { experiences } = siteData;
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section id="experiences" className="bg-forest section-padding relative overflow-hidden text-white">
@@ -34,18 +36,26 @@ export default function Experiences() {
             return (
               <motion.div
                 key={exp.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: index * 0.08 }}
-                whileHover={{ y: -5 }}
+                transition={{
+                  duration: LUXURY_DURATION.medium,
+                  ease: LUXURY_EASING.quintOut,
+                  delay: index * 0.07,
+                }}
+                whileHover={shouldReduceMotion ? {} : { y: -4 }}
                 className="snap-center flex-shrink-0 w-[84vw] md:w-auto bg-white/10 backdrop-blur-md border border-white/15 rounded-3xl p-7 hover:bg-white/15 hover:border-mint-400/40 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-mint-400/20 text-mint-300 flex items-center justify-center border border-mint-400/30 shadow-sm">
+                    <motion.div
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.06 }}
+                      transition={{ duration: 0.25, ease: LUXURY_EASING.quintOut }}
+                      className="w-12 h-12 rounded-2xl bg-mint-400/20 text-mint-300 flex items-center justify-center border border-mint-400/30 shadow-sm"
+                    >
                       <Icon size={24} strokeWidth={1.5} />
-                    </div>
+                    </motion.div>
                     {exp.badge && (
                       <span className="font-eyebrow text-[10px] uppercase tracking-[0.24em] font-normal bg-mint-500/20 text-mint-200 border border-mint-400/30 px-3.5 py-1 rounded-full">
                         {exp.badge}

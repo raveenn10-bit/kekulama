@@ -1,11 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { siteData } from "@/data/siteData";
+import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 
 export default function CTA() {
   const { contact } = siteData;
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section className="relative w-full overflow-hidden">
@@ -22,10 +24,10 @@ export default function CTA() {
 
       <div className="relative z-10 py-24 sm:py-28 px-5 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 22 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: LUXURY_DURATION.slow, ease: LUXURY_EASING.editorial }}
           className="text-center max-w-3xl mx-auto"
         >
           <span className="font-eyebrow text-xs uppercase tracking-[0.28em] text-mint-300 mb-4 block font-normal">
@@ -39,20 +41,24 @@ export default function CTA() {
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-10">
-            <a
+            <motion.a
               href={`https://wa.me/${contact.whatsappRaw}?text=Hello%20Kekulama%20Eco%20Cabana,%20I%20would%20like%20to%20reserve%20a%20stay.`}
               target="_blank"
               rel="noreferrer"
+              whileHover={shouldReduceMotion ? {} : { y: -1, scale: 1.012 }}
+              whileTap={{ scale: 0.98 }}
               className="bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full px-8 py-3.5 hover:from-mint-600 hover:to-mint-700 transition-all font-body font-semibold text-xs uppercase tracking-[0.15em] shadow-glow w-full sm:w-auto text-center"
             >
               Book via WhatsApp
-            </a>
-            <a
+            </motion.a>
+            <motion.a
               href={`tel:${contact.phoneRaw}`}
+              whileHover={shouldReduceMotion ? {} : { y: -1, scale: 1.012 }}
+              whileTap={{ scale: 0.98 }}
               className="border border-white/30 text-white hover:bg-white/10 rounded-full px-8 py-3.5 transition-colors font-body font-semibold text-xs uppercase tracking-[0.15em] w-full sm:w-auto text-center backdrop-blur-sm"
             >
               Call Directly
-            </a>
+            </motion.a>
           </div>
         </motion.div>
       </div>

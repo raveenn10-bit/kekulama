@@ -1,5 +1,9 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
+import { LUXURY_EASING } from "@/lib/motion";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "mint" | "outline" | "ghost" | "glass";
@@ -19,14 +23,16 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   const baseStyles =
-    "inline-flex items-center justify-center font-body font-semibold uppercase tracking-[0.15em] transition-all duration-300 active:scale-[0.97] cursor-pointer";
+    "relative inline-flex items-center justify-center font-body font-semibold uppercase tracking-[0.15em] transition-colors duration-300 cursor-pointer overflow-hidden select-none";
 
   const variants = {
     primary:
-      "bg-bark text-white rounded-full hover:bg-bark-dark shadow-soft hover:shadow-lifted hover:scale-[1.02]",
+      "bg-bark text-white rounded-full hover:bg-bark-dark shadow-soft hover:shadow-lifted",
     mint:
-      "bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full hover:from-mint-600 hover:to-mint-700 shadow-glow hover:scale-[1.02]",
+      "bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full hover:from-mint-600 hover:to-mint-700 shadow-glow",
     outline:
       "border border-mint-500/70 text-mint-800 bg-white/90 backdrop-blur-sm rounded-full hover:bg-mint-100 hover:border-mint-600 shadow-sm",
     ghost: "text-sage-700 hover:text-mint-700 rounded-full hover:bg-mint-50/60",
@@ -42,18 +48,28 @@ export function Button({
 
   const classes = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
 
+  const motionProps = shouldReduceMotion
+    ? {}
+    : {
+        whileHover: { y: -1, scale: 1.012 },
+        whileTap: { scale: 0.98 },
+        transition: { duration: 0.25, ease: LUXURY_EASING.quintOut },
+      };
+
   if (href) {
     return (
-      <Link href={href} target={target} rel={rel} className={classes}>
-        {children}
-      </Link>
+      <motion.div {...motionProps} className="inline-block">
+        <Link href={href} target={target} rel={rel} className={classes}>
+          {children}
+        </Link>
+      </motion.div>
     );
   }
 
   return (
-    <button className={classes} {...props}>
+    <motion.button {...motionProps} className={classes} {...(props as any)}>
       {children}
-    </button>
+    </motion.button>
   );
 }
 
