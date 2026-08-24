@@ -6,6 +6,7 @@
   * {
     box-sizing: border-box;
     border-color: rgba(228, 221, 208, 0.6);
+    -webkit-tap-highlight-color: transparent;
   }
 
   html {
@@ -14,11 +15,15 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "liga" 1, "calt" 1, "kern" 1;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
   }
 
   body {
     @apply bg-eucalyptus-50 text-sage-900 font-body font-normal leading-lux-body tracking-lux-normal;
     text-wrap: pretty;
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 
   ::selection {
@@ -46,15 +51,19 @@
   p {
     text-wrap: pretty;
   }
+
+  button, a {
+    touch-action: manipulation;
+  }
 }
 
 @layer components {
   .section-padding {
-    @apply py-20 md:py-28 lg:py-32;
+    @apply py-14 sm:py-20 md:py-28 lg:py-32;
   }
 
   .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-5 sm:px-6 lg:px-8;
   }
 
   .text-gradient {
@@ -81,11 +90,13 @@
     @apply bg-forest-dark/85 backdrop-blur-2xl border border-white/10;
   }
 
-  /* Custom horizontal mobile snap scroll container */
+  /* Custom horizontal mobile snap scroll container with smooth momentum & edge peeking */
   .mobile-scroll-row {
-    @apply flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0;
+    @apply flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-5 px-5 sm:mx-0 sm:px-0 sm:pb-0;
     -webkit-overflow-scrolling: touch;
+    scroll-padding-inline: 1.25rem;
     scrollbar-width: none;
+    overscroll-behavior-x: contain;
   }
 
   .mobile-scroll-row::-webkit-scrollbar {

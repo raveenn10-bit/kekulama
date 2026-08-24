@@ -42,27 +42,27 @@ export function Footer() {
       {/* Infinite Auto-Scrolling Photography Strip with Smooth Marquee */}
       <div className="relative w-full overflow-hidden bg-forest-dark py-2 group cursor-pointer">
         {/* Soft edge gradient fades for luxury editorial feel */}
-        <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-r from-forest-dark to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-forest-dark to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-24 bg-gradient-to-r from-forest-dark to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-24 bg-gradient-to-l from-forest-dark to-transparent z-10 pointer-events-none" />
 
-        <div className="animate-marquee gap-2.5 px-1.5 flex items-center">
+        <div className="animate-marquee gap-2 sm:gap-2.5 px-1 flex items-center">
           {duplicatedPhotos.map((photo, i) => (
             <div
               key={i}
-              className="relative w-[210px] sm:w-[260px] md:w-[310px] h-[150px] sm:h-[180px] md:h-[210px] flex-shrink-0 rounded-2xl overflow-hidden group/item shadow-sm border border-white/10"
+              className="relative w-[190px] sm:w-[260px] md:w-[310px] h-[135px] sm:h-[180px] md:h-[210px] flex-shrink-0 rounded-2xl overflow-hidden group/item shadow-sm border border-white/10"
             >
               <Image
                 src={photo.src}
                 alt={photo.alt}
                 fill
-                sizes="(max-width: 640px) 210px, (max-width: 768px) 260px, 310px"
+                sizes="(max-width: 640px) 190px, (max-width: 768px) 260px, 310px"
                 className="object-cover group-hover/item:scale-108 transition-transform duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/75 via-transparent to-transparent opacity-60 group-hover/item:opacity-30 transition-opacity duration-300" />
               
               {/* Subtle caption reveal on hover */}
-              <div className="absolute bottom-3 left-3 right-3 text-left">
-                <span className="font-eyebrow text-[9.5px] uppercase tracking-[0.24em] text-white/90 font-medium block drop-shadow-sm">
+              <div className="absolute bottom-2.5 left-2.5 right-2.5 text-left">
+                <span className="font-eyebrow text-[9px] sm:text-[9.5px] uppercase tracking-[0.24em] text-white/90 font-medium block drop-shadow-sm">
                   {photo.caption}
                 </span>
               </div>
@@ -71,16 +71,16 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="container-custom py-16 md:py-24 flex flex-col items-center text-center">
+      <div className="container-custom py-14 sm:py-20 md:py-24 flex flex-col items-center text-center">
         {/* Brand Logo & Luxury Name */}
         <motion.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: LUXURY_EASING.quintOut }}
-          className="flex flex-col items-center mb-9"
+          className="flex flex-col items-center mb-8"
         >
-          <div className="relative w-16 h-16 rounded-full overflow-hidden shadow-soft mb-4 border border-mint-300/80">
+          <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shadow-soft mb-3.5 border border-mint-300/80">
             <Image
               src="/images/logo.jpg"
               alt="Kekulama Eco Cabana Logo"
@@ -88,16 +88,16 @@ export function Footer() {
               className="object-cover"
             />
           </div>
-          <h2 className="font-display text-3xl sm:text-4xl tracking-[0.22em] text-forest font-normal uppercase">
+          <h2 className="font-display text-2xl sm:text-4xl tracking-[0.22em] text-forest font-normal uppercase">
             Kekulama
           </h2>
-          <span className="font-eyebrow text-xs uppercase tracking-[0.34em] text-mint-700 font-normal mt-1.5">
+          <span className="font-eyebrow text-[10px] sm:text-xs uppercase tracking-[0.34em] text-mint-700 font-normal mt-1">
             Eco Sanctuary · Galle
           </span>
         </motion.div>
 
         {/* Circular Social Media Buttons */}
-        <div className="flex items-center justify-center gap-3 mb-10">
+        <div className="flex items-center justify-center gap-2.5 sm:gap-3 mb-8 sm:mb-10">
           {[
             { href: contact.social.facebook, icon: Facebook, label: "Facebook" },
             { href: contact.social.instagram, icon: Instagram, label: "Instagram" },
@@ -114,10 +114,10 @@ export function Footer() {
                 whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.25, ease: LUXURY_EASING.quintOut }}
-                className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-mint-500 hover:border-mint-500 flex items-center justify-center shadow-sm transition-colors"
+                className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-mint-500 hover:border-mint-500 flex items-center justify-center shadow-sm transition-colors active:scale-95"
                 aria-label={soc.label}
               >
-                <Icon size={17} strokeWidth={1.5} />
+                <Icon size={16} strokeWidth={1.5} />
               </motion.a>
             );
           })}
@@ -128,7 +128,7 @@ export function Footer() {
             whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.25, ease: LUXURY_EASING.quintOut }}
-            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-[#25D366] hover:border-[#25D366] flex items-center justify-center shadow-sm transition-colors"
+            className="w-10 h-10 rounded-full bg-white border border-sage-200 text-sage-700 hover:text-white hover:bg-[#25D366] hover:border-[#25D366] flex items-center justify-center shadow-sm transition-colors active:scale-95"
             aria-label="WhatsApp"
           >
             <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -138,12 +138,12 @@ export function Footer() {
         </div>
 
         {/* Navigation Links in Minimalist Horizontal Row */}
-        <nav className="flex flex-wrap items-center justify-center gap-6 sm:gap-9 mb-8 font-body text-[11.5px] font-semibold uppercase tracking-[0.18em] text-sage-800">
+        <nav className="flex flex-wrap items-center justify-center gap-4 sm:gap-9 mb-7 font-body text-[11px] sm:text-[11.5px] font-semibold uppercase tracking-[0.16em] text-sage-800">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="hover:text-mint-600 transition-colors py-1"
+              className="hover:text-mint-600 transition-colors py-1 px-1.5"
             >
               {item.label || item.name}
             </Link>
@@ -151,7 +151,7 @@ export function Footer() {
         </nav>
 
         {/* Sub-highlights bulleted list */}
-        <div className="flex flex-wrap items-center justify-center gap-x-3.5 gap-y-1.5 font-body font-light text-xs text-sage-500 mb-12 max-w-2xl">
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-body font-light text-[11px] sm:text-xs text-sage-500 mb-10 max-w-2xl px-2">
           {highlights.map((item, idx) => (
             <React.Fragment key={idx}>
               <span>{item}</span>
@@ -168,25 +168,25 @@ export function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: LUXURY_EASING.quintOut }}
-          className="flex flex-col items-center mb-12"
+          className="flex flex-col items-center mb-10"
         >
-          <span className="font-eyebrow text-[11px] font-normal uppercase tracking-[0.28em] text-bark-dark mb-3">
-            Get in Touch
+          <span className="font-eyebrow text-[10px] sm:text-[11px] font-normal uppercase tracking-[0.28em] text-bark-dark mb-2">
+            Direct Inquiries
           </span>
           <a
             href={`tel:${contact.phoneRaw}`}
-            className="font-display text-3xl sm:text-4xl text-forest hover:text-mint-600 transition-colors mb-2 tracking-wide font-normal"
+            className="font-display text-2xl sm:text-4xl text-forest hover:text-mint-600 transition-colors mb-2 tracking-wide font-normal"
           >
             {contact.phoneDisplay || contact.phone}
           </a>
-          <div className="flex items-center justify-center gap-1.5 font-body font-light text-xs text-sage-600 mt-1">
-            <MapPin size={13} className="text-mint-600" />
-            <span>Address: {contact.address}</span>
+          <div className="flex items-center justify-center gap-1.5 font-body font-light text-xs text-sage-600 mt-1 px-4 text-center">
+            <MapPin size={13} className="text-mint-600 flex-shrink-0" />
+            <span>{contact.address}</span>
           </div>
         </motion.div>
 
         {/* Divider & Copyright */}
-        <div className="w-full max-w-4xl border-t border-sage-200/80 pt-8 mt-2 flex flex-col sm:flex-row items-center justify-center sm:justify-between font-body text-xs text-sage-500 gap-3">
+        <div className="w-full max-w-4xl border-t border-sage-200/80 pt-6 mt-2 flex flex-col sm:flex-row items-center justify-center sm:justify-between font-body text-xs text-sage-500 gap-2.5">
           <p>
             Copyright &copy; {new Date().getFullYear()} Kekulama Eco Cabana. All Rights Reserved.
           </p>
