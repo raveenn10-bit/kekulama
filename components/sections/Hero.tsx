@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { siteData } from "@/data/siteData";
 import { Badge } from "@/components/ui/Badge";
+import { AnimatedWords } from "@/components/ui/AnimatedText";
 import { MapPin, Sparkles, Star } from "lucide-react";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 
@@ -156,13 +157,13 @@ export default function Hero() {
             </a>
           </motion.div>
 
-          {/* Editorial Display Headline */}
+          {/* Editorial Display Headline with Word Stagger */}
           <motion.h1
             variants={itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl font-display text-white leading-[1.12] sm:leading-[1.1] 2xl:leading-[1.08] tracking-[-0.015em] mb-6 sm:mb-8 2xl:mb-10 drop-shadow-md"
           >
             <span className="block font-light text-slate-100 mb-1 sm:mb-2 2xl:mb-3 text-2xl sm:text-3xl md:text-4xl 2xl:text-5xl">
-              Disconnect & Recharge at
+              <AnimatedWords text="Disconnect & Recharge at" delay={0.1} />
             </span>
             <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-mint-200 via-mint-300 to-eucalyptus-300 pr-2">
               Kekulama
