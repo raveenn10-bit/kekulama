@@ -121,8 +121,13 @@ export default function AmbientAudioPlayer() {
         src="/audio/forest-ambience.mp3"
         autoPlay
         loop
-        preload="none"
+        preload="auto"
         playsInline
+        onTimeUpdate={(e) => {
+          if (e.currentTarget.currentTime >= 17.0) {
+            e.currentTarget.currentTime = 0;
+          }
+        }}
       />
 
       <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom,0))] left-4 sm:left-6 z-50 flex items-center gap-2.5">
