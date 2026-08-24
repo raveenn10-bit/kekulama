@@ -3,7 +3,6 @@
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { siteData } from "@/data/siteData";
 import { Sparkles, MapPin, ChevronDown } from "lucide-react";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
@@ -143,52 +142,10 @@ export function Hero() {
           {/* Lead Description in Plus Jakarta Sans */}
           <motion.p
             variants={itemVariants}
-            className="font-body font-light text-sm sm:text-lg md:text-xl text-eucalyptus-100/95 max-w-2xl mb-8 sm:mb-10 leading-lux-relaxed"
+            className="font-body font-light text-sm sm:text-lg md:text-xl text-eucalyptus-100/95 max-w-2xl leading-lux-relaxed"
           >
             {hero.subtitle}
           </motion.p>
-
-          {/* Dual Action Buttons */}
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-10 sm:mb-14"
-          >
-            <Button
-              variant="mint"
-              size="lg"
-              href="https://wa.me/94756657000"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="gap-2 shadow-glow w-full sm:w-auto py-3.5 sm:py-3.5"
-            >
-              <span>Book via WhatsApp</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              href="#packages"
-              className="border-white/30 text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 hover:border-mint-300 w-full sm:w-auto py-3.5 sm:py-3.5"
-            >
-              Explore Rates & Packages
-            </Button>
-          </motion.div>
-
-          {/* Luxury Stats Strip (Grid on Mobile for perfect 3-column balance) */}
-          <motion.div
-            variants={itemVariants}
-            className="border-t border-white/15 pt-6 grid grid-cols-3 gap-2 sm:flex sm:gap-16 text-center sm:text-left"
-          >
-            {hero.stats.map((stat, i) => (
-              <div key={i} className="flex flex-col">
-                <span className="font-display text-2xl sm:text-4xl text-mint-200 font-normal tracking-tight">
-                  {stat.value}
-                </span>
-                <span className="font-eyebrow text-[9.5px] sm:text-xs text-eucalyptus-200/90 uppercase tracking-[0.2em] mt-0.5">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </motion.div>
         </motion.div>
       </div>
 
