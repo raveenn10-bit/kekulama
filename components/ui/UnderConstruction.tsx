@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { MessageCircle, Facebook, Instagram, Music2, Home, Star, MapPin, Sparkles, Eye, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageCircle, Facebook, Instagram, Music2, Star, MapPin, Sparkles, Lock, KeyRound, X, ArrowRight } from "lucide-react";
 import { siteData } from "@/data/siteData";
 
-// 18 hours in milliseconds = 18 * 60 * 60 * 1000 = 64,800,000 ms
 const COUNTDOWN_DURATION_MS = 18 * 60 * 60 * 1000;
 const STORAGE_KEY = "kekulama_launch_target_time";
+const AUTH_PASSWORD = "0770663154";
 
-export default function UnderConstruction({ onPreview }: { onPreview?: () => void }) {
+export default function UnderConstruction({ onUnlock }: { onUnlock?: () => void }) {
   const { contact } = siteData;
   const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number }>({
     hours: 18,
@@ -18,11 +18,26 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
   });
   const [progressPercent, setProgressPercent] = useState(88);
   const [mounted, setMounted] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [inputPassword, setInputPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     setMounted(true);
 
-    // Get or initialize launch target timestamp
+    // Check URL query for direct password access: ?pass=0770663154
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlPass = params.get("pass") || params.get("password") || params.get("unlock");
+      if (urlPass === AUTH_PASSWORD) {
+        try {
+          sessionStorage.setItem("kekulama_admin_unlocked", "true");
+        } catch {}
+        if (onUnlock) onUnlock();
+        return;
+      }
+    }
+
     let targetTime: number;
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -51,7 +66,6 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
 
       setTimeLeft({ hours, minutes, seconds });
 
-      // Progress advances from 85% to 99%
       const elapsed = COUNTDOWN_DURATION_MS - diff;
       const progress = 85 + Math.min(14, (elapsed / COUNTDOWN_DURATION_MS) * 14);
       setProgressPercent(Math.round(progress));
@@ -60,7 +74,21 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
     calculateTime();
     const interval = setInterval(calculateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [onUnlock]);
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputPassword === AUTH_PASSWORD) {
+      setErrorMsg("");
+      setShowPasswordModal(false);
+      try {
+        sessionStorage.setItem("kekulama_admin_unlocked", "true");
+      } catch {}
+      if (onUnlock) onUnlock();
+    } else {
+      setErrorMsg("Incorrect passcode. Please try again.");
+    }
+  };
 
   if (!mounted) return null;
 
@@ -83,10 +111,14 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-mint-500/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* ── Top Header Navigation Bar ── */}
+      {/* ── Top Header Navigation Bar (Matches User Screenshot) ── */}
       <header className="w-full max-w-6xl relative z-10 flex items-center justify-between pt-2">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-full bg-mint-500/20 border border-mint-400/30 flex items-center justify-center text-mint-300">
+        <div
+          onClick={() => setShowPasswordModal(true)}
+          className="flex items-center gap-2.5 cursor-pointer group"
+          title="Kekulama Eco Cabana"
+        >
+          <div className="w-9 h-9 rounded-full bg-mint-500/20 border border-mint-400/30 flex items-center justify-center text-mint-300 group-hover:scale-105 transition-transform">
             <Sparkles size={16} />
           </div>
           <div>
@@ -99,20 +131,13 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
           </div>
         </div>
 
-        {/* Home / Preview Button */}
-        {onPreview ? (
-          <button
-            onClick={onPreview}
-            className="font-eyebrow text-xs uppercase tracking-[0.2em] text-sage-300 hover:text-white transition-colors flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10"
-          >
-            <Eye size={13} className="text-mint-300" />
-            <span>Preview Site</span>
-          </button>
-        ) : (
-          <span className="font-eyebrow text-xs uppercase tracking-[0.25em] text-sage-400 font-normal">
-            HOME
-          </span>
-        )}
+        {/* Clean HOME text matching reference screenshot */}
+        <button
+          onClick={() => setShowPasswordModal(true)}
+          className="font-eyebrow text-xs uppercase tracking-[0.25em] text-sage-300 hover:text-white transition-colors cursor-pointer"
+        >
+          HOME
+        </button>
       </header>
 
       {/* ── Center Content: Under Construction & Countdown ── */}
@@ -236,9 +261,8 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
 
       {/* ── Bottom Section: Circular Social Links & Footer ── */}
       <footer className="w-full max-w-6xl relative z-10 flex flex-col items-center pt-6 pb-2 text-center">
-        {/* Circular Social Icons matching User's Image */}
+        {/* Circular Social Icons */}
         <div className="flex items-center justify-center gap-3.5 sm:gap-4 mb-5">
-          {/* Facebook */}
           <a
             href={contact.social.facebook}
             target="_blank"
@@ -249,7 +273,6 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
             <Facebook size={18} />
           </a>
 
-          {/* Instagram */}
           <a
             href={contact.social.instagram}
             target="_blank"
@@ -260,7 +283,6 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
             <Instagram size={18} />
           </a>
 
-          {/* TripAdvisor */}
           <a
             href={contact.social.tripadvisor || "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html"}
             target="_blank"
@@ -271,7 +293,6 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
             <Star size={18} className="text-amber-300 fill-amber-300" />
           </a>
 
-          {/* TikTok */}
           <a
             href={contact.social.tiktok}
             target="_blank"
@@ -282,7 +303,6 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
             <Music2 size={18} />
           </a>
 
-          {/* Google Maps Location */}
           <a
             href={contact.googleMapsUrl}
             target="_blank"
@@ -294,11 +314,83 @@ export default function UnderConstruction({ onPreview }: { onPreview?: () => voi
           </a>
         </div>
 
-        {/* Copyright */}
-        <p className="font-body text-xs text-sage-400 font-light">
+        {/* Copyright with subtle admin trigger */}
+        <p
+          onClick={() => setShowPasswordModal(true)}
+          className="font-body text-xs text-sage-400 font-light cursor-pointer hover:text-sage-300 transition-colors"
+        >
           © {new Date().getFullYear()} Kekulama Eco Cabana · Pinnaduwa, Galle, Sri Lanka. All rights reserved.
         </p>
       </footer>
+
+      {/* ── Secure Password Prompt Modal ── */}
+      <AnimatePresence>
+        {showPasswordModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            onClick={() => setShowPasswordModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.94, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.94, opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#111e18] border border-mint-400/30 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl relative text-center"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowPasswordModal(false)}
+                className="absolute top-4 right-4 text-sage-400 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="w-12 h-12 rounded-2xl bg-mint-500/20 border border-mint-400/30 text-mint-300 flex items-center justify-center mx-auto mb-4">
+                <KeyRound size={22} />
+              </div>
+
+              <h3 className="font-display text-2xl text-white font-normal mb-1">
+                Admin Passcode
+              </h3>
+              <p className="font-body text-xs text-sage-400 mb-5">
+                Enter your passcode to unlock the website preview.
+              </p>
+
+              <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                <div>
+                  <input
+                    type="password"
+                    autoFocus
+                    value={inputPassword}
+                    onChange={(e) => {
+                      setInputPassword(e.target.value);
+                      setErrorMsg("");
+                    }}
+                    placeholder="Enter passcode"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/20 text-white placeholder-sage-500 text-center font-mono tracking-widest text-lg focus:outline-none focus:border-mint-400 focus:ring-1 focus:ring-mint-400 transition-all"
+                  />
+                  {errorMsg && (
+                    <span className="font-body text-xs text-red-400 mt-2 block">
+                      {errorMsg}
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-mint-500 to-mint-600 hover:from-mint-600 hover:to-mint-700 text-white font-body font-semibold text-xs uppercase tracking-wider transition-all shadow-glow flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Lock size={14} />
+                  <span>Unlock Full Site</span>
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

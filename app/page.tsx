@@ -12,6 +12,7 @@ import Experiences from "@/components/sections/Experiences";
 import Reviews from "@/components/sections/Reviews";
 import CTA from "@/components/sections/CTA";
 import Contact from "@/components/sections/Contact";
+import { Lock } from "lucide-react";
 
 // Dynamically imported background systems for lightning-fast initial page paint
 const DynamicSky = dynamic(() => import("@/components/ui/DynamicSky"), {
@@ -32,36 +33,55 @@ const AmbientAudioPlayer = dynamic(
   }
 );
 
+const AUTH_PASSWORD = "0770663154";
+
 export default function Home() {
-  const [isPreview, setIsPreview] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Check if ?preview=true query parameter is present in the URL
     if (typeof window !== "undefined") {
+      // Check session storage
+      const sessionAuth = sessionStorage.getItem("kekulama_admin_unlocked");
+      if (sessionAuth === "true") {
+        setIsUnlocked(true);
+        return;
+      }
+
+      // Check URL query parameters: ?pass=0770663154
       const params = new URLSearchParams(window.location.search);
-      if (params.get("preview") === "true") {
-        setIsPreview(true);
+      const urlPass = params.get("pass") || params.get("password") || params.get("unlock");
+      if (urlPass === AUTH_PASSWORD) {
+        sessionStorage.setItem("kekulama_admin_unlocked", "true");
+        setIsUnlocked(true);
       }
     }
   }, []);
 
-  // During 18-hour maintenance window, show Under Construction page unless preview is triggered
-  if (!isPreview) {
-    return <UnderConstruction onPreview={() => setIsPreview(true)} />;
+  const handleLockSite = () => {
+    try {
+      sessionStorage.removeItem("kekulama_admin_unlocked");
+    } catch {}
+    setIsUnlocked(false);
+  };
+
+  // During 18-hour maintenance window, show Under Construction page unless unlocked by passcode
+  if (!isUnlocked) {
+    return <UnderConstruction onUnlock={() => setIsUnlocked(true)} />;
   }
 
-  // Full Interactive Website View (Accessible via "Preview Site" or ?preview=true)
+  // Full Interactive Website View (Unlocked via Passcode: 0770663154)
   return (
     <>
-      {/* Discreet Banner to return to Under Construction Mode */}
+      {/* Discreet Admin Lock Button */}
       <div className="fixed top-20 right-4 z-50">
         <button
-          onClick={() => setIsPreview(false)}
-          className="px-3.5 py-1.5 rounded-full bg-forest-dark/90 text-mint-300 text-xs font-eyebrow uppercase tracking-widest border border-mint-400/30 backdrop-blur-md shadow-lg hover:bg-forest-dark transition-all"
+          onClick={handleLockSite}
+          className="px-3.5 py-1.5 rounded-full bg-forest-dark/90 text-mint-300 text-xs font-eyebrow uppercase tracking-widest border border-mint-400/30 backdrop-blur-md shadow-lg hover:bg-forest-dark transition-all flex items-center gap-1.5 cursor-pointer"
         >
-          ← Return to Countdown
+          <Lock size={12} />
+          <span>Lock Site</span>
         </button>
       </div>
 
