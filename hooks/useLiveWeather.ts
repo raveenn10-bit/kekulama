@@ -17,9 +17,6 @@ export interface LiveWeatherData {
   lastUpdated: string;
 }
 
-const API_KEY = "c070bcffa7b657af94243f076afe0468";
-const LAT = 6.0779352;
-const LON = 80.2623579;
 const CACHE_KEY = "kekulama_live_weather";
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes cache
 
@@ -39,7 +36,7 @@ function getFallbackWeather(): LiveWeatherData {
     windSpeed: 12,
     windDeg: 220,
     humidity: 78,
-    cityName: "Galle, Sri Lanka",
+    cityName: "Pinnaduwa, Galle",
     isLive: false,
     lastUpdated: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
   };
@@ -48,43 +45,6 @@ function getFallbackWeather(): LiveWeatherData {
 export function useLiveWeather() {
   const [weather, setWeather] = useState<LiveWeatherData>(getFallbackWeather());
   const [loading, setLoading] = useState(true);
-
-  const parseWeatherResponse = (data: any): LiveWeatherData => {
-    const rawCondition = data.weather?.[0]?.main || "Clouds";
-    let condition: LiveWeatherData["condition"] = "Clouds";
-
-    if (["Clear"].includes(rawCondition)) condition = "Clear";
-    else if (["Rain"].includes(rawCondition)) condition = "Rain";
-    else if (["Drizzle"].includes(rawCondition)) condition = "Drizzle";
-    else if (["Thunderstorm"].includes(rawCondition)) condition = "Thunderstorm";
-    else if (["Mist", "Haze", "Fog"].includes(rawCondition)) condition = rawCondition as any;
-    else condition = "Clouds";
-
-    // Calculate rain intensity
-    let rainIntensity = 0;
-    if (condition === "Drizzle") rainIntensity = 0.3;
-    else if (condition === "Rain") {
-      const rain1h = data.rain?.["1h"] || 2.5;
-      rainIntensity = Math.min(1, Math.max(0.4, rain1h / 10));
-    } else if (condition === "Thunderstorm") {
-      rainIntensity = 0.9;
-    }
-
-    return {
-      temp: Math.round(data.main?.temp ?? 28),
-      feelsLike: Math.round(data.main?.feels_like ?? 31),
-      condition,
-      description: data.weather?.[0]?.description || "partly cloudy",
-      cloudCoverage: data.clouds?.all ?? 40,
-      rainIntensity,
-      windSpeed: Math.round((data.wind?.speed ?? 3.5) * 3.6), // convert m/s to km/h
-      windDeg: data.wind?.deg ?? 220,
-      humidity: data.main?.humidity ?? 78,
-      cityName: data.name ? `${data.name}, Sri Lanka` : "Pinnaduwa, Galle",
-      isLive: true,
-      lastUpdated: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-  };
 
   const fetchWeather = useCallback(async () => {
     // Check session cache first
@@ -98,37 +58,21 @@ export function useLiveWeather() {
           return;
         }
       }
-    } catch {
-      // ignore storage errors
-    }
+    } catch {}
 
+    // Call secure server API route (no API key in browser)
     try {
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric`
-      );
+      const res = await fetch("/api/weather");
+      if (!res.ok) throw new Error("Failed to fetch secure weather proxy");
+      const data: LiveWeatherData = await res.json();
 
-      if (!res.ok) {
-        // Fallback to realistic tropical conditions if key is pending activation
-        setWeather(getFallbackWeather());
-        setLoading(false);
-        return;
-      }
-
-      const data = await res.json();
-      const parsed = parseWeatherResponse(data);
-      setWeather(parsed);
-      setLoading(false);
-
+      setWeather(data);
       try {
-        sessionStorage.setItem(
-          CACHE_KEY,
-          JSON.stringify({ timestamp: Date.now(), data: parsed })
-        );
-      } catch {
-        // ignore
-      }
-    } catch (err) {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data }));
+      } catch {}
+    } catch {
       setWeather(getFallbackWeather());
+    } finally {
       setLoading(false);
     }
   }, []);
