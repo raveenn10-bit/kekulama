@@ -36,53 +36,98 @@ const luxuryMono = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kekulamaecocabana.com"),
-  title: "Kekulama Eco Cabana — Luxury Nature Sanctuary in Galle, Sri Lanka",
+  title: "Kekulama Eco Cabana | Romantic Nature Sanctuary & Boutique Eco Lodge in Galle, Sri Lanka",
   description:
-    "Your exclusive sanctuary in nature's lap. Eco-luxury cabanas crafted from natural timbers amidst the emerald tea estates of Pinnaduwa, Galle. Reconnect with tranquility.",
+    "Secluded private A-frame timber eco cabana nestled in tranquil tea hills near Galle Fort. Perfect for couples, honeymooners, and international nature seekers. Authentic Sri Lankan hospitality, birdsong, organic meals, and serene luxury.",
   keywords: [
-    "luxury eco cabana",
-    "galle boutique hotel",
-    "sri lanka luxury retreat",
-    "eco resort galle",
-    "tea estate villa",
-    "pinnaduwa sanctuary",
-    "kekulama eco cabana",
+    "romantic eco cabana galle",
+    "honeymoon nature resort sri lanka",
+    "couples boutique retreat galle",
+    "eco lodge near galle fort",
+    "secluded tea estate villa galle",
+    "sustainable travel sri lanka for foreigners",
+    "private timber loft cabin galle",
+    "best honeymoon stay in galle",
+    "booking.com kekulama eco cabana",
+    "airbnb superhost eco cabana galle",
+    "galle southern expressway airport transfer stay",
+    "romantic getaway southern province sri lanka",
   ],
+  authors: [{ name: "Kekulama Eco Cabana Team" }],
+  creator: "Kekulama Eco Cabana",
+  publisher: "Kekulama Eco Cabana",
+  formatDetection: {
+    telephone: true,
+    address: true,
+    email: true,
+  },
+  alternates: {
+    canonical: "https://kekulamaecocabana.com",
+  },
   openGraph: {
-    title: "Kekulama Eco Cabana — Luxury Nature Sanctuary in Galle",
+    title: "Kekulama Eco Cabana | Romantic Nature Retreat & Boutique Lodge in Galle",
     description:
-      "Eco-luxury cabanas nestled among rolling tea estates in Pinnaduwa, Galle. Sculptural timber architecture & pure serenity.",
+      "A secluded tropical A-frame sanctuary for couples & international travelers. Nestled in lush tea hills in Pinnaduwa, Galle. Wake up to birdsong and pure serenity.",
     url: "https://kekulamaecocabana.com",
     siteName: "Kekulama Eco Cabana",
     locale: "en_US",
     type: "website",
-    images: [{ url: "/images/hero.jpg", width: 1200, height: 630, alt: "Kekulama Eco Cabana Nature Sanctuary" }],
+    images: [
+      {
+        url: "/images/hero.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Kekulama Eco Cabana - Romantic Nature Sanctuary in Galle Sri Lanka",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kekulama Eco Cabana — Luxury Nature Sanctuary",
-    description: "Eco-luxury timber cabanas among tea estates in Galle, Sri Lanka.",
+    title: "Kekulama Eco Cabana | Romantic Eco Lodge in Galle, Sri Lanka",
+    description:
+      "Secluded timber cabana in tranquil tea estate. Perfect romantic getaway for couples & foreign nature travelers in Galle.",
     images: ["/images/hero.jpg"],
   },
   icons: {
     icon: "/images/logo.jpg",
     apple: "/images/logo.jpg",
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "LodgingBusiness",
+  "@type": ["LodgingBusiness", "Resort", "BedAndBreakfast"],
   "name": "Kekulama Eco Cabana",
-  "description": "An idyllic eco-luxury sanctuary nestled among tea plantations in Pinnaduwa, Galle, Sri Lanka.",
+  "alternateName": "Kekulama Eco Cabana Galle",
+  "description": "Secluded private A-frame timber eco cabana nestled in tranquil tea hills in Pinnaduwa, Galle. Ideal for couples, honeymooners, and international nature seekers seeking authentic Sri Lankan serenity.",
   "url": "https://kekulamaecocabana.com",
   "telephone": "+94756657000",
   "email": "kekulamaecocabana@gmail.com",
-  "priceRange": "LKR 6,000 - 15,000",
+  "priceRange": "$20 - $50 / night (LKR 6,000 - 15,000)",
+  "currenciesAccepted": "USD, EUR, GBP, LKR",
+  "paymentAccepted": "Cash, Bank Transfer, WhatsApp Direct, Booking.com, Airbnb",
+  "checkinTime": "14:00",
+  "checkoutTime": "10:00",
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Couples, Honeymooners, International Travelers, Nature Enthusiasts, Digital Nomads"
+  },
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "416/1, Pinnaduwa",
     "addressLocality": "Galle",
+    "addressRegion": "Southern Province",
     "postalCode": "800034",
     "addressCountry": "LK"
   },
@@ -94,21 +139,29 @@ const jsonLd = {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "5.0",
-    "reviewCount": "19",
-    "bestRating": "5"
+    "reviewCount": "24",
+    "bestRating": "5",
+    "worstRating": "1"
   },
   "sameAs": [
     "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html",
+    "https://www.booking.com/searchresults.html?ss=Kekulama+Eco+Cabana+Galle+Sri+Lanka",
+    "https://www.airbnb.com/rooms/1549628955214353080",
     "https://maps.app.goo.gl/SjnALMB1tAHYKzkM6",
     "https://www.facebook.com/Kekulamaecocabanagalle",
     "https://instagram.com/kekulamaecocabanagalle"
   ],
   "amenityFeature": [
-    { "@type": "LocationFeatureSpecification", "name": "45-inch Smart TV", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "JBL Speaker", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Kitchenette & Cooker", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Hot Water Pressure Pump", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Tea Estate Panorama", "value": true }
+    { "@type": "LocationFeatureSpecification", "name": "Romantic Loft Bedroom with Nature View", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Air Conditioning & Ceiling Fan", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Free High-Speed Wi-Fi", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Hot Water Shower with Pressure Pump", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "45-inch Smart TV with Netflix & YouTube", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "JBL Bluetooth Sound System", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Kitchenette & Refrigerator", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Private Tea Plantation & Bird Sanctuary", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Authentic Ceylon Breakfast & Local Dining", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Airport Pick-up / Taxi Arrangement", "value": true }
   ]
 };
 

@@ -2,15 +2,25 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Check, Sparkles, ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import { Check, Sparkles, ArrowRight, ShieldCheck, Heart, Globe2 } from "lucide-react";
 import { siteData } from "@/data/siteData";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
 
+type Currency = "LKR" | "USD" | "EUR" | "GBP";
+
+const CURRENCY_RATES: Record<Currency, { symbol: string; rate: number; label: string }> = {
+  LKR: { symbol: "Rs", rate: 1, label: "LKR (Sri Lankan Rupee)" },
+  USD: { symbol: "$", rate: 0.0033, label: "USD (US Dollar)" },
+  EUR: { symbol: "€", rate: 0.0031, label: "EUR (Euro)" },
+  GBP: { symbol: "£", rate: 0.0026, label: "GBP (British Pound)" },
+};
+
 export default function Packages() {
   const { packages } = siteData;
   const [activeTab, setActiveTab] = useState<"all" | "day" | "night" | "meals">("all");
+  const [currency, setCurrency] = useState<Currency>("LKR");
   const shouldReduceMotion = useReducedMotion();
   const scrollRef = useAutoScroll({ interval: 3200 });
 
@@ -37,47 +47,71 @@ export default function Packages() {
 
       <div className="container-custom relative z-10">
         <SectionHeading
-          badge="Curated Stays & Rates"
-          title="Choose your perfect"
-          highlight="stay"
-          subtitle="All prices in Sri Lankan Rupees (LKR). Direct booking via WhatsApp with instant confirmation and personalized service."
+          badge="Romantic Stays & Transparent Rates"
+          title="Curated plans for couples &"
+          highlight="international travelers"
+          subtitle="All rates include full private cabana access, mountain breezes & bespoke hospitality. Direct booking via WhatsApp with instant confirmation."
         />
 
-        {/* Filter Pills with Bold Typography */}
-        <div className="flex items-center justify-center gap-2.5 mb-12 2xl:mb-16 overflow-x-auto no-scrollbar pb-2">
-          {[
-            { id: "all", label: "All Packages" },
-            { id: "day", label: "Day Out" },
-            { id: "night", label: "Night Stay" },
-            { id: "meals", label: "Meal Plans (B&B / FB)" },
-          ].map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
+        {/* Currency Switcher & Category Tabs Bar */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-10 max-w-5xl mx-auto">
+          {/* Filter Pills with Bold Typography */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 w-full md:w-auto">
+            {[
+              { id: "all", label: "All Plans" },
+              { id: "day", label: "Day Out" },
+              { id: "night", label: "Night Stay" },
+              { id: "meals", label: "Meal Plans (B&B / FB)" },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`relative px-5 py-2.5 rounded-full font-body text-xs font-bold uppercase tracking-[0.14em] transition-colors duration-300 whitespace-nowrap cursor-pointer z-10 ${
+                    isActive ? "text-white" : "text-forest/80 hover:text-forest"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="activePackageTab"
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 35,
+                      }}
+                      className="absolute inset-0 bg-forest rounded-full shadow-md -z-10"
+                    />
+                  )}
+                  {!isActive && (
+                    <div className="absolute inset-0 bg-white border border-stone-200 rounded-full -z-20 shadow-sm" />
+                  )}
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Foreign Traveler International Currency Switcher */}
+          <div className="flex items-center gap-1.5 bg-white p-1.5 rounded-full border border-stone-200 shadow-sm self-center">
+            <span className="font-eyebrow text-[10.5px] uppercase tracking-wider text-sage-600 px-2.5 font-bold flex items-center gap-1">
+              <Globe2 size={13} className="text-forest" />
+              <span>Currency:</span>
+            </span>
+            {(["LKR", "USD", "EUR", "GBP"] as Currency[]).map((curr) => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`relative px-6 py-3 2xl:px-7 2xl:py-3.5 rounded-full font-body text-xs 2xl:text-sm font-bold uppercase tracking-[0.16em] transition-colors duration-300 whitespace-nowrap cursor-pointer z-10 ${
-                  isActive ? "text-white" : "text-forest/80 hover:text-forest"
+                key={curr}
+                onClick={() => setCurrency(curr)}
+                className={`px-3 py-1 rounded-full text-xs font-mono font-bold transition-colors cursor-pointer ${
+                  currency === curr
+                    ? "bg-emerald-800 text-white shadow-sm"
+                    : "text-stone-600 hover:text-forest hover:bg-stone-100"
                 }`}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="activePackageTab"
-                    transition={{
-                      type: "spring",
-                      stiffness: 400,
-                      damping: 35,
-                    }}
-                    className="absolute inset-0 bg-forest rounded-full shadow-md -z-10"
-                  />
-                )}
-                {!isActive && (
-                  <div className="absolute inset-0 bg-white/95 border border-stone-200 rounded-full -z-20 shadow-sm" />
-                )}
-                {tab.label}
+                {curr}
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
         {/* Mobile Horizontal Snap Row / Desktop Grid */}
@@ -92,6 +126,7 @@ export default function Packages() {
                 key={pkg.name}
                 pkg={pkg}
                 index={index}
+                currency={currency}
                 shouldReduceMotion={shouldReduceMotion}
               />
             ))}
@@ -110,12 +145,22 @@ export default function Packages() {
 function PackageCard({
   pkg,
   index,
+  currency,
   shouldReduceMotion,
 }: {
   pkg: any;
   index: number;
+  currency: Currency;
   shouldReduceMotion: boolean | null;
 }) {
+  const isCoupleFavorite = pkg.name.includes("Bed & Breakfast") || pkg.name.includes("Half Board") || pkg.name.includes("Full Board");
+  
+  // Calculate converted price
+  const priceLkrNum = parseInt(pkg.price.replace(/,/g, ""), 10) || 10000;
+  const currInfo = CURRENCY_RATES[currency];
+  const convertedNum = Math.round(priceLkrNum * currInfo.rate);
+  const displayPrice = currency === "LKR" ? pkg.price : convertedNum.toString();
+
   return (
     <motion.div
       layout
@@ -135,13 +180,18 @@ function PackageCard({
       }`}
     >
       <div>
-        {/* Popular Highlight Badge */}
-        {pkg.popular && (
+        {/* Popular / Honeymoon Highlight Badge */}
+        {pkg.popular ? (
           <div className="absolute -top-3.5 right-6 bg-forest text-white font-eyebrow text-[10.5px] 2xl:text-xs font-bold uppercase tracking-[0.22em] px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
             <Sparkles size={12} className="text-amber-300" />
             <span>TOP CHOICE</span>
           </div>
-        )}
+        ) : isCoupleFavorite ? (
+          <div className="absolute -top-3.5 right-6 bg-red-600 text-white font-eyebrow text-[10px] 2xl:text-xs font-bold uppercase tracking-[0.2em] px-3.5 py-1 rounded-full shadow-md flex items-center gap-1">
+            <Heart size={11} className="fill-white" />
+            <span>COUPLES PICK</span>
+          </div>
+        ) : null}
 
         <div className="mb-4">
           <span className="font-eyebrow text-[10.5px] 2xl:text-xs uppercase tracking-[0.26em] text-emerald-800 font-bold block mb-1">
@@ -152,19 +202,24 @@ function PackageCard({
           </h3>
         </div>
 
-        {/* Price Tag with Professional Bold Cormorant Numerals and Bold Currency */}
+        {/* Price Tag with Professional Bold Numerals and Currency */}
         <div className="bg-stone-50 rounded-2xl p-4 2xl:p-5 mb-5 border border-stone-200">
           <div className="flex items-baseline gap-1.5">
             <span className="font-mono text-sm 2xl:text-base font-bold tracking-[0.16em] uppercase text-forest/70">
-              LKR
+              {currency === "LKR" ? "LKR" : currInfo.symbol}
             </span>
             <span className="font-display font-bold text-4xl sm:text-5xl 2xl:text-6xl text-forest tracking-tight">
-              {pkg.price}
+              {displayPrice}
             </span>
             <span className="font-body text-xs 2xl:text-sm font-semibold text-sage-600 ml-1">
               / {pkg.unit}
             </span>
           </div>
+          {currency !== "LKR" && (
+            <span className="text-[11px] font-mono text-sage-500 block mt-0.5">
+              ≈ LKR {pkg.price}
+            </span>
+          )}
           <div className="flex items-center gap-2 mt-2.5 flex-wrap">
             {pkg.timing && (
               <span className="inline-flex items-center gap-1 font-mono text-[11px] 2xl:text-xs uppercase tracking-wider text-forest font-bold bg-white border border-stone-200 px-2.5 py-1 rounded-md">
