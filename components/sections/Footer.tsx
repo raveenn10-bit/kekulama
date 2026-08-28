@@ -119,6 +119,22 @@ export function Footer() {
             <span>TripAdvisor</span>
           </motion.a>
 
+          <motion.a
+            href={contact.bookingcomUrl || "https://www.booking.com/searchresults.html?ss=Kekulama+Eco+Cabana+Galle"}
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.25, ease: LUXURY_EASING.quintOut }}
+            className="h-10 px-3.5 rounded-full bg-[#003580]/10 border border-[#003580]/30 text-[#003580] hover:text-white hover:bg-[#003580] hover:border-[#003580] flex items-center gap-1.5 shadow-sm transition-colors active:scale-95 text-xs font-semibold uppercase tracking-wider"
+            aria-label="Booking.com"
+          >
+            <div className="w-4 h-4 rounded-full bg-[#003580] text-white text-[9px] font-bold flex items-center justify-center">
+              B.
+            </div>
+            <span>Booking.com</span>
+          </motion.a>
+
           {[
             { href: contact.social.facebook, icon: Facebook, label: "Facebook" },
             { href: contact.social.instagram, icon: Instagram, label: "Instagram" },

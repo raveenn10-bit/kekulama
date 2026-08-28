@@ -57,7 +57,7 @@ export interface Review {
   initials?: string;
   avatarBg?: string;
   verified?: boolean;
-  source?: "google" | "airbnb" | "facebook";
+  source?: "google" | "airbnb" | "facebook" | "booking";
 }
 
 export interface ContactInfo {
@@ -71,12 +71,14 @@ export interface ContactInfo {
   mapCoords: { lat: number; lng: number };
   googleMapsUrl: string;
   tripadvisorUrl?: string;
+  bookingcomUrl?: string;
   social: {
     facebook: string;
     instagram: string;
     tiktok: string;
     airbnb: string;
     tripadvisor?: string;
+    bookingcom?: string;
   };
 }
 

@@ -13,6 +13,7 @@ export const siteData: SiteData = {
     { label: "Home", name: "Home", href: "#home" },
     { label: "About", name: "About", href: "#about" },
     { label: "Packages", name: "Packages", href: "#packages" },
+    { label: "Live Rates", name: "Live Rates", href: "#booking" },
     { label: "Amenities", name: "Amenities", href: "#amenities" },
     { label: "Gallery", name: "Gallery", href: "#gallery" },
     { label: "Experiences", name: "Experiences", href: "#experiences" },
@@ -293,6 +294,8 @@ export const siteData: SiteData = {
     googleMapsUrl: "https://maps.app.goo.gl/SjnALMB1tAHYKzkM6",
     tripadvisorUrl:
       "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html",
+    bookingcomUrl:
+      "https://www.booking.com/searchresults.html?ss=Kekulama+Eco+Cabana+Galle+Sri+Lanka",
     social: {
       facebook: "https://www.facebook.com/Kekulamaecocabanagalle",
       instagram: "https://instagram.com/kekulamaecocabanagalle",
@@ -300,6 +303,8 @@ export const siteData: SiteData = {
       airbnb: "https://www.airbnb.com/rooms/1549628955214353080",
       tripadvisor:
         "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html",
+      bookingcom:
+        "https://www.booking.com/searchresults.html?ss=Kekulama+Eco+Cabana+Galle+Sri+Lanka",
     },
   },
 

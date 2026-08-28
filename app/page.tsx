@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Packages from "@/components/sections/Packages";
+import RealtimeBookingTable from "@/components/sections/RealtimeBookingTable";
 import Amenities from "@/components/sections/Amenities";
 import Gallery from "@/components/sections/Gallery";
 import Experiences from "@/components/sections/Experiences";
@@ -14,13 +15,6 @@ const DynamicSky = dynamic(() => import("@/components/ui/DynamicSky"), {
   ssr: false,
 });
 
-const AmbientParticles = dynamic(
-  () => import("@/components/ui/AmbientParticles"),
-  {
-    ssr: false,
-  }
-);
-
 const AmbientAudioPlayer = dynamic(
   () => import("@/components/ui/AmbientAudioPlayer"),
   {
@@ -32,11 +26,11 @@ export default function Home() {
   return (
     <>
       <DynamicSky />
-      <AmbientParticles />
       <AmbientAudioPlayer />
       <Hero />
       <About />
       <Packages />
+      <RealtimeBookingTable />
       <Amenities />
       <Gallery />
       <Experiences />

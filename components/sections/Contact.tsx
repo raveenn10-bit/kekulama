@@ -98,6 +98,16 @@ export default function Contact() {
                     <span>TripAdvisor</span>
                   </a>
                   <a
+                    href={contact.bookingcomUrl || "https://www.booking.com/searchresults.html?ss=Kekulama+Eco+Cabana+Galle"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="h-9 px-3 rounded-full bg-[#003580]/15 text-[#003580] hover:bg-[#003580] hover:text-white flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase transition-all active:scale-95 border border-[#003580]/30"
+                    aria-label="Booking.com"
+                  >
+                    <span className="font-bold text-xs">B.</span>
+                    <span>Booking.com</span>
+                  </a>
+                  <a
                     href={contact.social.facebook}
                     target="_blank"
                     rel="noreferrer"
