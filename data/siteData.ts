@@ -289,7 +289,7 @@ export const siteData: SiteData = {
     phoneDisplay: "075 665 7000",
     whatsapp: "+94 75 665 7000",
     whatsappRaw: "94756657000",
-    email: "kekulamaecocabana@gmail.com",
+    email: "raveenn10@gmail.com",
     address: "416/1, Pinnaduwa, Galle, Sri Lanka 800034",
     mapCoords: { lat: 6.0779352, lng: 80.2623579 },
     googleMapsUrl: "https://maps.app.goo.gl/SjnALMB1tAHYKzkM6",

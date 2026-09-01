@@ -153,7 +153,7 @@ const jsonLd = {
         "https://www.kekulamaecocabanagalle.com/images/cabana-garden.jpg"
       ],
       telephone: "+94756657000",
-      email: "kekulamaecocabana@gmail.com",
+      email: "raveenn10@gmail.com",
       priceRange: "$20 - $50 / night (LKR 6,000 - 15,000)",
       currenciesAccepted: "USD, EUR, GBP, LKR",
       paymentAccepted: "Cash, Bank Transfer, WhatsApp Direct, Booking.com, Airbnb",
