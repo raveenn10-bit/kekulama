@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://kekulamaecocabana.com";
+  const baseUrl = "https://www.kekulamaecocabanagalle.com";
   const lastModified = new Date();
 
   return [
@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/#about`,
       lastModified,
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.85,
     },
     {
       url: `${baseUrl}/#packages`,
@@ -30,10 +30,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
     },
     {
+      url: `${baseUrl}/#amenities`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/#gallery`,
       lastModified,
       changeFrequency: "monthly",
-      priority: 0.7,
+      priority: 0.75,
     },
     {
       url: `${baseUrl}/#experiences`,
@@ -45,13 +51,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/#reviews`,
       lastModified,
       changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/#faq`,
+      lastModified,
+      changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${baseUrl}/#contact`,
       lastModified,
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.85,
     },
   ];
 }

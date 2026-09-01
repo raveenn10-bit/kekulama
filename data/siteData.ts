@@ -18,6 +18,7 @@ export const siteData: SiteData = {
     { label: "Gallery", name: "Gallery", href: "#gallery" },
     { label: "Experiences", name: "Experiences", href: "#experiences" },
     { label: "Reviews", name: "Reviews", href: "#reviews" },
+    { label: "FAQ", name: "FAQ", href: "#faq" },
     { label: "Contact", name: "Contact", href: "#contact" },
   ],
 
