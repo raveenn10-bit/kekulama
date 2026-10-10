@@ -140,28 +140,89 @@ const jsonLd = {
         "Kekulama Eco Cabana",
         "Kekulama Cabana Galle",
         "Kekulama Eco Lodge Galle",
-        "Kekulama Galle"
+        "Kekulama Galle Romantic Retreat"
       ],
       description:
         "Secluded private A-frame timber eco cabana nestled in tranquil tea hills in Pinnaduwa, Galle. Ideal for couples, honeymooners, day outs, and international nature seekers seeking authentic Sri Lankan serenity.",
+      disambiguatingDescription:
+        "Boutique timber A-frame couples eco cabana and romantic nature sanctuary on a private tea estate in Pinnaduwa, Galle, Sri Lanka, 2 minutes from the Southern Expressway exit and 12 minutes from Galle Fort.",
       url: "https://www.kekulamaecocabanagalle.com",
       logo: "https://www.kekulamaecocabanagalle.com/icon-512.png",
       image: [
         "https://www.kekulamaecocabanagalle.com/images/hero.jpg",
         "https://www.kekulamaecocabanagalle.com/images/loft-bedroom.jpg",
         "https://www.kekulamaecocabanagalle.com/images/cabana-front.jpg",
-        "https://www.kekulamaecocabanagalle.com/images/cabana-garden.jpg"
+        "https://www.kekulamaecocabanagalle.com/images/cabana-garden.jpg",
+        "https://www.kekulamaecocabanagalle.com/images/cabana-side.jpg"
       ],
       telephone: "+94756657000",
       email: "raveenn10@gmail.com",
-      priceRange: "$20 - $50 / night (LKR 6,000 - 15,000)",
+      priceRange: "LKR 6,000 - 15,000 / $20 - $50",
       currenciesAccepted: "USD, EUR, GBP, LKR",
       paymentAccepted: "Cash, Bank Transfer, WhatsApp Direct, Booking.com, Airbnb",
       checkinTime: "14:00",
       checkoutTime: "10:00",
+      petsAllowed: false,
+      smokingAllowed: false,
       audience: {
         "@type": "Audience",
         audienceType: "Couples, Honeymooners, International Travelers, Nature Enthusiasts, Digital Nomads"
+      },
+      areaServed: [
+        {
+          "@type": "AdministrativeArea",
+          name: "Galle"
+        },
+        {
+          "@type": "AdministrativeArea",
+          name: "Southern Province, Sri Lanka"
+        }
+      ],
+      knowsAbout: [
+        "Eco Tourism in Galle Sri Lanka",
+        "Romantic Honeymoon Stays in Galle",
+        "Private Cabana Day Out in Galle",
+        "A-frame Timber Eco Cabana",
+        "Tea Plantation Sanctuary Retreats",
+        "UNESCO World Heritage Galle Fort Excursions"
+      ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Cabana Packages & Rates",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            name: "Day Out Package (Non-A/C)",
+            price: "6000",
+            priceCurrency: "LKR",
+            description: "Room access, tea garden views, kitchenette access, tea & coffee.",
+            url: "https://www.kekulamaecocabanagalle.com/#packages"
+          },
+          {
+            "@type": "Offer",
+            name: "Day Out Package (A/C)",
+            price: "8000",
+            priceCurrency: "LKR",
+            description: "Air-conditioned cabana, garden views, full smart amenities, tea & coffee.",
+            url: "https://www.kekulamaecocabanagalle.com/#packages"
+          },
+          {
+            "@type": "Offer",
+            name: "Night Stay Package (Non-A/C)",
+            price: "8000",
+            priceCurrency: "LKR",
+            description: "Overnight stay in timber loft, nature breeze, smart TV, hot water shower.",
+            url: "https://www.kekulamaecocabanagalle.com/#packages"
+          },
+          {
+            "@type": "Offer",
+            name: "Night Stay Package (A/C)",
+            price: "9000",
+            priceCurrency: "LKR",
+            description: "Air-conditioned cabana, overnight stay in loft, hot water booster shower, smart TV & kitchenette.",
+            url: "https://www.kekulamaecocabanagalle.com/#packages"
+          }
+        ]
       },
       address: {
         "@type": "PostalAddress",
@@ -199,11 +260,26 @@ const jsonLd = {
         { "@type": "LocationFeatureSpecification", name: "Hot Water Shower with Pressure Pump", value: true },
         { "@type": "LocationFeatureSpecification", name: "45-inch Smart TV with Netflix & YouTube", value: true },
         { "@type": "LocationFeatureSpecification", name: "JBL Bluetooth Sound System", value: true },
-        { "@type": "LocationFeatureSpecification", name: "Kitchenette & Refrigerator", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Kitchenette with Refrigerator & Gas Cooker", value: true },
         { "@type": "LocationFeatureSpecification", name: "Private Tea Plantation & Bird Sanctuary", value: true },
         { "@type": "LocationFeatureSpecification", name: "Authentic Ceylon Breakfast & Local Dining", value: true },
-        { "@type": "LocationFeatureSpecification", name: "Airport Pick-up / Taxi Arrangement", value: true }
-      ]
+        { "@type": "LocationFeatureSpecification", name: "Airport Pick-up & Taxi Arrangement", value: true }
+      ],
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: ["#home h1", "#about p", "#packages", "#faq", "#location"]
+      }
+    },
+    {
+      "@type": "TouristDestination",
+      "@id": "https://www.kekulamaecocabanagalle.com/#destination",
+      name: "Galle, Sri Lanka",
+      description: "Historic coastal city in Southern Sri Lanka famous for the UNESCO World Heritage Galle Dutch Fort, tropical beaches, and verdant tea estates.",
+      sameAs: "https://en.wikipedia.org/wiki/Galle",
+      containedInPlace: {
+        "@type": "Country",
+        name: "Sri Lanka"
+      }
     },
     {
       "@type": "WebSite",
@@ -232,6 +308,12 @@ const jsonLd = {
         {
           "@type": "ListItem",
           position: 3,
+          name: "Location & Travel Times",
+          item: "https://www.kekulamaecocabanagalle.com/#location"
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
           name: "Live Rates & Booking",
           item: "https://www.kekulamaecocabanagalle.com/#booking"
         }
@@ -253,7 +335,7 @@ const jsonLd = {
           name: "Is Kekulama Eco Cabana suitable for honeymoons and romantic couples?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, Kekulama is designed as a secluded romantic nature retreat for couples and honeymooners with private A-frame timber lofts, tea estate views, birdsong mornings, and intimate verandah dining."
+            text: "Yes, Kekulama is designed specifically as a secluded romantic nature retreat for couples and honeymooners with private A-frame timber lofts, tea estate views, birdsong mornings, and intimate verandah dining."
           }
         },
         {
@@ -269,7 +351,31 @@ const jsonLd = {
           name: "How far is the cabana from UNESCO Galle Fort and beaches?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Kekulama Eco Cabana is approximately 6 km (12 minutes drive) from Galle Fort, 15 minutes from Unawatuna Beach, and 20 minutes from Jungle Beach."
+            text: "Kekulama Eco Cabana is approximately 6.2 km (12 minutes drive) from Galle Fort, 15 minutes from Unawatuna Beach, and 18 minutes from Jungle Beach."
+          }
+        },
+        {
+          "@type": "Question",
+          name: "What modern amenities are provided in the eco cabana?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "The cabana includes high-speed Wi-Fi, air conditioning, 45-inch Smart TV with Netflix, JBL Bluetooth audio, hot water rain shower with pressure pump, fully equipped kitchenette with refrigerator, and a private tea garden verandah."
+          }
+        },
+        {
+          "@type": "Question",
+          name: "What are the check-in and check-out times?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Check-in is from 2:00 PM (14:00) and check-out is by 10:00 AM (10:00). 24/7 host assistance is available for flexible arrival coordination."
+          }
+        },
+        {
+          "@type": "Question",
+          name: "Are traditional Sri Lankan breakfasts and meals available?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes, authentic Ceylon village breakfasts (string hoppers, coconut sambol, fresh tea) and meals are prepared fresh upon prior request."
           }
         },
         {
@@ -302,10 +408,26 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
         <link rel="manifest" href="/site.webmanifest" />
+        
+        {/* Geographic & Local Search Meta Tags (GEO) */}
         <meta name="geo.region" content="LK-31" />
         <meta name="geo.placename" content="Galle, Southern Province, Sri Lanka" />
         <meta name="geo.position" content="6.0779352;80.2623579" />
         <meta name="ICBM" content="6.0779352, 80.2623579" />
+        <meta name="city" content="Galle" />
+        <meta name="state" content="Southern Province" />
+        <meta name="country" content="Sri Lanka" />
+
+        {/* Dublin Core & Semantic Meta Tags (SEO / AEO) */}
+        <meta name="DC.title" content="Kekulama Eco Cabana Galle" />
+        <meta name="DC.description" content="Romantic Eco Cabana & Boutique Stay in Galle, Sri Lanka" />
+        <meta name="DC.coverage" content="Galle, Sri Lanka" />
+        <meta name="rating" content="general" />
+
+        {/* LLM Knowledge Anchors for Answer & Generative Engines (AEO / GEO) */}
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM Context Summary" />
+        <link rel="alternate" type="text/plain" href="/llms-full.txt" title="LLM Knowledge Base" />
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.openweathermap.org" />

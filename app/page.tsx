@@ -21,6 +21,7 @@ const RealtimeBookingTable = dynamic(
 const Amenities = dynamic(() => import("@/components/sections/Amenities"));
 const Gallery = dynamic(() => import("@/components/sections/Gallery"));
 const Experiences = dynamic(() => import("@/components/sections/Experiences"));
+const LocationGuide = dynamic(() => import("@/components/sections/LocationGuide"));
 const Reviews = dynamic(() => import("@/components/sections/Reviews"));
 const FAQ = dynamic(() => import("@/components/sections/FAQ"));
 const CTA = dynamic(() => import("@/components/sections/CTA"));
@@ -38,6 +39,7 @@ export default function Home() {
       <Amenities />
       <Gallery />
       <Experiences />
+      <LocationGuide />
       <Reviews />
       <FAQ />
       <CTA />

@@ -17,6 +17,7 @@ export const siteData: SiteData = {
     { label: "Amenities", name: "Amenities", href: "#amenities" },
     { label: "Gallery", name: "Gallery", href: "#gallery" },
     { label: "Experiences", name: "Experiences", href: "#experiences" },
+    { label: "Location", name: "Location", href: "#location" },
     { label: "Reviews", name: "Reviews", href: "#reviews" },
     { label: "FAQ", name: "FAQ", href: "#faq" },
     { label: "Contact", name: "Contact", href: "#contact" },

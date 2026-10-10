@@ -44,9 +44,21 @@ export const faqs: FAQItem[] = [
     category: "Couples & Amenities",
   },
   {
+    question: "What are the check-in and check-out times?",
+    answer:
+      "Check-in is from 2:00 PM (14:00) and check-out is by 10:00 AM (10:00). Early check-in or late check-out can often be arranged upon request based on availability. Our hosts provide 24/7 personalized arrival assistance.",
+    category: "Booking & Pricing",
+  },
+  {
+    question: "Are traditional Sri Lankan breakfasts and meals available?",
+    answer:
+      "Yes. We serve authentic Ceylon home-cooked breakfasts including string hoppers, coconut sambol, fresh seasonal tropical fruits, and estate-plucked tea upon prior request. You also have full use of the private kitchenette equipped with cooker and refrigerator.",
+    category: "Couples & Amenities",
+  },
+  {
     question: "How do I book direct for the best rate guarantee?",
     answer:
-      "You can book directly with the host via WhatsApp at +94 75 665 7000 for instant date confirmation and the guaranteed lowest direct rates. We also welcome reservations through Airbnb and Booking.com.",
+      "You can book directly with the host via WhatsApp at +94 75 665 7000 for instant date confirmation and the guaranteed lowest direct rates without booking platform commission. We also welcome reservations through Airbnb and Booking.com.",
     category: "Booking & Pricing",
   },
 ];
