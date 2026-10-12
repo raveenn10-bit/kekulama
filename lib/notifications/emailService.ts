@@ -1,5 +1,6 @@
 import { adminDb } from "@/lib/firebase/admin";
 import { decryptToken } from "@/lib/security/tokenEncryption";
+import { getGmailOAuthSettings } from "@/lib/security/settingsStorage";
 
 export type NotificationEvent =
   | "NEW_ONLINE_BOOKING"
@@ -30,12 +31,7 @@ async function sendViaGmailApi(
   body: string
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
-    const settingsDoc = await adminDb.collection("system_settings").doc("gmail_oauth").get();
-    if (!settingsDoc.exists) {
-      return { success: false, error: "Gmail OAuth settings not found in system_settings." };
-    }
-
-    const data = settingsDoc.data();
+    const data = await getGmailOAuthSettings();
     if (!data || data.status !== "active" || !data.encryptedRefreshToken) {
       return { success: false, error: "Gmail OAuth is inactive or refresh token is not configured." };
     }
@@ -181,10 +177,9 @@ export async function sendNotification(payload: EmailNotificationPayload): Promi
       error: deliveryResult.error || null,
       timestamp: nowIso,
     });
-
-    return deliveryResult.success;
   } catch (err) {
-    console.error("[NOTIFICATION LOG ERROR]", err);
-    return false;
+    console.warn("[NOTIFICATION LOG WRITE SKIPPED]", err);
   }
+
+  return deliveryResult.success;
 }

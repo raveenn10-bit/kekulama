@@ -109,5 +109,15 @@ service cloud.firestore {
     match /backups/{backupId} {
       allow read, write: if isOwner();
     }
+
+    // 10. System Settings (Owner only)
+    match /system_settings/{settingId} {
+      allow read, write: if isOwner();
+    }
+
+    // 11. Notification Logs (Staff & Owner)
+    match /notification_logs/{logId} {
+      allow read, write: if isStaff();
+    }
   }
 }

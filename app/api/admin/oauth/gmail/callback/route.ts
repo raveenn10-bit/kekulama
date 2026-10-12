@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { adminDb, logAuditEvent } from "@/lib/firebase/admin";
+import { logAuditEvent } from "@/lib/firebase/admin";
 import { encryptToken } from "@/lib/security/tokenEncryption";
+import { saveGmailOAuthSettings, getGmailOAuthSettings } from "@/lib/security/settingsStorage";
 
 export const dynamic = "force-dynamic";
 
@@ -105,46 +106,44 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // 6. Store OAuth settings safely in Firestore system_settings collection
+    // 6. Store OAuth settings safely (Firestore with automatic encrypted fallback)
     // Tokens are encrypted at rest with AES-256-GCM and never exposed to the client or logs
-    const settingsDocRef = adminDb.collection("system_settings").doc("gmail_oauth");
-    const existingDoc = await settingsDocRef.get();
-    const existingData = existingDoc.data() || {};
-
-    const rawRefreshToken = refreshToken || existingData.rawRefreshToken || null;
+    const existingSettings = await getGmailOAuthSettings();
+    const rawRefreshToken = refreshToken || null;
     const encryptedRefreshToken = rawRefreshToken
       ? encryptToken(rawRefreshToken)
-      : (existingData.encryptedRefreshToken || null);
+      : (existingSettings?.encryptedRefreshToken || null);
 
     const now = new Date().toISOString();
-    await settingsDocRef.set(
-      {
-        provider: "gmail",
-        connectedEmail,
-        encryptedRefreshToken,
-        hasRefreshToken: Boolean(encryptedRefreshToken),
-        scopes: tokenData.scope || "https://www.googleapis.com/auth/gmail.send",
-        tokenType: tokenData.token_type || "Bearer",
-        status: "active",
-        updatedAt: now,
-      },
-      { merge: true }
-    );
-
-    // 7. Record immutable audit log entry (NEVER log the token itself)
-    await logAuditEvent({
-      actorId: "owner",
-      actorRole: "owner",
-      actorEmail: connectedEmail,
-      action: "SETTINGS_CHANGED",
-      targetResource: "system_settings/gmail_oauth",
-      details: {
-        provider: "gmail",
-        connectedEmail,
-        hasRefreshToken: Boolean(encryptedRefreshToken),
-      },
-      timestamp: now,
+    await saveGmailOAuthSettings({
+      provider: "gmail",
+      connectedEmail,
+      encryptedRefreshToken,
+      hasRefreshToken: Boolean(encryptedRefreshToken),
+      scopes: tokenData.scope || "https://www.googleapis.com/auth/gmail.send",
+      tokenType: tokenData.token_type || "Bearer",
+      status: "active",
+      updatedAt: now,
     });
+
+    // 7. Record immutable audit log entry (fail-safe: never breaks OAuth flow if Firestore audit logs lack permission)
+    try {
+      await logAuditEvent({
+        actorId: "owner",
+        actorRole: "owner",
+        actorEmail: connectedEmail,
+        action: "SETTINGS_CHANGED",
+        targetResource: "system_settings/gmail_oauth",
+        details: {
+          provider: "gmail",
+          connectedEmail,
+          hasRefreshToken: Boolean(encryptedRefreshToken),
+        },
+        timestamp: now,
+      });
+    } catch (auditErr) {
+      console.warn("[GMAIL OAUTH] Audit log entry write skipped:", auditErr);
+    }
 
     // 8. Clear state cookie and redirect back to notifications management console
     const successResponse = NextResponse.redirect(

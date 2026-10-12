@@ -17,6 +17,8 @@
 # misc
 .DS_Store
 *.pem
+*.enc
+.system_settings*
 
 # debug
 npm-debug.log*
