@@ -109,27 +109,6 @@ export default function AdminLoginPage() {
               )}
             </button>
           </form>
-
-          {/* Quick Helper for Owner */}
-          <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-            <span className="text-[11px] text-slate-400 block mb-2">Authorized Owner Accounts:</span>
-            <div className="flex flex-wrap gap-1.5 justify-center">
-              <button
-                type="button"
-                onClick={() => setEmail("kekulamaecocabana@gmail.com")}
-                className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-md transition-colors font-mono cursor-pointer"
-              >
-                kekulamaecocabana@gmail.com
-              </button>
-              <button
-                type="button"
-                onClick={() => setEmail("chamilka.ch@gmail.com")}
-                className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-md transition-colors font-mono cursor-pointer"
-              >
-                chamilka.ch@gmail.com
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
