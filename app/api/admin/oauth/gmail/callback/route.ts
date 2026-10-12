@@ -4,6 +4,7 @@ import { encryptToken } from "@/lib/security/tokenEncryption";
 import { saveGmailOAuthSettings, getGmailOAuthSettings } from "@/lib/security/settingsStorage";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 /**
  * Secure Google OAuth 2.0 Callback Route for Gmail Integration.

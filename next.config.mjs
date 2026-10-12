@@ -6,6 +6,7 @@ const nextConfig = {
   swcMinify: true,
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
+    serverComponentsExternalPackages: ["firebase-admin"],
   },
   images: {
     formats: ["image/avif", "image/webp"],
