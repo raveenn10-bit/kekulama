@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Marcellus, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import PublicLayoutWrapper from "@/components/navigation/PublicLayoutWrapper";
+import { Analytics } from "@vercel/analytics/next";
 
 const luxuryDisplay = Cormorant_Garamond({
   subsets: ["latin"],
@@ -436,6 +437,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-eucalyptus-50 text-sage-900 overflow-x-hidden selection:bg-mint-200 selection:text-forest-dark">
         <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
+        <Analytics />
       </body>
     </html>
   );
