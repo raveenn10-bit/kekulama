@@ -131,18 +131,29 @@ function AdminBackupContent() {
         },
       });
 
-      const data = await res.json();
-      if (res.ok && data.success) {
+      let data: any = null;
+      let text = "";
+      try {
+        text = await res.text();
+        data = JSON.parse(text);
+      } catch {
+        // Non-JSON response
+      }
+
+      if (res.ok && data?.success) {
         setBackupSuccess(
           `Backup archive ${data.filename} (${Math.round((data.sizeBytes || 0) / 1024)} KB) created and synchronized to Google Drive!`
         );
         fetchStatusAndHistory();
         setTimeout(() => setBackupSuccess(null), 8000);
       } else {
-        setErrorMessage(data.error || "Failed to generate backup.");
+        const errorDetail =
+          data?.error ||
+          (text && text.length < 250 ? text : `Server error: HTTP ${res.status} (${res.statusText})`);
+        setErrorMessage(errorDetail || "Failed to generate backup.");
       }
-    } catch {
-      setErrorMessage("Network error during backup.");
+    } catch (err: any) {
+      setErrorMessage(err?.message ? `Network request failed: ${err.message}` : "Network error during backup.");
     } finally {
       setBackingUp(false);
     }
@@ -169,15 +180,20 @@ function AdminBackupContent() {
         }),
       });
 
-      const data = await res.json();
-      if (res.ok && data.success && data.preview) {
+      let data: any = null;
+      try {
+        const text = await res.text();
+        data = JSON.parse(text);
+      } catch {}
+
+      if (res.ok && data?.success && data.preview) {
         setRestorePreview(data.preview);
       } else {
-        alert(data.error || "Dry-run validation failed.");
+        alert(data?.error || `Dry-run validation failed (HTTP ${res.status}).`);
         setSelectedBackupForRestore(null);
       }
-    } catch {
-      alert("Network error during restore dry-run.");
+    } catch (err: any) {
+      alert(`Network error during restore dry-run: ${err?.message || "Unknown error"}`);
       setSelectedBackupForRestore(null);
     } finally {
       setRestoring(false);
@@ -204,15 +220,20 @@ function AdminBackupContent() {
         }),
       });
 
-      const data = await res.json();
-      if (res.ok && data.success) {
+      let data: any = null;
+      try {
+        const text = await res.text();
+        data = JSON.parse(text);
+      } catch {}
+
+      if (res.ok && data?.success) {
         setRestoreSuccessMsg(data.message || "Disaster recovery restore completed successfully!");
         fetchStatusAndHistory();
       } else {
-        alert(data.error || "Restore execution failed.");
+        alert(data?.error || `Restore execution failed (HTTP ${res.status}).`);
       }
-    } catch {
-      alert("Network error during restore execution.");
+    } catch (err: any) {
+      alert(`Network error during restore execution: ${err?.message || "Unknown error"}`);
     } finally {
       setRestoring(false);
     }
@@ -330,11 +351,14 @@ function AdminBackupContent() {
             <span>Schedule & Encryption Policy</span>
           </div>
           <p className="text-slate-600 leading-relaxed text-[11px]">
-            Automated Vercel Cron triggers daily backups with military-grade AES-256-GCM encryption and SHA-256 integrity checksums.
+            Automated Vercel Cron triggers once a day (dawasakata 1 serayak) with military-grade AES-256-GCM encryption and SHA-256 integrity checksums.
           </p>
           <div className="p-3 bg-slate-50 rounded-xl font-mono text-xs font-bold text-slate-800 flex items-center justify-between">
-            <span>02:00 AM (Asia/Colombo)</span>
-            <span className="text-[10px] text-slate-500 font-normal">20:30 UTC</span>
+            <span className="flex items-center gap-1.5 text-emerald-700">
+              <CheckCircle2 size={13} className="text-emerald-600" />
+              Auto-Backup: Active (1x Daily)
+            </span>
+            <span className="text-[11px] text-slate-700 font-semibold">02:00 AM (SL Time) / 20:30 UTC</span>
           </div>
           <div className="p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-800 font-semibold text-[11px] flex items-center gap-1.5">
             <Lock size={13} />

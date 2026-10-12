@@ -90,38 +90,44 @@ export async function executeBackup(options?: {
   const backupId = `bkp_${timestampClean}`;
   const filename = `kekulama_backup_${timestampClean}.enc`;
 
-  // 1. Export Cloud Firestore Collections
+  // 1. Export Cloud Firestore Collections in Parallel (Eliminates sequential roundtrip latency)
   const backupCollectionsData: Record<string, any[]> = {};
   const collectionStats: Record<string, CollectionBackupStats> = {};
 
-  for (const colName of BACKUP_COLLECTIONS) {
-    try {
-      const snap = await adminDb.collection(colName).get();
-      const docs = snap.docs.map((doc) => ({
-        _id: doc.id,
-        ...doc.data(),
-      }));
-      backupCollectionsData[colName] = docs;
-      collectionStats[colName] = {
-        count: docs.length,
-        sampleIds: docs.slice(0, 3).map((d) => d._id),
-      };
-    } catch (colErr: any) {
-      console.warn(`[BACKUP WARNING] Failed exporting collection ${colName}:`, colErr?.message || colErr);
-      backupCollectionsData[colName] = [];
-      collectionStats[colName] = { count: 0, sampleIds: [] };
-    }
-  }
+  await Promise.all(
+    BACKUP_COLLECTIONS.map(async (colName) => {
+      try {
+        const snap = await adminDb.collection(colName).get();
+        const docs = snap.docs.map((doc) => ({
+          _id: doc.id,
+          ...doc.data(),
+        }));
+        backupCollectionsData[colName] = docs;
+        collectionStats[colName] = {
+          count: docs.length,
+          sampleIds: docs.slice(0, 3).map((d) => d._id),
+        };
+      } catch (colErr: any) {
+        console.warn(`[BACKUP WARNING] Failed exporting collection ${colName}:`, colErr?.message || colErr);
+        backupCollectionsData[colName] = [];
+        collectionStats[colName] = { count: 0, sampleIds: [] };
+      }
+    })
+  );
 
-  // 2. Export Supabase Guest Storage Files
+  // 2. Export Supabase Guest Storage Files in Parallel
   const storageFiles: StoredStorageFile[] = [];
   const filePaths: string[] = [];
   let totalFileSizeBytes = 0;
 
   if (isSupabaseConfigured() && backupCollectionsData["guestDocuments"]) {
     const guestDocs = backupCollectionsData["guestDocuments"];
-    for (const doc of guestDocs) {
-      if (doc.privateStoragePath && typeof doc.privateStoragePath === "string") {
+    const docsWithFiles = guestDocs.filter(
+      (doc) => doc.privateStoragePath && typeof doc.privateStoragePath === "string"
+    );
+
+    const downloadResults = await Promise.all(
+      docsWithFiles.map(async (doc) => {
         try {
           const { data, error } = await supabaseAdmin.storage
             .from(GUEST_PRIVATE_BUCKET)
@@ -130,19 +136,30 @@ export async function executeBackup(options?: {
           if (!error && data) {
             const arrayBuffer = await data.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
-            totalFileSizeBytes += buffer.length;
-            filePaths.push(doc.privateStoragePath);
-
-            storageFiles.push({
-              path: doc.privateStoragePath,
-              mimeType: doc.mimeType || "application/octet-stream",
+            return {
+              path: doc.privateStoragePath as string,
+              mimeType: (doc.mimeType as string) || "application/octet-stream",
               size: buffer.length,
               dataBase64: buffer.toString("base64"),
-            });
+            };
           }
         } catch (downloadErr: any) {
           console.warn(`[BACKUP WARNING] Could not download storage file ${doc.privateStoragePath}:`, downloadErr?.message);
         }
+        return null;
+      })
+    );
+
+    for (const res of downloadResults) {
+      if (res) {
+        totalFileSizeBytes += res.size;
+        filePaths.push(res.path);
+        storageFiles.push({
+          path: res.path,
+          mimeType: res.mimeType,
+          size: res.size,
+          dataBase64: res.dataBase64,
+        });
       }
     }
   }
@@ -196,18 +213,20 @@ export async function executeBackup(options?: {
 
   const archiveBuffer = Buffer.from(encryptedEnvelope, "utf-8");
 
-  // 7. Upload to Google Drive with Resumable Upload & Verification
+  // 7. Upload to Google Drive (Fast Multipart Upload, with Resumable fallback)
   const driveFile = await uploadBackupArchiveToDrive({
     filename,
     buffer: archiveBuffer,
   });
 
-  // 8. Enforce 30-day retention on Google Drive
-  await rotateOldBackups(30);
+  // 8. Enforce 30-day retention asynchronously in background (does not block HTTP response)
+  rotateOldBackups(30).catch((rotErr) => {
+    console.warn("[DRIVE ROTATION ASYNC WARNING]", rotErr?.message || rotErr);
+  });
 
-  // 9. Store Record in Firestore `backups` Collection
-  try {
-    await adminDb.collection("backups").doc(backupId).set({
+  // 9. Store Record in Firestore & write audit log in parallel
+  await Promise.all([
+    adminDb.collection("backups").doc(backupId).set({
       backupId,
       filename,
       sizeBytes: archiveBuffer.length,
@@ -221,14 +240,11 @@ export async function executeBackup(options?: {
       actorEmail: options?.actorEmail || null,
       status: "success",
       createdAt: now,
-    });
-  } catch (dbErr) {
-    console.warn("[BACKUP DB LOG WARNING] Could not persist backup record in Firestore:", dbErr);
-  }
+    }).catch((dbErr) => {
+      console.warn("[BACKUP DB LOG WARNING] Could not persist backup record in Firestore:", dbErr);
+    }),
 
-  // 10. Immutable Audit Logging
-  try {
-    await logAuditEvent({
+    logAuditEvent({
       actorId: options?.actorId || "owner",
       actorEmail: options?.actorEmail || "owner",
       actorRole: "owner",
@@ -243,10 +259,10 @@ export async function executeBackup(options?: {
         triggeredBy: options?.triggeredBy || "manual",
       },
       timestamp: now,
-    });
-  } catch (auditErr) {
-    console.warn("[BACKUP AUDIT LOG WARNING] Write skipped:", auditErr);
-  }
+    }).catch((auditErr) => {
+      console.warn("[BACKUP AUDIT LOG WARNING] Write skipped:", auditErr);
+    }),
+  ]);
 
   return {
     success: true,

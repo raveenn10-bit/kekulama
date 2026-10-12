@@ -23,19 +23,15 @@ export async function POST(req: NextRequest) {
 async function handleScheduledBackup(req: NextRequest) {
   try {
     // 1. Authenticate Request:
-    // Option A: Vercel Cron passes Authorization: Bearer <CRON_SECRET>
+    // Option A: Vercel Cron Header in production (guaranteed by Vercel edge proxy)
+    const isVercelCronHeader = req.headers.get("x-vercel-cron") === "1";
+
+    // Option B: Authorization header with CRON_SECRET
     const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
     const cronSecret = process.env.CRON_SECRET;
-    let isAuthorized = false;
+    const isSecretAuthorized = Boolean(cronSecret && authHeader === `Bearer ${cronSecret}`);
 
-    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
-      isAuthorized = true;
-    }
-
-    // Option B: Vercel Cron Header `x-vercel-cron` in production
-    if (!isAuthorized && req.headers.get("x-vercel-cron") === "1" && !cronSecret) {
-      isAuthorized = true;
-    }
+    let isAuthorized = isVercelCronHeader || isSecretAuthorized;
 
     // Option C: Authenticated Owner
     if (!isAuthorized) {

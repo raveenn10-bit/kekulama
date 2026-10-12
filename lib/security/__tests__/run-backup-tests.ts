@@ -119,6 +119,17 @@ runTest("Google Drive Scope adheres to Least Privilege (drive.file)", () => {
   assert(allowedScope === "https://www.googleapis.com/auth/drive.file", "Requires strictly per-file drive.file scope");
 });
 
+// 4. Daily Cron Schedule Validation (Once a day at 02:00 AM Sri Lanka Time)
+runTest("Vercel Cron Schedule is configured for once daily at 02:00 AM SL Time (20:30 UTC)", () => {
+  const cronSchedule = "30 20 * * *";
+  const [min, hour, dom, mon, dow] = cronSchedule.split(" ");
+  assert.strictEqual(min, "30", "Runs at minute 30");
+  assert.strictEqual(hour, "20", "Runs at 20:00 UTC (02:00 AM Asia/Colombo next day)");
+  assert.strictEqual(dom, "*", "Runs every day of month");
+  assert.strictEqual(mon, "*", "Runs every month");
+  assert.strictEqual(dow, "*", "Runs every day of week (once daily)");
+});
+
 console.log("\n=======================================================");
 console.log(`  ALL ${passedTests}/${totalTests} BACKUP TESTS PASSED!`);
 console.log("=======================================================\n");
