@@ -15,7 +15,7 @@ function getFirebaseAdminApp(): App {
   let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
   if (privateKey) {
-    privateKey = privateKey.replace(/\\n/g, "\n");
+    privateKey = privateKey.trim().replace(/^["']|["']$/g, "").replace(/\\n/g, "\n");
   }
 
   if (projectId && clientEmail && privateKey) {

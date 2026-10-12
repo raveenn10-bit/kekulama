@@ -222,11 +222,25 @@ export function Footer() {
         </motion.div>
 
         {/* Divider & Copyright */}
-        <div className="w-full max-w-4xl border-t border-sage-200/80 pt-6 mt-2 flex flex-col sm:flex-row items-center justify-center sm:justify-between font-body text-xs text-sage-500 gap-2.5">
+        <div className="w-full max-w-4xl border-t border-sage-200/80 pt-6 mt-2 flex flex-col sm:flex-row items-center justify-center sm:justify-between font-body text-xs text-sage-500 gap-3">
           <p>
             Copyright &copy; {new Date().getFullYear()} Kekulama Eco Cabana. All Rights Reserved.
           </p>
-          <div className="flex items-center gap-2 font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-400">
+          <div className="flex flex-wrap items-center justify-center gap-2 font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-400">
+            <Link
+              href="/privacy"
+              className="hover:text-mint-700 transition-colors py-0.5 px-1.5 rounded hover:bg-mint-50/60"
+            >
+              Privacy Policy
+            </Link>
+            <span>·</span>
+            <Link
+              href="/terms"
+              className="hover:text-mint-700 transition-colors py-0.5 px-1.5 rounded hover:bg-mint-50/60"
+            >
+              Terms of Service
+            </Link>
+            <span>·</span>
             <Link
               href="/admin"
               className="flex items-center gap-1 hover:text-mint-700 transition-colors py-0.5 px-2 rounded hover:bg-mint-50/60 cursor-pointer"
@@ -235,8 +249,6 @@ export function Footer() {
               <Lock size={11} />
               <span>Owner Portal</span>
             </Link>
-            <span>·</span>
-            <span>Private Eco Retreat · Galle</span>
           </div>
         </div>
       </div>

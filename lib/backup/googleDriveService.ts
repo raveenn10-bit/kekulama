@@ -37,12 +37,17 @@ export async function getDriveAccessToken(): Promise<string> {
     refreshToken = decryptToken(settings.encryptedRefreshToken);
   }
 
-  // 2. Fallback to environment variable if configured
+  // 2. Fallback to explicit Google Drive environment variable if configured
   if (!refreshToken) {
-    refreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || process.env.GMAIL_REFRESH_TOKEN || null;
+    refreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || null;
   }
 
   if (!refreshToken) {
+    if (settings?.hasRefreshToken) {
+      throw new Error(
+        "Google Drive refresh token exists in settings, but could not be decrypted with current keys. Please reconnect Google Drive in Admin > Cloud Backup Console."
+      );
+    }
     throw new Error(
       "Google Drive is not connected. Please connect Google Drive in Admin > Cloud Backup Console before initiating backups."
     );

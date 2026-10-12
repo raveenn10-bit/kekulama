@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireOwner } from "@/lib/security/authBridge";
 import { getDriveOAuthSettings } from "@/lib/security/settingsStorage";
+import { decryptToken } from "@/lib/security/tokenEncryption";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +19,15 @@ export async function GET(req: NextRequest) {
     }
 
     const settings = await getDriveOAuthSettings();
-    const hasEnvRefreshToken = Boolean(process.env.GOOGLE_DRIVE_REFRESH_TOKEN || process.env.GMAIL_REFRESH_TOKEN);
-    const isConnected = Boolean(settings?.hasRefreshToken || hasEnvRefreshToken);
+    const hasEnvRefreshToken = Boolean(process.env.GOOGLE_DRIVE_REFRESH_TOKEN);
+
+    let canDecryptToken = false;
+    if (settings?.encryptedRefreshToken) {
+      const decrypted = decryptToken(settings.encryptedRefreshToken);
+      canDecryptToken = Boolean(decrypted && decrypted.length > 0);
+    }
+
+    const isConnected = Boolean(canDecryptToken || hasEnvRefreshToken);
 
     return NextResponse.json({
       connected: isConnected,
@@ -27,7 +35,7 @@ export async function GET(req: NextRequest) {
       folderName: settings?.folderName || "Kekulama_Backups_Secure",
       folderId: settings?.folderId || process.env.GOOGLE_DRIVE_FOLDER_ID || "Dedicated Drive Folder",
       updatedAt: settings?.updatedAt || null,
-      status: settings?.status || (isConnected ? "active" : "not_connected"),
+      status: isConnected ? (settings?.status || "active") : "not_connected",
     });
   } catch (err: any) {
     console.error("[DRIVE STATUS ERROR]", err);

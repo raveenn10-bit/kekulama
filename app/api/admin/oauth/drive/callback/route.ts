@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { logAuditEvent } from "@/lib/firebase/admin";
-import { encryptToken } from "@/lib/security/tokenEncryption";
+import { encryptToken, decryptToken } from "@/lib/security/tokenEncryption";
 import { saveDriveOAuthSettings, getDriveOAuthSettings } from "@/lib/security/settingsStorage";
 
 export const dynamic = "force-dynamic";
@@ -112,19 +112,32 @@ export async function GET(req: NextRequest) {
 
     // 6. Encrypt refresh token with AES-256-GCM
     const existingSettings = await getDriveOAuthSettings();
-    const rawRefreshToken = refreshToken || null;
-    const encryptedRefreshToken = rawRefreshToken
-      ? encryptToken(rawRefreshToken)
-      : existingSettings?.encryptedRefreshToken || null;
+    let encryptedRefreshToken: string | null = null;
+
+    if (refreshToken) {
+      encryptedRefreshToken = encryptToken(refreshToken);
+    } else if (existingSettings?.encryptedRefreshToken) {
+      const existingDecrypted = decryptToken(existingSettings.encryptedRefreshToken);
+      if (existingDecrypted) {
+        encryptedRefreshToken = existingSettings.encryptedRefreshToken;
+      }
+    }
+
+    if (!encryptedRefreshToken) {
+      console.error("[DRIVE OAUTH CALLBACK] No usable refresh token received from Google or found in existing settings.");
+      return NextResponse.redirect(
+        `${backupConsoleUrl}?oauth=error&reason=missing_refresh_token_reconsent_required`
+      );
+    }
 
     const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID || existingSettings?.folderId;
     const now = new Date().toISOString();
 
-    await saveDriveOAuthSettings({
+    const saveResult = await saveDriveOAuthSettings({
       provider: "google_drive",
       connectedEmail,
       encryptedRefreshToken,
-      hasRefreshToken: Boolean(encryptedRefreshToken),
+      hasRefreshToken: true,
       folderId,
       folderName: "Kekulama_Backups_Secure",
       scopes: tokenData.scope || "https://www.googleapis.com/auth/drive.file",

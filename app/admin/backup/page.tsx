@@ -69,11 +69,32 @@ function AdminBackupContent() {
   const [backups, setBackups] = useState<BackupItem[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
+  // Reconciled OAuth Banner state
+  const [oauthBanner, setOauthBanner] = useState<{
+    status: string;
+    email?: string | null;
+    reason?: string | null;
+  } | null>(null);
+
   // Restore state
   const [selectedBackupForRestore, setSelectedBackupForRestore] = useState<BackupItem | null>(null);
   const [restoring, setRestoring] = useState(false);
   const [restorePreview, setRestorePreview] = useState<RestorePreviewData | null>(null);
   const [restoreSuccessMsg, setRestoreSuccessMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (oauthStatus) {
+      setOauthBanner({
+        status: oauthStatus,
+        email: oauthEmail,
+        reason: oauthReason,
+      });
+      // Clean query parameters from address bar to prevent sticky banner on page reloads
+      if (typeof window !== "undefined" && window.history?.replaceState) {
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+    }
+  }, [oauthStatus, oauthEmail, oauthReason]);
 
   // Load Drive status & backup history
   const fetchStatusAndHistory = async () => {
@@ -263,23 +284,59 @@ function AdminBackupContent() {
         </button>
       </div>
 
-      {/* OAuth Callback Alerts */}
-      {oauthStatus === "success" && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-          <ShieldCheck size={18} className="text-emerald-600 shrink-0" />
-          <div>
-            <span className="font-bold">Google Drive Connected Successfully!</span> Authorized destination:{" "}
-            <span className="font-mono">{oauthEmail || "kekulamaecocabana@gmail.com"}</span>. Daily 02:00 AM automated backups are active.
+      {/* OAuth Callback Alerts - Reconciled with Backend Verification */}
+      {oauthBanner?.status === "success" && (loadingStatus || driveStatus?.connected) && (
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between gap-2 shadow-sm">
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={18} className="text-emerald-600 shrink-0" />
+            <div>
+              <span className="font-bold">Google Drive Connected Successfully!</span> Authorized destination:{" "}
+              <span className="font-mono">{oauthBanner.email || driveStatus?.email || "kekulamaecocabana@gmail.com"}</span>. Daily 02:00 AM automated backups are active.
+            </div>
           </div>
+          <button
+            onClick={() => setOauthBanner(null)}
+            className="text-emerald-700 hover:text-emerald-950 px-2 py-0.5 font-bold cursor-pointer"
+            title="Dismiss"
+          >
+            ✕
+          </button>
         </div>
       )}
 
-      {oauthStatus === "error" && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-          <AlertCircle size={18} className="text-rose-600 shrink-0" />
-          <div>
-            <span className="font-bold">Drive OAuth Authorization Error:</span> {oauthReason || "Unknown error"}. Please check Google Cloud credentials.
+      {oauthBanner?.status === "success" && !loadingStatus && !driveStatus?.connected && (
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between gap-2 shadow-sm">
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={18} className="text-amber-600 shrink-0" />
+            <div>
+              <span className="font-bold">OAuth Redirect Received:</span> Google completed authorization, but the backend could not verify a decryptable refresh token in storage. Please click <strong>Reconnect Google Drive</strong> to grant offline consent.
+            </div>
           </div>
+          <button
+            onClick={() => setOauthBanner(null)}
+            className="text-amber-700 hover:text-amber-950 px-2 py-0.5 font-bold cursor-pointer"
+            title="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {oauthBanner?.status === "error" && (
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center justify-between gap-2 shadow-sm">
+          <div className="flex items-center gap-2">
+            <AlertCircle size={18} className="text-rose-600 shrink-0" />
+            <div>
+              <span className="font-bold">Drive OAuth Authorization Error:</span> {oauthBanner.reason || "Unknown error"}. Please check Google Cloud credentials and reconnect.
+            </div>
+          </div>
+          <button
+            onClick={() => setOauthBanner(null)}
+            className="text-rose-700 hover:text-rose-950 px-2 py-0.5 font-bold cursor-pointer"
+            title="Dismiss"
+          >
+            ✕
+          </button>
         </div>
       )}
 
