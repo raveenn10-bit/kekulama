@@ -55,20 +55,32 @@ export async function verifyFirebaseSessionOrToken(req: Request): Promise<Authen
     const uid = decodedToken.uid;
     const email = decodedToken.email || "";
 
-    // Strictly enforce Owner privileges only for verified owner UIDs
-    const isApprovedOwner = APPROVED_OWNER_UIDS.includes(uid as typeof APPROVED_OWNER_UIDS[number]);
+    // Strictly enforce Owner privileges for verified owner UIDs, token claims, or Firestore role
+    const isApprovedUid = APPROVED_OWNER_UIDS.includes(uid as typeof APPROVED_OWNER_UIDS[number]);
+    const isTokenOwnerClaim = decodedToken.role === "owner" || (decodedToken as any).admin === true;
+
     let role: UserRole = "reception";
 
-    if (isApprovedOwner) {
+    if (isApprovedUid || isTokenOwnerClaim) {
       role = "owner";
     } else {
       // Check user record in Firestore
-      const userDoc = await adminDb.collection("users").doc(uid).get();
-      if (userDoc.exists) {
-        const userData = userDoc.data();
-        role = userData?.role || "reception";
+      try {
+        const userDoc = await adminDb.collection("users").doc(uid).get();
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          if (userData?.role === "owner") {
+            role = "owner";
+          } else if (userData?.role === "reception") {
+            role = "reception";
+          }
+        }
+      } catch (dbErr) {
+        console.warn("[AUTH BRIDGE] Firestore user record lookup skipped:", dbErr);
       }
     }
+
+    const isApprovedOwner = role === "owner";
 
     return {
       uid,

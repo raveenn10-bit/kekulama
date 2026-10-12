@@ -3,6 +3,7 @@
 import React, { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Bell, Send, CheckCircle2, AlertCircle, RefreshCw, Mail, ShieldCheck, ExternalLink } from "lucide-react";
+import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 
 interface NotificationLog {
   id: string;
@@ -14,6 +15,7 @@ interface NotificationLog {
 }
 
 function NotificationsContent() {
+  const { getIdToken } = useAdminAuth();
   const searchParams = useSearchParams();
   const oauthStatus = searchParams.get("oauth");
   const oauthEmail = searchParams.get("email");
@@ -22,6 +24,8 @@ function NotificationsContent() {
   const [recipientEmail, setRecipientEmail] = useState("kekulamaecocabana@gmail.com");
   const [testing, setTesting] = useState(false);
   const [testSuccess, setTestSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const mockLogs: NotificationLog[] = [
     {
@@ -52,21 +56,39 @@ function NotificationsContent() {
 
   const handleSendTest = async () => {
     setTesting(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
     try {
+      const token = await getIdToken();
+      if (!token) {
+        setErrorMessage("Authentication required: Please sign in with an authorized Owner account.");
+        setTesting(false);
+        return;
+      }
+
       const res = await fetch("/api/admin/notifications/test", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify({ recipient: recipientEmail }),
       });
+
       const data = await res.json().catch(() => ({}));
-      if (res.ok) {
-        setTestSuccess(true);
-        setTimeout(() => setTestSuccess(false), 5000);
+      if (res.ok && data.success) {
+        if (data.delivered) {
+          setTestSuccess(true);
+          setSuccessMessage(data.message || `Test operational alert dispatched to ${recipientEmail} via Gmail API.`);
+          setTimeout(() => setTestSuccess(false), 8000);
+        } else {
+          setErrorMessage(data.message || "Notification recorded in system logs, but Gmail delivery was not completed.");
+        }
       } else {
-        alert(data.error || "Failed to trigger test alert.");
+        setErrorMessage(data.error || "Failed to trigger test alert.");
       }
     } catch {
-      alert("Failed to reach server to send test notification.");
+      setErrorMessage("Failed to reach server to send test notification.");
     } finally {
       setTesting(false);
     }
@@ -115,10 +137,17 @@ function NotificationsContent() {
         </div>
       )}
 
-      {testSuccess && (
+      {testSuccess && successMessage && (
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-          <CheckCircle2 size={16} />
-          <span>Test operational alert dispatched to {recipientEmail}.</span>
+          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+          <span>{successMessage}</span>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+          <AlertCircle size={16} className="text-rose-600 shrink-0" />
+          <span>{errorMessage}</span>
         </div>
       )}
 

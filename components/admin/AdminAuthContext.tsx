@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { User, onIdTokenChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/client";
 import { AdminUser, UserRole } from "@/types/admin";
@@ -13,6 +13,7 @@ interface AdminAuthContextType {
   loading: boolean;
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
+  getIdToken: (forceRefresh?: boolean) => Promise<string | null>;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType>({
@@ -22,6 +23,7 @@ const AdminAuthContext = createContext<AdminAuthContextType>({
   loading: true,
   login: async () => {},
   logout: async () => {},
+  getIdToken: async () => null,
 });
 
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
@@ -31,12 +33,15 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    // onIdTokenChanged fires on sign-in, sign-out, and whenever token is refreshed
+    const unsubscribe = onIdTokenChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         try {
           const idToken = await currentUser.getIdToken();
-          document.cookie = `session=${idToken}; path=/; max-age=3600; SameSite=Lax`;
+          const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
+          const secureFlag = isHttps ? "; Secure" : "";
+          document.cookie = `session=${idToken}; path=/; max-age=86400; SameSite=Lax${secureFlag}`;
         } catch {
           // Ignore cookie setting errors
         }
@@ -88,8 +93,21 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     await signOut(auth);
   };
 
+  const getIdToken = async (forceRefresh = false): Promise<string | null> => {
+    if (!auth.currentUser) return null;
+    const token = await auth.currentUser.getIdToken(forceRefresh);
+    try {
+      const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
+      const secureFlag = isHttps ? "; Secure" : "";
+      document.cookie = `session=${token}; path=/; max-age=86400; SameSite=Lax${secureFlag}`;
+    } catch {
+      // Ignore cookie errors
+    }
+    return token;
+  };
+
   return (
-    <AdminAuthContext.Provider value={{ user, adminProfile, role, loading, login, logout }}>
+    <AdminAuthContext.Provider value={{ user, adminProfile, role, loading, login, logout, getIdToken }}>
       {children}
     </AdminAuthContext.Provider>
   );

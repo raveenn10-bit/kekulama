@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyFirebaseSessionOrToken } from "@/lib/security/authBridge";
+import { requireOwner } from "@/lib/security/authBridge";
 import { sendNotification } from "@/lib/notifications/emailService";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
-    const authUser = await verifyFirebaseSessionOrToken(req);
+    const owner = await requireOwner(req);
     const isDev = process.env.NODE_ENV === "development";
 
-    // Enforce Owner-only access
-    if (!isDev && (!authUser || !authUser.isApprovedOwner)) {
+    // Strictly enforce authoritative Owner-only access
+    if (!isDev && !owner) {
       return NextResponse.json({ error: "Forbidden: Owner access required." }, { status: 403 });
     }
 
