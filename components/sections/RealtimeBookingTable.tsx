@@ -676,6 +676,16 @@ export default function RealtimeBookingTable() {
                     Dates <strong>{bookingSuccessData.startDate} to {bookingSuccessData.endDate}</strong> are now locked on the calendar and synced across Booking.com and Airbnb.
                   </p>
 
+                  {bookingSuccessData.registrationToken && (
+                    <a
+                      href={`/guest/register?token=${bookingSuccessData.registrationToken}`}
+                      className="w-full py-3.5 rounded-full bg-forest hover:bg-forest-dark text-white font-body font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md mb-2.5 transition-all"
+                    >
+                      <User size={14} />
+                      <span>Complete Guest Registration (NIC / Passport)</span>
+                    </a>
+                  )}
+
                   <a
                     href={`https://wa.me/${contact.whatsappRaw}?text=${encodeURIComponent(
                       `Hello Kekulama Eco Cabana, I just placed reservation #${bookingSuccessData.id} for ${guestName} (${bookingSuccessData.startDate} to ${bookingSuccessData.endDate}). Please confirm details.`

@@ -1,0 +1,53 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Default deny for entire bucket
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner() {
+      return isAuthenticated() && request.auth.token.role == 'owner';
+    }
+
+    function isStaff() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'owner' || 
+        request.auth.token.role == 'reception'
+      );
+    }
+
+    function isValidImage() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp)')
+        && request.resource.size < 10 * 1024 * 1024; // 10MB max
+    }
+
+    function isValidProof() {
+      return (request.resource.contentType.matches('image/(jpeg|png|webp)') || request.resource.contentType == 'application/pdf')
+        && request.resource.size < 5 * 1024 * 1024; // 5MB max
+    }
+
+    // 1. Private Guest Identity Documents (NIC, Passport)
+    // NEVER allow public read access
+    match /guest-docs/{bookingId}/{allPaths=**} {
+      // Direct client upload via portal link
+      allow write: if isValidImage();
+      // Read access strictly restricted to authenticated staff (or via server-signed URLs)
+      allow read: if isStaff();
+      // Deletions allowed by owner (or retention worker)
+      allow delete: if isOwner();
+    }
+
+    // 2. Bank Transfer Payment Proofs
+    match /payment-proofs/{bookingId}/{allPaths=**} {
+      allow write: if isValidProof();
+      allow read: if isStaff();
+      allow delete: if isOwner();
+    }
+  }
+}

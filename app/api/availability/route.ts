@@ -1,144 +1,140 @@
 import { NextResponse } from "next/server";
-import { getInitialBookings, BookingEvent, isRangeAvailable } from "@/lib/calendarSync";
+import { checkRateLimit } from "@/lib/security/auth";
+import { createBookingSchema } from "@/lib/security/validation";
+import { createReservationAtomic, getActiveLocks } from "@/lib/booking/availabilityEngine";
+import { adminDb } from "@/lib/firebase/admin";
+import { Booking } from "@/types/booking";
 
-// In-memory synced bookings registry (persists securely on the server)
-let activeBookings: BookingEvent[] = getInitialBookings();
-
-// Rate limiting map (IP -> timestamp array)
-const ipRateLimitMap = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_MINUTE = 10;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = ipRateLimitMap.get(ip) || [];
-  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-
-  if (recent.length >= MAX_REQUESTS_PER_MINUTE) {
-    return true;
-  }
-
-  recent.push(now);
-  ipRateLimitMap.set(ip, recent);
-  return false;
-}
-
-// Clean string inputs against script injection / XSS
-function sanitizeInput(str: string, maxLength: number = 100): string {
-  if (typeof str !== "string") return "";
-  return str
-    .replace(/[<>'"&;]/g, "")
-    .trim()
-    .slice(0, maxLength);
-}
+export const dynamic = "force-dynamic";
 
 /**
- * Public GET: Returns strictly anonymized availability intervals
+ * Public GET: Returns strictly anonymized availability intervals from Cloud Firestore
  * NO guest names, phone numbers, or private customer details are ever exposed!
  */
 export async function GET() {
-  const anonymizedBookings = activeBookings.map((b) => ({
-    id: b.id,
-    startDate: b.startDate,
-    endDate: b.endDate,
-    source: b.source,
-    summary: b.source === "direct" ? "Reserved" : b.summary,
-  }));
+  try {
+    // 1. Fetch active locks from Firestore
+    const locks = await getActiveLocks("cabana-01");
 
-  return NextResponse.json(
-    {
+    // 2. Fetch active bookings from Firestore
+    const bookingsSnap = await adminDb
+      .collection("bookings")
+      .where("status", "in", ["pending", "confirmed", "registered", "checked_in"])
+      .get();
+
+    const bookings: Booking[] = bookingsSnap.docs.map((doc) => doc.data() as Booking);
+
+    // Anonymize for public calendar table
+    const anonymizedBookings = bookings.map((b) => ({
+      id: b.id,
+      startDate: b.checkIn,
+      endDate: b.checkOut,
+      source: b.source,
+      summary: b.source === "direct" ? "Direct Booking" : b.packagePlan,
+    }));
+
+    return NextResponse.json(
+      {
+        success: true,
+        bookings: anonymizedBookings,
+        lockedDates: locks.map((l) => l.date),
+        lastSynced: new Date().toISOString(),
+        channels: ["booking.com", "airbnb", "direct"],
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+          "X-Content-Type-Options": "nosniff",
+        },
+      }
+    );
+  } catch (err) {
+    console.error("Error in GET /api/availability:", err);
+    // Graceful fallback
+    return NextResponse.json({
       success: true,
-      bookings: anonymizedBookings,
+      bookings: [],
+      lockedDates: [],
       lastSynced: new Date().toISOString(),
       channels: ["booking.com", "airbnb", "direct"],
-    },
-    {
-      headers: {
-        "Cache-Control": "no-store, max-age=0",
-        "X-Content-Type-Options": "nosniff",
-      },
-    }
-  );
+    });
+  }
 }
 
 /**
- * Secure POST: Handles new reservation requests with rate-limiting and validation
+ * Secure POST: Handles new reservation requests with rate-limiting, Zod validation, and atomic locks
  */
 export async function POST(req: Request) {
   try {
     const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
 
-    if (isRateLimited(clientIp)) {
+    // Rate limiting: max 10 requests per minute per IP
+    const rateCheck = checkRateLimit(clientIp, { maxRequests: 10, windowMs: 60 * 1000 });
+    if (!rateCheck.allowed) {
       return NextResponse.json(
-        { success: false, error: "Too many requests. Please wait a moment." },
+        { success: false, error: "Too many reservation requests. Please wait a moment." },
         { status: 429 }
       );
     }
 
     const body = await req.json();
-    const startDate = sanitizeInput(body.startDate, 10);
-    const endDate = sanitizeInput(body.endDate, 10);
-    const guestName = sanitizeInput(body.guestName, 60);
-    const guestPhone = sanitizeInput(body.guestPhone, 30);
-    const guestEmail = sanitizeInput(body.guestEmail, 80);
-    const packagePlan = sanitizeInput(body.packagePlan, 50);
-
-    if (!startDate || !endDate || !guestName || !guestPhone) {
-      return NextResponse.json(
-        { success: false, error: "Missing required booking details (dates, name, and phone)." },
-        { status: 400 }
-      );
-    }
-
-    // Validate ISO date format YYYY-MM-DD
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
-      return NextResponse.json(
-        { success: false, error: "Invalid date format." },
-        { status: 400 }
-      );
-    }
-
-    // Check availability
-    const available = isRangeAvailable(startDate, endDate, activeBookings);
-    if (!available) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Selected dates are already booked on Booking.com, Airbnb, or by another guest.",
-        },
-        { status: 409 }
-      );
-    }
-
-    // Generate secure booking reference ID
-    const newId = `KEK-${Date.now().toString().slice(-6)}`;
-    const newBooking: BookingEvent = {
-      id: newId,
-      startDate,
-      endDate,
-      source: "direct",
-      summary: `Direct Booking (${packagePlan || "Eco Cabana"})`,
-      guestName,
+    const payload = {
+      checkIn: body.checkIn || body.startDate,
+      checkOut: body.checkOut || body.endDate,
+      guestName: body.guestName,
+      guestEmail: body.guestEmail,
+      guestPhone: body.guestPhone,
+      adults: body.adults !== undefined ? Number(body.adults) : 2,
+      children: body.children !== undefined ? Number(body.children) : 0,
+      packagePlan: body.packagePlan,
+      specialRequests: body.specialRequests,
+      source: body.source || "direct",
     };
 
-    activeBookings.push(newBooking);
+    // Validate using Zod schema
+    const parseResult = createBookingSchema.safeParse(payload);
+    if (!parseResult.success) {
+      const errorMsg = parseResult.error.issues?.[0]?.message || "Invalid booking data.";
+      return NextResponse.json({ success: false, error: errorMsg }, { status: 400 });
+    }
 
-    // Return confirmation back to caller without leaking other guests' data
+    const validData = parseResult.data;
+
+    // Atomically reserve in Firestore
+    const reservation = await createReservationAtomic({
+      guestName: validData.guestName,
+      guestEmail: validData.guestEmail,
+      guestPhone: validData.guestPhone,
+      checkIn: validData.checkIn,
+      checkOut: validData.checkOut,
+      adults: validData.adults,
+      children: validData.children,
+      packagePlan: validData.packagePlan,
+      specialRequests: validData.specialRequests,
+      source: "direct",
+      status: "pending",
+      ipAddress: clientIp,
+    });
+
     return NextResponse.json({
       success: true,
       booking: {
-        id: newBooking.id,
-        startDate: newBooking.startDate,
-        endDate: newBooking.endDate,
-        packagePlan,
+        ...reservation.booking,
+        startDate: reservation.booking.checkIn,
+        endDate: reservation.booking.checkOut,
+        registrationToken: reservation.registrationToken,
       },
-      message: `Reservation #${newId} successfully registered and synchronized!`,
+      registrationUrl: reservation.registrationUrl,
+      message: `Reservation #${reservation.booking.id} successfully requested! Please complete your guest registration.`,
     });
   } catch (err: any) {
+    const isConflict = err.message && err.message.includes("already reserved");
     return NextResponse.json(
-      { success: false, error: "An unexpected error occurred while processing reservation." },
-      { status: 500 }
+      {
+        success: false,
+        error: err.message || "An unexpected error occurred while placing reservation.",
+      },
+      { status: isConflict ? 409 : 500 }
     );
   }
 }

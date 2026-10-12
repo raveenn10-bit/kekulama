@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Auth Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isOwner() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'owner' ||
+        getUserData().role == 'owner'
+      );
+    }
+
+    function isReception() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'reception' ||
+        getUserData().role == 'reception'
+      );
+    }
+
+    function isStaff() {
+      return isOwner() || isReception();
+    }
+
+    // 1. Rooms & Inventory
+    match /rooms/{roomId} {
+      allow read: if true;
+      allow write: if isOwner();
+    }
+
+    // 2. Room Calendar Locks (authoritative availability)
+    match /room_calendar_locks/{lockId} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    // 3. Bookings
+    match /bookings/{bookingId} {
+      // Staff can view and manage all bookings
+      allow read: if isStaff();
+      
+      // Public guest booking request submission
+      allow create: if request.resource.data.status == 'pending'
+                    && request.resource.data.source == 'direct'
+                    && request.resource.data.guestName is string
+                    && request.resource.data.guestEmail is string
+                    && request.resource.data.checkIn is string
+                    && request.resource.data.checkOut is string;
+
+      // Updating bookings: staff only
+      allow update: if isStaff();
+      
+      // Deletions strictly forbidden: cancellations only
+      allow delete: if false;
+    }
+
+    // 4. Registration Tokens (Expiring Guest ID Links)
+    match /registration_tokens/{tokenId} {
+      // Guest can read token details to verify expiry
+      allow read: if true;
+      // Tokens managed and marked used
+      allow write: if isStaff();
+    }
+
+    // 5. Guest Documents (Private metadata)
+    match /guest_documents/{docId} {
+      allow read: if isOwner() || (isReception() && resource.data.verificationStatus != 'purged');
+      allow create: if true; // Uploaded metadata via portal
+      allow update: if isStaff();
+      allow delete: if isOwner();
+    }
+
+    // 6. Payments
+    match /payments/{paymentId} {
+      allow read: if isStaff();
+      // Reception can record a cash or bank transfer payment
+      allow create: if isStaff() && request.resource.data.status == 'recorded';
+      // Only owner can confirm or reverse payments
+      allow update: if isOwner();
+      allow delete: if false;
+    }
+
+    // 7. Users (Staff Directory & Roles)
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isOwner());
+      allow write: if isOwner();
+    }
+
+    // 8. Audit Logs (Immutable, append-only)
+    match /audit_logs/{logId} {
+      allow read: if isOwner();
+      allow create: if isAuthenticated();
+      allow update, delete: if false; // strictly immutable
+    }
+
+    // 9. Backups (Owner only)
+    match /backups/{backupId} {
+      allow read, write: if isOwner();
+    }
+  }
+}
