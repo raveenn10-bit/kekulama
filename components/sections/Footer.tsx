@@ -226,8 +226,16 @@ export function Footer() {
           <p>
             Copyright &copy; {new Date().getFullYear()} Kekulama Eco Cabana. All Rights Reserved.
           </p>
-          <div className="flex items-center gap-1 font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-400">
-            <Lock size={12} />
+          <div className="flex items-center gap-2 font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-400">
+            <Link
+              href="/admin"
+              className="flex items-center gap-1 hover:text-mint-700 transition-colors py-0.5 px-2 rounded hover:bg-mint-50/60 cursor-pointer"
+              title="Staff & Owner Admin Portal"
+            >
+              <Lock size={11} />
+              <span>Owner Portal</span>
+            </Link>
+            <span>·</span>
             <span>Private Eco Retreat · Galle</span>
           </div>
         </div>

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Menu, X, PhoneCall, ArrowUpRight } from "lucide-react";
+import { Menu, X, PhoneCall, ArrowUpRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { siteData } from "@/data/siteData";
 import { LUXURY_EASING } from "@/lib/motion";
@@ -121,6 +121,19 @@ export function Navbar() {
             >
               <span>Book via WhatsApp</span>
             </Button>
+
+            <Link
+              href="/admin"
+              className={`p-2 rounded-full transition-all duration-300 ${
+                isScrolled
+                  ? "text-sage-700 hover:text-mint-700 hover:bg-mint-50"
+                  : "text-white/80 hover:text-white hover:bg-white/10"
+              }`}
+              title="Staff & Owner Portal"
+              aria-label="Staff & Owner Portal"
+            >
+              <Lock size={15} />
+            </Link>
           </div>
 
           {/* Mobile Actions (Phone Call + Menu Toggle with 44px touch targets) */}
@@ -237,6 +250,14 @@ export function Navbar() {
                 <PhoneCall size={14} />
                 <span>Call +94 75 665 7000</span>
               </a>
+              <Link
+                href="/admin"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full py-2.5 rounded-full text-center font-body text-xs font-medium tracking-[0.1em] text-white/60 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Lock size={13} />
+                <span>Owner & Staff Portal</span>
+              </Link>
               <div className="pt-2 text-center font-eyebrow text-[9.5px] uppercase tracking-[0.25em] text-sage-400">
                 Pinnaduwa, Galle · 100% Recommended
               </div>

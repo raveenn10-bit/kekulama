@@ -15,14 +15,18 @@ if (typeof window !== "undefined") {
   throw new Error("[SECURITY CRITICAL] supabaseAdmin client cannot be instantiated in the browser.");
 }
 
-const supabaseUrl = process.env.SUPABASE_URL || "https://placeholder-kekulama.supabase.co";
+const supabaseUrl =
+  process.env.SUPABASE_URL ||
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  "https://dsqxvnmdoebfkqxqwktc.supabase.co";
+
 const supabaseSecretKey = 
   process.env.SUPABASE_SECRET_KEY || 
   process.env.SUPABASE_SERVICE_ROLE_KEY || 
-  "placeholder-supabase-service-role-key";
+  "";
 
 const isConfigured = Boolean(
-  process.env.SUPABASE_URL && 
+  (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL) && 
   (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)
 );
 
