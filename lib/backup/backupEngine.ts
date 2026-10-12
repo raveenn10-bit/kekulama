@@ -62,13 +62,115 @@ export interface StoredStorageFile {
   dataBase64: string;
 }
 
-function getBackupEncryptionKey(): Buffer {
+/**
+ * Safely parses a secret string into a 32-byte cryptographic key Buffer.
+ * Supports:
+ * - 64-char Hex strings (32 raw bytes)
+ * - 43-44 char Base64 or Base64URL 32-byte keys (e.g. from openssl rand -base64 32)
+ * - Passphrases / arbitrary strings (hashed via SHA-256 to 32 bytes)
+ */
+export function deriveKeyFromSecret(secret: string): Buffer {
+  const trimmed = (secret || "").trim();
+  if (!trimmed) {
+    return crypto.createHash("sha256").update("kekulama-luxury-backup-secure-passphrase-2026", "utf8").digest();
+  }
+
+  // 1. Direct 64-character Hex string (32 raw bytes)
+  if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
+    return Buffer.from(trimmed, "hex");
+  }
+
+  // 2. Direct Base64 or Base64URL 32-byte key (43 or 44 characters)
+  if (/^(?:[A-Za-z0-9+/]{43}=|[A-Za-z0-9+/]{42}==|[A-Za-z0-9_-]{43})$/.test(trimmed) || trimmed.length === 44) {
+    try {
+      const isUrlSafe = trimmed.includes("-") || trimmed.includes("_");
+      const decoded = Buffer.from(trimmed, isUrlSafe ? "base64url" : "base64");
+      if (decoded.length === 32) {
+        return decoded;
+      }
+    } catch {
+      // Fall through to SHA-256 derivation
+    }
+  }
+
+  // 3. Fallback: SHA-256 digest of passphrase string
+  return crypto.createHash("sha256").update(trimmed, "utf8").digest();
+}
+
+/**
+ * Computes a short 8-character key identifier for envelope tagging and fast lookup.
+ */
+export function computeKeyId(key: Buffer): string {
+  return crypto.createHash("sha256").update(key).digest("hex").slice(0, 8);
+}
+
+/**
+ * Derives the active 32-byte encryption key for generating new backup archives.
+ */
+export function getBackupEncryptionKey(): Buffer {
   const secret =
     process.env.BACKUP_ENCRYPTION_KEY ||
     process.env.OAUTH_ENCRYPTION_KEY ||
     process.env.APP_SECRET ||
     "kekulama-luxury-backup-secure-passphrase-2026";
-  return crypto.createHash("sha256").update(secret).digest();
+  return deriveKeyFromSecret(secret);
+}
+
+/**
+ * Gathers candidate 32-byte decryption keys in descending priority order.
+ * Ensures zero-downtime key rotation and 100% backward compatibility with
+ * all legacy archives encrypted with previous keys or literal SHA-256 string hashes.
+ */
+export function getBackupDecryptionCandidateKeys(): { key: Buffer; keyId: string; source: string }[] {
+  const rawSecrets: { secret: string; source: string }[] = [];
+
+  const addSecret = (secret: string | undefined, source: string) => {
+    if (secret && typeof secret === "string" && secret.trim()) {
+      rawSecrets.push({ secret: secret.trim(), source });
+    }
+  };
+
+  // 1. Primary backup encryption key
+  addSecret(process.env.BACKUP_ENCRYPTION_KEY, "BACKUP_ENCRYPTION_KEY");
+
+  // 2. Key rotation list (comma-separated keys)
+  if (process.env.BACKUP_ENCRYPTION_KEYS) {
+    const list = process.env.BACKUP_ENCRYPTION_KEYS.split(",");
+    list.forEach((k, idx) => addSecret(k, `BACKUP_ENCRYPTION_KEYS[${idx}]`));
+  }
+
+  // 3. Explicit old / compromised key fallbacks
+  addSecret(process.env.OLD_BACKUP_ENCRYPTION_KEY, "OLD_BACKUP_ENCRYPTION_KEY");
+  addSecret(process.env.BACKUP_ENCRYPTION_KEY_OLD, "BACKUP_ENCRYPTION_KEY_OLD");
+  addSecret(process.env.PREVIOUS_BACKUP_ENCRYPTION_KEY, "PREVIOUS_BACKUP_ENCRYPTION_KEY");
+
+  // 4. Secondary system keys
+  addSecret(process.env.OAUTH_ENCRYPTION_KEY, "OAUTH_ENCRYPTION_KEY");
+  addSecret(process.env.APP_SECRET, "APP_SECRET");
+
+  // 5. Default legacy passphrases
+  addSecret("kekulama-luxury-backup-secure-passphrase-2026", "DEFAULT_PASSPHRASE_1");
+  addSecret("kekulama-aes256-backup-encryption-passphrase", "DEFAULT_PASSPHRASE_2");
+
+  const candidateMap = new Map<string, { key: Buffer; keyId: string; source: string }>();
+
+  for (const { secret, source } of rawSecrets) {
+    // A: Decoded/derived 32-byte key (Base64/Hex/SHA256)
+    const primaryKey = deriveKeyFromSecret(secret);
+    const primaryKeyId = computeKeyId(primaryKey);
+    if (!candidateMap.has(primaryKeyId)) {
+      candidateMap.set(primaryKeyId, { key: primaryKey, keyId: primaryKeyId, source: `${source} (derived)` });
+    }
+
+    // B: Literal UTF-8 SHA-256 digest in case the key was previously treated as an ASCII string
+    const legacyKey = crypto.createHash("sha256").update(secret, "utf8").digest();
+    const legacyKeyId = computeKeyId(legacyKey);
+    if (!candidateMap.has(legacyKeyId)) {
+      candidateMap.set(legacyKeyId, { key: legacyKey, keyId: legacyKeyId, source: `${source} (legacy_sha256)` });
+    }
+  }
+
+  return Array.from(candidateMap.values());
 }
 
 /**
@@ -197,6 +299,7 @@ export async function executeBackup(options?: {
 
   // 6. Encrypt with AES-256-GCM (96-bit random IV, 128-bit auth tag)
   const key = getBackupEncryptionKey();
+  const keyId = computeKeyId(key);
   const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
 
@@ -205,6 +308,7 @@ export async function executeBackup(options?: {
 
   const encryptedEnvelope = JSON.stringify({
     format: "kekulama_encrypted_backup_v2",
+    keyId,
     manifest,
     iv: iv.toString("hex"),
     authTag: authTag.toString("hex"),
@@ -298,24 +402,55 @@ export interface RestoreResult {
 /**
  * Decrypts and unpacks a backup archive buffer.
  * Performs cryptographic auth-tag validation and SHA-256 integrity verification.
+ * Implements a resilient multi-key candidate fallback loop to safely restore archives
+ * encrypted with current, previous, or legacy keys without downtime.
  */
-export function decryptBackupArchive(archiveBuffer: Buffer): { manifest: BackupManifest; payload: any } {
+export function decryptBackupArchive(archiveBuffer: Buffer): { manifest: BackupManifest; payload: any; matchedKeySource?: string } {
   const envelope = JSON.parse(archiveBuffer.toString("utf-8"));
-  if (envelope.format !== "kekulama_encrypted_backup_v2" || !envelope.iv || !envelope.authTag || !envelope.ciphertext) {
+  if (
+    envelope.format !== "kekulama_encrypted_backup_v2" ||
+    !envelope.iv ||
+    !envelope.authTag ||
+    !envelope.ciphertext
+  ) {
     throw new Error("Invalid or corrupted backup archive envelope format.");
   }
 
-  const key = getBackupEncryptionKey();
   const iv = Buffer.from(envelope.iv, "hex");
   const authTag = Buffer.from(envelope.authTag, "hex");
   const ciphertextBuffer = Buffer.from(envelope.ciphertext, "base64");
+  const candidates = getBackupDecryptionCandidateKeys();
 
-  const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
-  decipher.setAuthTag(authTag);
+  // If envelope includes a keyId, prioritize matching candidate first
+  const envelopeKeyId: string | undefined = envelope.keyId;
+  const sortedCandidates = envelopeKeyId
+    ? [...candidates.filter((c) => c.keyId === envelopeKeyId), ...candidates.filter((c) => c.keyId !== envelopeKeyId)]
+    : candidates;
 
-  const decryptedRaw = Buffer.concat([decipher.update(ciphertextBuffer), decipher.final()]).toString("utf8");
+  let decryptedRaw: string | null = null;
+  let matchedSource: string | null = null;
+  let lastAuthError: Error | null = null;
 
-  // Cryptographic integrity verification
+  for (const candidate of sortedCandidates) {
+    try {
+      const decipher = crypto.createDecipheriv("aes-256-gcm", candidate.key, iv);
+      decipher.setAuthTag(authTag);
+      decryptedRaw = Buffer.concat([decipher.update(ciphertextBuffer), decipher.final()]).toString("utf8");
+      matchedSource = candidate.source;
+      break; // Successfully authenticated and decrypted
+    } catch (err: any) {
+      lastAuthError = err;
+      // GCM authentication failure; proceed to next candidate key
+    }
+  }
+
+  if (!decryptedRaw) {
+    throw new Error(
+      `Backup archive decryption failed: Unable to authenticate ciphertext with any available encryption key (tried ${sortedCandidates.length} candidate keys). Please verify BACKUP_ENCRYPTION_KEY or supply the legacy key in OLD_BACKUP_ENCRYPTION_KEY.`
+    );
+  }
+
+  // Cryptographic integrity verification against manifest SHA-256 checksum
   const computedHash = crypto.createHash("sha256").update(decryptedRaw, "utf8").digest("hex");
   if (computedHash !== envelope.manifest.sha256Checksum) {
     throw new Error(
@@ -324,7 +459,7 @@ export function decryptBackupArchive(archiveBuffer: Buffer): { manifest: BackupM
   }
 
   const payload = JSON.parse(decryptedRaw);
-  return { manifest: envelope.manifest, payload };
+  return { manifest: envelope.manifest, payload, matchedKeySource: matchedSource || undefined };
 }
 
 /**

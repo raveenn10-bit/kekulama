@@ -1,6 +1,6 @@
 import assert from "assert";
 import crypto from "crypto";
-import { decryptBackupArchive, BackupManifest } from "../../backup/backupEngine";
+import { decryptBackupArchive, deriveKeyFromSecret, BackupManifest } from "../../backup/backupEngine";
 
 console.log("=======================================================");
 console.log("  RUNNING GOOGLE DRIVE BACKUP & ENCRYPTION TESTS");
@@ -128,6 +128,97 @@ runTest("Vercel Cron Schedule is configured for once daily at 02:00 AM SL Time (
   assert.strictEqual(dom, "*", "Runs every day of month");
   assert.strictEqual(mon, "*", "Runs every month");
   assert.strictEqual(dow, "*", "Runs every day of week (once daily)");
+});
+
+// 5. Direct 32-Byte Base64 Key Derivation Test
+runTest("Direct 32-byte Base64 Key decodes to exact 32 bytes Buffer", () => {
+  const random32 = crypto.randomBytes(32);
+  const base64Key = random32.toString("base64");
+  const derived = deriveKeyFromSecret(base64Key);
+  assert.strictEqual(derived.length, 32, "Derived key is exactly 32 bytes");
+  assert(derived.equals(random32), "Base64 decodes directly to original 32 raw bytes");
+});
+
+// 6. Multi-Key Fallback and Key Rotation Restoration Test
+runTest("Restores legacy archive encrypted with old key after key rotation", () => {
+  // Simulate an old backup created with legacy passphrase
+  const oldSecret = "kekulama-luxury-backup-secure-passphrase-2026";
+  const oldKey = crypto.createHash("sha256").update(oldSecret, "utf8").digest();
+  const samplePayload = {
+    version: "2.0",
+    backupId: "bkp_legacy_rotation_test",
+    createdAt: new Date().toISOString(),
+    project: "kekulama",
+    collections: { bookings: [{ _id: "b_legacy", guestName: "Old Guest" }] },
+    storageFiles: [],
+  };
+  const rawJson = JSON.stringify(samplePayload);
+  const sha256Checksum = crypto.createHash("sha256").update(rawJson, "utf8").digest("hex");
+
+  const manifest: BackupManifest = {
+    version: "2.0",
+    backupId: "bkp_legacy_rotation_test",
+    createdAt: new Date().toISOString(),
+    project: "kekulama",
+    collections: { bookings: { count: 1, sampleIds: ["b_legacy"] } },
+    files: { count: 0, totalSizeBytes: 0, paths: [] },
+    sha256Checksum,
+    encryptionAlgorithm: "aes-256-gcm",
+  };
+
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", oldKey, iv);
+  const ciphertext = Buffer.concat([cipher.update(rawJson, "utf8"), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+
+  const envelope = JSON.stringify({
+    format: "kekulama_encrypted_backup_v2",
+    manifest,
+    iv: iv.toString("hex"),
+    authTag: authTag.toString("hex"),
+    ciphertext: ciphertext.toString("base64"),
+  });
+
+  // Now simulate environment having a NEW, rotated BACKUP_ENCRYPTION_KEY
+  const new32ByteKey = crypto.randomBytes(32).toString("base64");
+  process.env.BACKUP_ENCRYPTION_KEY = new32ByteKey;
+  process.env.OLD_BACKUP_ENCRYPTION_KEY = oldSecret;
+
+  // Decrypt should transparently test candidate keys and succeed!
+  const decrypted = decryptBackupArchive(Buffer.from(envelope, "utf-8"));
+  assert.strictEqual(decrypted.manifest.backupId, "bkp_legacy_rotation_test");
+  assert.strictEqual(decrypted.payload.collections.bookings[0].guestName, "Old Guest");
+});
+
+// 7. Strict Rejection with Unknown / Untrusted Key
+runTest("Rejects archive encrypted with completely unknown key", () => {
+  const alienKey = crypto.randomBytes(32);
+  const rawJson = JSON.stringify({ secret: "alien data" });
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", alienKey, iv);
+  const ciphertext = Buffer.concat([cipher.update(rawJson, "utf8"), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+
+  const envelope = JSON.stringify({
+    format: "kekulama_encrypted_backup_v2",
+    manifest: {
+      version: "2.0",
+      backupId: "bkp_alien",
+      createdAt: new Date().toISOString(),
+      project: "kekulama",
+      collections: {},
+      files: { count: 0, totalSizeBytes: 0, paths: [] },
+      sha256Checksum: crypto.createHash("sha256").update(rawJson, "utf8").digest("hex"),
+      encryptionAlgorithm: "aes-256-gcm",
+    },
+    iv: iv.toString("hex"),
+    authTag: authTag.toString("hex"),
+    ciphertext: ciphertext.toString("base64"),
+  });
+
+  assert.throws(() => {
+    decryptBackupArchive(Buffer.from(envelope, "utf-8"));
+  }, /Unable to authenticate ciphertext with any available encryption key/i);
 });
 
 console.log("\n=======================================================");
