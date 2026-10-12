@@ -129,6 +129,18 @@ const token2 = generateSecureToken();
 assert(token1.length === 32, "Generates 32-character hexadecimal token");
 assert(token1 !== token2, "Generates unique cryptographically secure tokens");
 
-console.log("\n=======================================================");
-console.log(`  ALL ${passedTests}/${totalTests} SECURITY TESTS PASSED!`);
-console.log("=======================================================\n");
+// 7. Authoritative Owner Authorization & UID Regression
+console.log("\n7. Authoritative Owner Authorization & UID Regression:");
+import("../authBridge").then(({ APPROVED_OWNER_UIDS }) => {
+  assert(APPROVED_OWNER_UIDS.includes("uaksPM6v5LRGmtR9BdYmVdNcksU2"), "Primary Owner UID is registered");
+  assert(APPROVED_OWNER_UIDS.includes("nfcCH0mfFMa1Yka50rBuXcRhCmY2"), "Secondary Owner UID is registered");
+  assert(!APPROVED_OWNER_UIDS.includes("attacker-fake-uid" as any), "Attacker UID is rejected");
+  assert(canPerform("CONFIRM_PAYMENT", "reception") === false, "Reception role rejected for Owner-only action");
+  assert(canPerform("REVERSE_PAYMENT", "reception") === false, "Reception role rejected for Payment reversal");
+  assert(canPerform("TRIGGER_BACKUP", "reception") === false, "Reception role rejected for Backup trigger");
+  assert(canPerform("CONFIRM_PAYMENT", "owner") === true, "Owner role authorized for payment confirmation");
+
+  console.log("\n=======================================================");
+  console.log(`  ALL ${passedTests}/${totalTests} SECURITY TESTS PASSED!`);
+  console.log("=======================================================\n");
+});

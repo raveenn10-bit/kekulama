@@ -1,5 +1,5 @@
-import { adminAuth, adminDb, logAuditEvent } from "@/lib/firebase/admin";
-import { UserRole } from "@/types/admin";
+import { adminAuth, adminDb, logAuditEvent } from "../firebase/admin";
+import { UserRole } from "../../types/admin";
 
 /**
  * Confirmed, immutable Owner UIDs for Kekulama Eco Cabana
@@ -47,40 +47,52 @@ export async function verifyFirebaseSessionOrToken(req: Request): Promise<Authen
     }
 
     if (!token) {
+      console.warn("[AUTH BRIDGE] Diagnostic: authenticated: false (missing bearer token/cookie)");
       return null;
     }
 
     // Verify token with Firebase Admin
     const decodedToken = await adminAuth.verifyIdToken(token);
     const uid = decodedToken.uid;
-    const email = decodedToken.email || "";
+    const email = (decodedToken.email || "").toLowerCase().trim();
 
     // Strictly enforce Owner privileges for verified owner UIDs, token claims, or Firestore role
     const isApprovedUid = APPROVED_OWNER_UIDS.includes(uid as typeof APPROVED_OWNER_UIDS[number]);
-    const isTokenOwnerClaim = decodedToken.role === "owner" || (decodedToken as any).admin === true;
+    const isTokenOwnerClaim =
+      (typeof decodedToken.role === "string" && decodedToken.role.toLowerCase() === "owner") ||
+      (decodedToken as any).admin === true;
 
     let role: UserRole = "reception";
+    let roleLookupSource = "default_reception";
 
-    if (isApprovedUid || isTokenOwnerClaim) {
+    if (isApprovedUid) {
       role = "owner";
+      roleLookupSource = "approved_owner_uid";
+    } else if (isTokenOwnerClaim) {
+      role = "owner";
+      roleLookupSource = "token_custom_claim";
     } else {
       // Check user record in Firestore
       try {
         const userDoc = await adminDb.collection("users").doc(uid).get();
         if (userDoc.exists) {
           const userData = userDoc.data();
-          if (userData?.role === "owner") {
+          const docRole = typeof userData?.role === "string" ? userData.role.toLowerCase().trim() : null;
+          if (docRole === "owner") {
             role = "owner";
-          } else if (userData?.role === "reception") {
+            roleLookupSource = "firestore_user_document";
+          } else if (docRole === "reception") {
             role = "reception";
+            roleLookupSource = "firestore_user_document";
           }
         }
-      } catch (dbErr) {
-        console.warn("[AUTH BRIDGE] Firestore user record lookup skipped:", dbErr);
+      } catch (dbErr: any) {
+        console.warn("[AUTH BRIDGE] Diagnostic: firestore lookup skipped:", dbErr?.message || dbErr);
       }
     }
 
     const isApprovedOwner = role === "owner";
+    console.log("[AUTH BRIDGE] Diagnostic: authenticated: true, roleLookup:", roleLookupSource, "ownerCheck:", isApprovedOwner ? "passed" : "rejected");
 
     return {
       uid,
@@ -88,8 +100,8 @@ export async function verifyFirebaseSessionOrToken(req: Request): Promise<Authen
       role,
       isApprovedOwner,
     };
-  } catch (err) {
-    console.error("[AUTH BRIDGE] Failed to verify Firebase token:", err);
+  } catch (err: any) {
+    console.error("[AUTH BRIDGE] Diagnostic: token verification failed:", err?.message || err);
     return null;
   }
 }

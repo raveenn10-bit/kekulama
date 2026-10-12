@@ -10,7 +10,7 @@ function getFirebaseAdminApp(): App {
     return existingApps[0]!;
   }
 
-  const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "kekulama";
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
@@ -30,8 +30,8 @@ function getFirebaseAdminApp(): App {
   }
 
   return initializeApp({
-    projectId: projectId || "kekulama-eco-cabana-dev",
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "kekulama-eco-cabana-dev.appspot.com",
+    projectId: projectId || "kekulama",
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "kekulama.firebasestorage.app",
   });
 }
 
