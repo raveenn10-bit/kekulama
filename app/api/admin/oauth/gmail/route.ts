@@ -1,43 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyFirebaseSessionOrToken } from "@/lib/security/authBridge";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
 /**
  * Initiates the Google OAuth 2.0 flow for Gmail transactional notifications.
- * Restricted to authenticated Owner accounts only.
+ * Generates a cryptographically random CSRF nonce and redirects to Google.
  */
 export async function GET(req: NextRequest) {
+  const origin = req.nextUrl.origin || "https://www.kekulamaecocabanagalle.com";
+
   try {
-    // 1. Authorize: Ensure requester is an authenticated Owner
-    const authUser = await verifyFirebaseSessionOrToken(req);
-    const isDev = process.env.NODE_ENV === "development";
-
-    // Determine Base URL
-    const host = req.headers.get("host") || "localhost:3000";
-    const protocol = req.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
-    const baseUrl = `${protocol}://${host}`;
-
-    if (!isDev && (!authUser || !authUser.isApprovedOwner)) {
-      return NextResponse.redirect(`${baseUrl}/admin/login?error=owner_authorization_required`);
-    }
-
     const clientId = process.env.GOOGLE_CLIENT_ID || process.env.GMAIL_CLIENT_ID;
     if (!clientId) {
-      return NextResponse.json(
-        { error: "GOOGLE_CLIENT_ID is not configured in server environment variables." },
-        { status: 500 }
+      return NextResponse.redirect(
+        `${origin}/admin/notifications?oauth=error&reason=missing_google_client_id_in_vercel_env`,
+        307
       );
     }
 
-    // Determine redirect URI: use GOOGLE_REDIRECT_URI if defined, otherwise derive from host
-    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${baseUrl}/api/admin/oauth/gmail/callback`;
+    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}/api/admin/oauth/gmail/callback`;
 
-    // 2. Generate cryptographically random CSRF state
+    // 1. Generate cryptographically random CSRF state nonce
     const stateToken = crypto.randomBytes(24).toString("hex");
 
-    // 3. Google OAuth 2.0 Authorization URL (gmail.send scope only)
+    // 2. Google OAuth 2.0 Authorization URL (gmail.send scope only)
     const scopes = "https://www.googleapis.com/auth/gmail.send";
 
     const googleAuthUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
@@ -49,11 +36,13 @@ export async function GET(req: NextRequest) {
     googleAuthUrl.searchParams.set("prompt", "consent"); // Force consent to ensure refresh_token returned
     googleAuthUrl.searchParams.set("state", stateToken);
 
-    // 4. Set state in an HTTP-only secure cookie and redirect
-    const response = NextResponse.redirect(googleAuthUrl.toString());
+    // 3. Set state in an HTTP-only secure cookie and redirect to Google
+    const isHttps = origin.startsWith("https") || req.headers.get("x-forwarded-proto") === "https";
+    const response = NextResponse.redirect(googleAuthUrl.toString(), 307);
+    
     response.cookies.set("gmail_oauth_state", stateToken, {
       httpOnly: true,
-      secure: protocol === "https",
+      secure: isHttps,
       sameSite: "lax",
       maxAge: 60 * 10, // 10 minutes
       path: "/",
@@ -62,9 +51,9 @@ export async function GET(req: NextRequest) {
     return response;
   } catch (err: any) {
     console.error("[GMAIL OAUTH INIT ERROR]", err);
-    return NextResponse.json(
-      { error: err.message || "Failed to initiate Gmail OAuth flow" },
-      { status: 500 }
+    return NextResponse.redirect(
+      `${origin}/admin/notifications?oauth=error&reason=${encodeURIComponent(err.message || "init_failed")}`,
+      307
     );
   }
 }

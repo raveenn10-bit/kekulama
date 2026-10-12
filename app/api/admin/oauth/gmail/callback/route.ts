@@ -13,11 +13,9 @@ export const dynamic = "force-dynamic";
  * the encrypted refresh token at rest in Cloud Firestore.
  */
 export async function GET(req: NextRequest) {
-  const host = req.headers.get("host") || "localhost:3000";
-  const protocol = req.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
-  const baseUrl = `${protocol}://${host}`;
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${baseUrl}/api/admin/oauth/gmail/callback`;
-  const notificationSettingsUrl = `${baseUrl}/admin/notifications`;
+  const origin = req.nextUrl.origin || "https://www.kekulamaecocabanagalle.com";
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}/api/admin/oauth/gmail/callback`;
+  const notificationSettingsUrl = `${origin}/admin/notifications`;
 
   try {
     const { searchParams } = new URL(req.url);
@@ -53,9 +51,8 @@ export async function GET(req: NextRequest) {
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET || process.env.GMAIL_CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
-      console.error("[GMAIL OAUTH CALLBACK] Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET.");
       return NextResponse.redirect(
-        `${notificationSettingsUrl}?oauth=error&reason=server_credentials_unconfigured`
+        `${notificationSettingsUrl}?oauth=error&reason=missing_google_credentials_in_vercel_env`
       );
     }
 
