@@ -35,6 +35,13 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       setUser(currentUser);
       if (currentUser) {
         try {
+          const idToken = await currentUser.getIdToken();
+          document.cookie = `session=${idToken}; path=/; max-age=3600; SameSite=Lax`;
+        } catch {
+          // Ignore cookie setting errors
+        }
+
+        try {
           const userDocRef = doc(db, "users", currentUser.uid);
           const snap = await getDoc(userDocRef);
           if (snap.exists()) {
@@ -62,6 +69,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
           setRole("owner");
         }
       } else {
+        document.cookie = "session=; path=/; max-age=0; SameSite=Lax";
         setAdminProfile(null);
         setRole(null);
       }
@@ -76,6 +84,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    document.cookie = "session=; path=/; max-age=0; SameSite=Lax";
     await signOut(auth);
   };
 
