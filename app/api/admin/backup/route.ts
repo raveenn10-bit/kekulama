@@ -1,70 +1,76 @@
-import { NextResponse } from "next/server";
-import crypto from "crypto";
-import { adminDb, logAuditEvent } from "@/lib/firebase/admin";
+import { NextRequest, NextResponse } from "next/server";
+import { requireOwner } from "@/lib/security/authBridge";
+import { adminDb } from "@/lib/firebase/admin";
+import { executeBackup } from "@/lib/backup/backupEngine";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60; // Extend Vercel function duration for upload
 
-export async function POST(req: Request) {
+/**
+ * GET: Lists backup history for authorized Owners.
+ * POST: Initiates an immediate manual encrypted backup to Google Drive.
+ */
+export async function GET(req: NextRequest) {
   try {
-    const collectionsToBackup = ["bookings", "payments", "rooms", "users", "audit_logs"];
-    const backupData: Record<string, any[]> = {};
-
-    for (const colName of collectionsToBackup) {
-      const snap = await adminDb.collection(colName).get();
-      backupData[colName] = snap.docs.map((d) => ({ _id: d.id, ...d.data() }));
+    const owner = await requireOwner(req);
+    if (!owner) {
+      return NextResponse.json(
+        { error: "Forbidden: Owner access required." },
+        { status: 403 }
+      );
     }
 
-    const payload = JSON.stringify({
-      version: "1.0",
-      project: "kekulama",
-      timestamp: new Date().toISOString(),
-      collections: backupData,
-    });
+    const snap = await adminDb
+      .collection("backups")
+      .orderBy("createdAt", "desc")
+      .limit(30)
+      .get();
 
-    // AES-256 Encryption
-    const encryptionKey = process.env.BACKUP_ENCRYPTION_KEY || "kekulama-luxury-backup-secure-passphrase-2026";
-    const key = crypto.createHash("sha256").update(encryptionKey).digest();
-    const iv = crypto.randomBytes(16);
+    const backups = snap.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    }));
 
-    const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
-    let encrypted = cipher.update(payload, "utf8", "hex");
-    encrypted += cipher.final("hex");
+    return NextResponse.json({ success: true, backups });
+  } catch (err: any) {
+    console.error("[BACKUP LIST ERROR]", err);
+    return NextResponse.json(
+      { error: err?.message || "Failed to retrieve backup history." },
+      { status: 500 }
+    );
+  }
+}
 
-    const finalArchive = JSON.stringify({
-      iv: iv.toString("hex"),
-      data: encrypted,
-      timestamp: new Date().toISOString(),
-    });
+export async function POST(req: NextRequest) {
+  try {
+    const owner = await requireOwner(req);
+    if (!owner) {
+      return NextResponse.json(
+        { error: "Forbidden: Owner access required." },
+        { status: 403 }
+      );
+    }
 
-    const filename = `kekulama_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.enc`;
-
-    // Save record in backups collection
-    await adminDb.collection("backups").add({
-      filename,
-      sizeBytes: Buffer.byteLength(finalArchive),
-      collectionsBackedUp: collectionsToBackup,
-      createdAt: new Date().toISOString(),
-      status: "success",
-    });
-
-    await logAuditEvent({
-      actorId: "owner",
-      actorRole: "owner",
-      action: "BACKUP_TRIGGERED",
-      targetResource: `backups/${filename}`,
-      timestamp: new Date().toISOString(),
+    const result = await executeBackup({
+      actorId: owner.uid,
+      actorEmail: owner.email,
+      triggeredBy: "manual",
     });
 
     return NextResponse.json({
       success: true,
-      filename,
-      sizeBytes: Buffer.byteLength(finalArchive),
-      message: "Encrypted backup archive created successfully.",
+      backupId: result.backupId,
+      filename: result.filename,
+      sizeBytes: result.sizeBytes,
+      sha256Checksum: result.sha256Checksum,
+      driveFileId: result.driveFile.id,
+      manifest: result.manifest,
+      message: `Encrypted backup successfully created and uploaded to Google Drive.`,
     });
   } catch (err: any) {
-    console.error("Backup error:", err);
+    console.error("[MANUAL BACKUP ERROR]", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Failed to generate backup archive." },
+      { success: false, error: err?.message || "Failed to execute manual backup." },
       { status: 500 }
     );
   }
