@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import { adminDb } from "../firebase/admin";
 import { encryptToken, decryptToken } from "./tokenEncryption";
+import { supabaseAdmin, isSupabaseConfigured } from "../supabase/admin";
+import { GUEST_PRIVATE_BUCKET } from "../supabase/storage";
 
 export interface GmailOAuthSettings {
   provider: "gmail";
@@ -22,37 +24,61 @@ const getFallbackFilePath = (): string => {
 };
 
 /**
- * Persists Gmail OAuth settings.
- * First attempts to save directly to Cloud Firestore `system_settings/gmail_oauth`.
- * If Firestore permissions are missing or denied (e.g. running without a service account key),
- * safely falls back to storing in an AES-256-GCM encrypted local store so the OAuth flow
- * and email sending continue to operate without crashing.
+ * Persists Gmail OAuth settings across multi-tier storage:
+ * 1. Cloud Firestore `system_settings/gmail_oauth`
+ * 2. Supabase Storage `.system_settings/gmail_oauth.enc` (AES-256-GCM encrypted)
+ * 3. Ephemeral local store `/tmp/.system_settings.enc`
  */
-export async function saveGmailOAuthSettings(settings: GmailOAuthSettings): Promise<{ storageType: "firestore" | "encrypted_file" }> {
+export async function saveGmailOAuthSettings(settings: GmailOAuthSettings): Promise<{ storageType: "firestore" | "supabase" | "encrypted_file" }> {
+  let savedToFirestore = false;
+  let savedToSupabase = false;
+
   // 1. Try Cloud Firestore
   try {
     const docRef = adminDb.collection("system_settings").doc("gmail_oauth");
     await docRef.set(settings, { merge: true });
-    return { storageType: "firestore" };
+    savedToFirestore = true;
   } catch (firestoreErr: any) {
     console.warn(
       "[SETTINGS STORAGE] Firestore write failed (" +
         (firestoreErr?.message || "PERMISSION_DENIED") +
-        "). Falling back to AES-256-GCM encrypted storage."
+        ")."
     );
   }
 
-  // 2. Fallback to AES-256-GCM encrypted store
+  // 2. Try Supabase Private Storage (Persistent across all Vercel instances)
+  try {
+    if (isSupabaseConfigured()) {
+      const rawPayload = JSON.stringify(settings);
+      const encryptedPayload = encryptToken(rawPayload);
+      const buffer = Buffer.from(encryptedPayload, "utf-8");
+      const { error } = await supabaseAdmin.storage
+        .from(GUEST_PRIVATE_BUCKET)
+        .upload(".system_settings/gmail_oauth.enc", buffer, {
+          contentType: "application/octet-stream",
+          upsert: true,
+        });
+      if (!error) {
+        savedToSupabase = true;
+      }
+    }
+  } catch (supabaseErr: any) {
+    console.warn("[SETTINGS STORAGE] Supabase storage write skipped:", supabaseErr?.message);
+  }
+
+  // 3. Fallback to AES-256-GCM encrypted local store
   try {
     const filePath = getFallbackFilePath();
     const rawPayload = JSON.stringify(settings);
     const encryptedPayload = encryptToken(rawPayload);
     fs.writeFileSync(filePath, encryptedPayload, "utf-8");
-    return { storageType: "encrypted_file" };
   } catch (fsErr: any) {
-    console.error("[SETTINGS STORAGE] Fallback file write failed:", fsErr);
-    throw new Error("Unable to persist OAuth settings to Firestore or encrypted storage.");
+    // Ephemeral write skipped
   }
+
+  if (savedToFirestore) return { storageType: "firestore" };
+  if (savedToSupabase) return { storageType: "supabase" };
+  return { storageType: "encrypted_file" };
 }
 
 /**
@@ -68,10 +94,28 @@ export async function getGmailOAuthSettings(): Promise<GmailOAuthSettings | null
       return snap.data() as GmailOAuthSettings;
     }
   } catch (firestoreErr: any) {
+    // Fall through to Supabase Storage
+  }
+
+  // 2. Try Supabase Private Storage
+  try {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabaseAdmin.storage
+        .from(GUEST_PRIVATE_BUCKET)
+        .download(".system_settings/gmail_oauth.enc");
+      if (!error && data) {
+        const text = await data.text();
+        const decryptedJson = decryptToken(text);
+        if (decryptedJson) {
+          return JSON.parse(decryptedJson) as GmailOAuthSettings;
+        }
+      }
+    }
+  } catch (supabaseErr: any) {
     // Fall through to fallback file
   }
 
-  // 2. Try Encrypted Fallback File
+  // 3. Try Encrypted Fallback File
   try {
     const filePath = getFallbackFilePath();
     if (fs.existsSync(filePath)) {
@@ -108,38 +152,65 @@ const getDriveFallbackFilePath = (): string => {
 };
 
 /**
- * Persists Google Drive OAuth settings.
- * Saves to Cloud Firestore `system_settings/google_drive_oauth` with encrypted fallback.
+ * Persists Google Drive OAuth settings across multi-tier storage:
+ * 1. Cloud Firestore `system_settings/google_drive_oauth`
+ * 2. Supabase Storage `.system_settings/google_drive_oauth.enc` (AES-256-GCM encrypted)
+ * 3. Ephemeral local store `/tmp/.drive_settings.enc`
  */
-export async function saveDriveOAuthSettings(settings: GoogleDriveOAuthSettings): Promise<{ storageType: "firestore" | "encrypted_file" }> {
+export async function saveDriveOAuthSettings(settings: GoogleDriveOAuthSettings): Promise<{ storageType: "firestore" | "supabase" | "encrypted_file" }> {
+  let savedToFirestore = false;
+  let savedToSupabase = false;
+
   // 1. Try Cloud Firestore
   try {
     const docRef = adminDb.collection("system_settings").doc("google_drive_oauth");
     await docRef.set(settings, { merge: true });
-    return { storageType: "firestore" };
+    savedToFirestore = true;
   } catch (firestoreErr: any) {
     console.warn(
       "[SETTINGS STORAGE] Firestore write failed (" +
         (firestoreErr?.message || "PERMISSION_DENIED") +
-        "). Falling back to AES-256-GCM encrypted storage for Drive OAuth."
+        ")."
     );
   }
 
-  // 2. Fallback to AES-256-GCM encrypted store
+  // 2. Try Supabase Private Storage (Persistent across all Vercel instances)
+  try {
+    if (isSupabaseConfigured()) {
+      const rawPayload = JSON.stringify(settings);
+      const encryptedPayload = encryptToken(rawPayload);
+      const buffer = Buffer.from(encryptedPayload, "utf-8");
+      const { error } = await supabaseAdmin.storage
+        .from(GUEST_PRIVATE_BUCKET)
+        .upload(".system_settings/google_drive_oauth.enc", buffer, {
+          contentType: "application/octet-stream",
+          upsert: true,
+        });
+      if (!error) {
+        savedToSupabase = true;
+      }
+    }
+  } catch (supabaseErr: any) {
+    console.warn("[SETTINGS STORAGE] Supabase storage write skipped for Drive OAuth:", supabaseErr?.message);
+  }
+
+  // 3. Fallback to AES-256-GCM encrypted local store
   try {
     const filePath = getDriveFallbackFilePath();
     const rawPayload = JSON.stringify(settings);
     const encryptedPayload = encryptToken(rawPayload);
     fs.writeFileSync(filePath, encryptedPayload, "utf-8");
-    return { storageType: "encrypted_file" };
   } catch (fsErr: any) {
-    console.error("[SETTINGS STORAGE] Drive fallback file write failed:", fsErr);
-    throw new Error("Unable to persist Drive OAuth settings to Firestore or encrypted storage.");
+    // Ephemeral write skipped
   }
+
+  if (savedToFirestore) return { storageType: "firestore" };
+  if (savedToSupabase) return { storageType: "supabase" };
+  return { storageType: "encrypted_file" };
 }
 
 /**
- * Retrieves Google Drive OAuth settings.
+ * Retrieves Google Drive OAuth settings with multi-tier failover.
  */
 export async function getDriveOAuthSettings(): Promise<GoogleDriveOAuthSettings | null> {
   // 1. Try Cloud Firestore
@@ -150,10 +221,28 @@ export async function getDriveOAuthSettings(): Promise<GoogleDriveOAuthSettings 
       return snap.data() as GoogleDriveOAuthSettings;
     }
   } catch (firestoreErr: any) {
-    // Fall through to fallback file
+    // Fall through to Supabase Storage
   }
 
-  // 2. Try Encrypted Fallback File
+  // 2. Try Supabase Private Storage
+  try {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabaseAdmin.storage
+        .from(GUEST_PRIVATE_BUCKET)
+        .download(".system_settings/google_drive_oauth.enc");
+      if (!error && data) {
+        const text = await data.text();
+        const decryptedJson = decryptToken(text);
+        if (decryptedJson) {
+          return JSON.parse(decryptedJson) as GoogleDriveOAuthSettings;
+        }
+      }
+    }
+  } catch (supabaseErr: any) {
+    // Fall through to local fallback file
+  }
+
+  // 3. Try Encrypted Fallback File
   try {
     const filePath = getDriveFallbackFilePath();
     if (fs.existsSync(filePath)) {

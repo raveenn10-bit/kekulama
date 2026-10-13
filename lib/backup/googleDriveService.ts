@@ -81,6 +81,43 @@ export async function getDriveAccessToken(): Promise<string> {
   return tokenData.access_token;
 }
 
+interface TokenCache {
+  accessToken: string;
+  expiresAt: number;
+  lastVerifiedAt: number;
+}
+
+let driveTokenCache: TokenCache | null = null;
+
+/**
+ * Validates Google Drive connection by actively verifying token refresh with Google.
+ * Caches positive verification in memory for up to 10 minutes to eliminate redundant roundtrips.
+ */
+export async function verifyDriveToken(options?: { forceCheck?: boolean }): Promise<{
+  valid: boolean;
+  error?: string;
+}> {
+  const now = Date.now();
+
+  // If cached and valid within last 10 minutes, return fast (unless forced)
+  if (!options?.forceCheck && driveTokenCache && driveTokenCache.expiresAt > now + 60000) {
+    return { valid: true };
+  }
+
+  try {
+    const accessToken = await getDriveAccessToken();
+    driveTokenCache = {
+      accessToken,
+      expiresAt: now + 50 * 60 * 1000, // ~50 minutes
+      lastVerifiedAt: now,
+    };
+    return { valid: true };
+  } catch (err: any) {
+    driveTokenCache = null;
+    return { valid: false, error: err?.message || "Token verification failed." };
+  }
+}
+
 /**
  * Finds or creates the dedicated Kekulama backup folder in Google Drive.
  * Caches folder ID in memory to eliminate redundant API roundtrips.

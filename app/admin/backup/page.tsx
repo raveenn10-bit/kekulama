@@ -43,6 +43,8 @@ interface DriveStatus {
   folderName: string;
   status: string;
   updatedAt?: string;
+  error?: string | null;
+  verified?: boolean;
 }
 
 interface RestorePreviewData {
@@ -285,12 +287,23 @@ function AdminBackupContent() {
       </div>
 
       {/* OAuth Callback Alerts - Reconciled with Backend Verification */}
-      {oauthBanner?.status === "success" && (loadingStatus || driveStatus?.connected) && (
+      {oauthBanner?.status === "success" && loadingStatus && (
+        <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-center justify-between gap-2 shadow-sm">
+          <div className="flex items-center gap-2">
+            <RefreshCw size={16} className="text-blue-600 animate-spin shrink-0" />
+            <div>
+              <span className="font-bold">Verifying Google Drive Connection:</span> Validating OAuth token and secure cloud vault storage...
+            </div>
+          </div>
+        </div>
+      )}
+
+      {oauthBanner?.status === "success" && !loadingStatus && driveStatus?.connected && (
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between gap-2 shadow-sm">
           <div className="flex items-center gap-2">
             <ShieldCheck size={18} className="text-emerald-600 shrink-0" />
             <div>
-              <span className="font-bold">Google Drive Connected Successfully!</span> Authorized destination:{" "}
+              <span className="font-bold">Google Drive Connected & Verified!</span> Authorized destination:{" "}
               <span className="font-mono">{oauthBanner.email || driveStatus?.email || "kekulamaecocabana@gmail.com"}</span>. Daily 02:00 AM automated backups are active.
             </div>
           </div>
@@ -309,7 +322,7 @@ function AdminBackupContent() {
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} className="text-amber-600 shrink-0" />
             <div>
-              <span className="font-bold">OAuth Redirect Received:</span> Google completed authorization, but the backend could not verify a decryptable refresh token in storage. Please click <strong>Reconnect Google Drive</strong> to grant offline consent.
+              <span className="font-bold">Google Drive Not Connected:</span> Google returned from authorization, but backend token validation could not verify a live refresh token ({driveStatus?.error || "offline refresh token missing"}). Please click <strong>Connect Google Drive</strong> below.
             </div>
           </div>
           <button
@@ -364,7 +377,11 @@ function AdminBackupContent() {
               <Cloud size={16} className="text-blue-600" />
               <span>Google Drive Integration</span>
             </div>
-            {driveStatus?.connected ? (
+            {loadingStatus ? (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 uppercase">
+                <RefreshCw size={11} className="animate-spin" /> Verifying...
+              </span>
+            ) : driveStatus?.connected ? (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase">
                 <CheckCircle2 size={11} /> Connected
               </span>
