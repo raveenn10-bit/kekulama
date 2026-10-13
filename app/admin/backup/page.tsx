@@ -84,6 +84,14 @@ function AdminBackupContent() {
   const [restorePreview, setRestorePreview] = useState<RestorePreviewData | null>(null);
   const [restoreSuccessMsg, setRestoreSuccessMsg] = useState<string | null>(null);
 
+  // Direct Token Config & Testing State
+  const [showDirectConfig, setShowDirectConfig] = useState(false);
+  const [directTokenInput, setDirectTokenInput] = useState("");
+  const [directFolderId, setDirectFolderId] = useState("1XEvQdwiNbc47u1z8xkwNpYE7ajy1XZEL");
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [syncingToken, setSyncingToken] = useState(false);
+  const [directFeedback, setDirectFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
   useEffect(() => {
     if (oauthStatus) {
       setOauthBanner({
@@ -262,6 +270,70 @@ function AdminBackupContent() {
     }
   };
 
+  // Test live Google Drive connection
+  const handleTestConnection = async () => {
+    setTestingConnection(true);
+    setDirectFeedback(null);
+    try {
+      const token = await getIdToken();
+      const res = await fetch("/api/admin/backup/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ action: "test" }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setDirectFeedback({ type: "success", message: "Google Drive API verified! Connection is live and active." });
+        await fetchStatusAndHistory();
+      } else {
+        setDirectFeedback({ type: "error", message: data.error || "Token is invalid or not yet connected." });
+      }
+    } catch (err: any) {
+      setDirectFeedback({ type: "error", message: err.message || "Failed to test connection." });
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
+  // Direct Refresh Token Save & Auto-Verify
+  const handleDirectSync = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!directTokenInput.trim()) return;
+    setSyncingToken(true);
+    setDirectFeedback(null);
+    try {
+      const token = await getIdToken();
+      const res = await fetch("/api/admin/backup/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          action: "sync",
+          refreshToken: directTokenInput.trim(),
+          folderId: directFolderId.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDirectFeedback({ type: "success", message: data.message || "Connected and verified successfully!" });
+        setDirectTokenInput("");
+        setShowDirectConfig(false);
+        await fetchStatusAndHistory();
+      } else {
+        setDirectFeedback({ type: "error", message: data.error || "Failed to save and verify token." });
+      }
+    } catch (err: any) {
+      setDirectFeedback({ type: "error", message: err.message || "Network error." });
+    } finally {
+      setSyncingToken(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
@@ -278,8 +350,9 @@ function AdminBackupContent() {
 
         <button
           onClick={handleBackupNow}
-          disabled={backingUp}
-          className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer disabled:opacity-50 shrink-0"
+          disabled={backingUp || !driveStatus?.connected}
+          title={!driveStatus?.connected ? "Please connect Google Drive below before running manual backups" : "Trigger immediate encrypted backup"}
+          className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
         >
           {backingUp ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
           <span>{backingUp ? "Backing up..." : "Run Backup Now"}</span>
@@ -407,7 +480,7 @@ function AdminBackupContent() {
             </div>
           </div>
 
-          <div className="pt-1">
+          <div className="pt-2 flex flex-wrap items-center gap-2">
             <a
               href="/api/admin/oauth/drive"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-sm transition-all"
@@ -415,7 +488,89 @@ function AdminBackupContent() {
               <ExternalLink size={13} />
               <span>{driveStatus?.connected ? "Reconnect Google Drive" : "Connect Google Drive"}</span>
             </a>
+
+            <button
+              type="button"
+              onClick={handleTestConnection}
+              disabled={testingConnection}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw size={12} className={testingConnection ? "animate-spin" : ""} />
+              <span>{testingConnection ? "Testing..." : "Test Live Connection"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowDirectConfig(!showDirectConfig);
+                setDirectFeedback(null);
+              }}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl text-xs font-medium transition-all cursor-pointer"
+            >
+              <span>{showDirectConfig ? "Hide Manual Config" : "Manual / Direct Token Option"}</span>
+            </button>
           </div>
+
+          {/* Direct feedback alert */}
+          {directFeedback && (
+            <div
+              className={`p-3 rounded-xl text-xs flex items-center gap-2 border ${
+                directFeedback.type === "success"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                  : "bg-rose-50 border-rose-200 text-rose-800"
+              }`}
+            >
+              {directFeedback.type === "success" ? (
+                <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
+              ) : (
+                <AlertCircle size={14} className="text-rose-600 shrink-0" />
+              )}
+              <span>{directFeedback.message}</span>
+            </div>
+          )}
+
+          {/* Expandable Direct Refresh Token Configuration Form */}
+          {showDirectConfig && (
+            <form onSubmit={handleDirectSync} className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3 mt-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-800 uppercase tracking-wider">
+                  Direct Token Sync & Storage (Auto-Failover)
+                </span>
+                <span className="text-[10px] text-slate-500 font-mono">AES-256-GCM Encrypted</span>
+              </div>
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                If OAuth popup or third-party cookies fail in your browser, paste the Google Cloud Refresh Token directly below. It will be verified against Google APIs and permanently saved into Supabase PostgreSQL.
+              </p>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-slate-700 block">
+                  Google Refresh Token:
+                </label>
+                <input
+                  type="password"
+                  value={directTokenInput}
+                  onChange={(e) => setDirectTokenInput(e.target.value)}
+                  placeholder="1//04..."
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="submit"
+                  disabled={syncingToken || !directTokenInput.trim()}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {syncingToken ? "Verifying & Saving..." : "Save & Auto-Verify"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDirectConfig(false)}
+                  className="px-2.5 py-1.5 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
         </div>
 
         {/* Schedule & Encryption Policy Card */}

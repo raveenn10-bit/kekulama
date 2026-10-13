@@ -25,28 +25,46 @@ const getFallbackFilePath = (): string => {
 
 /**
  * Persists Gmail OAuth settings across multi-tier storage:
- * 1. Cloud Firestore `system_settings/gmail_oauth`
- * 2. Supabase Storage `.system_settings/gmail_oauth.enc` (AES-256-GCM encrypted)
- * 3. Ephemeral local store `/tmp/.system_settings.enc`
+ * 1. Supabase PostgreSQL `public.system_settings` (ACID persistent across all Vercel instances)
+ * 2. Cloud Firestore `system_settings/gmail_oauth` (with 2.5s timeout)
+ * 3. Supabase Private Storage `system_settings/gmail_oauth.enc`
+ * 4. Ephemeral local store `/tmp/.system_settings.enc`
  */
-export async function saveGmailOAuthSettings(settings: GmailOAuthSettings): Promise<{ storageType: "firestore" | "supabase" | "encrypted_file" }> {
+export async function saveGmailOAuthSettings(settings: GmailOAuthSettings): Promise<{ storageType: "supabase_db" | "firestore" | "supabase" | "encrypted_file" }> {
+  let savedToSupabaseDb = false;
   let savedToFirestore = false;
-  let savedToSupabase = false;
+  let savedToSupabaseStorage = false;
 
-  // 1. Try Cloud Firestore
+  // 1. Tier 1: Supabase PostgreSQL Database (Global persistent store)
   try {
-    const docRef = adminDb.collection("system_settings").doc("gmail_oauth");
-    await docRef.set(settings, { merge: true });
-    savedToFirestore = true;
-  } catch (firestoreErr: any) {
-    console.warn(
-      "[SETTINGS STORAGE] Firestore write failed (" +
-        (firestoreErr?.message || "PERMISSION_DENIED") +
-        ")."
-    );
+    if (isSupabaseConfigured()) {
+      const { error } = await supabaseAdmin.from("system_settings").upsert({
+        id: "gmail_oauth",
+        data: settings,
+        updated_at: new Date().toISOString(),
+      });
+      if (!error) {
+        savedToSupabaseDb = true;
+      } else {
+        console.warn("[SETTINGS STORAGE] Supabase DB write failed for Gmail:", error.message);
+      }
+    }
+  } catch (dbErr: any) {
+    console.warn("[SETTINGS STORAGE] Supabase DB exception:", dbErr?.message);
   }
 
-  // 2. Try Supabase Private Storage (Persistent across all Vercel instances)
+  // 2. Tier 2: Cloud Firestore (with 2.5s timeout)
+  try {
+    const docRef = adminDb.collection("system_settings").doc("gmail_oauth");
+    const writePromise = docRef.set(settings, { merge: true });
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2500));
+    await Promise.race([writePromise, timeoutPromise]);
+    savedToFirestore = true;
+  } catch (firestoreErr: any) {
+    // Firestore write timed out or skipped
+  }
+
+  // 3. Tier 3: Supabase Private Storage
   try {
     if (isSupabaseConfigured()) {
       const rawPayload = JSON.stringify(settings);
@@ -54,55 +72,67 @@ export async function saveGmailOAuthSettings(settings: GmailOAuthSettings): Prom
       const buffer = Buffer.from(encryptedPayload, "utf-8");
       const { error } = await supabaseAdmin.storage
         .from(GUEST_PRIVATE_BUCKET)
-        .upload(".system_settings/gmail_oauth.enc", buffer, {
+        .upload("system_settings/gmail_oauth.enc", buffer, {
           contentType: "application/octet-stream",
           upsert: true,
         });
       if (!error) {
-        savedToSupabase = true;
+        savedToSupabaseStorage = true;
       }
     }
-  } catch (supabaseErr: any) {
-    console.warn("[SETTINGS STORAGE] Supabase storage write skipped:", supabaseErr?.message);
-  }
+  } catch (supabaseErr: any) {}
 
-  // 3. Fallback to AES-256-GCM encrypted local store
+  // 4. Tier 4: Fallback to AES-256-GCM encrypted local store
   try {
     const filePath = getFallbackFilePath();
     const rawPayload = JSON.stringify(settings);
     const encryptedPayload = encryptToken(rawPayload);
     fs.writeFileSync(filePath, encryptedPayload, "utf-8");
-  } catch (fsErr: any) {
-    // Ephemeral write skipped
-  }
+  } catch (fsErr: any) {}
 
+  if (savedToSupabaseDb) return { storageType: "supabase_db" };
   if (savedToFirestore) return { storageType: "firestore" };
-  if (savedToSupabase) return { storageType: "supabase" };
+  if (savedToSupabaseStorage) return { storageType: "supabase" };
   return { storageType: "encrypted_file" };
 }
 
 /**
  * Retrieves Gmail OAuth settings.
- * Checks Cloud Firestore first, then falls back to the encrypted local store.
+ * Checks Supabase PostgreSQL first, then Firestore, then Supabase Storage, then local store.
  */
 export async function getGmailOAuthSettings(): Promise<GmailOAuthSettings | null> {
-  // 1. Try Cloud Firestore
+  // 1. Tier 1: Supabase PostgreSQL Database (Fastest & Authoritative)
+  try {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabaseAdmin
+        .from("system_settings")
+        .select("data")
+        .eq("id", "gmail_oauth")
+        .maybeSingle();
+
+      if (!error && data?.data) {
+        return data.data as GmailOAuthSettings;
+      }
+    }
+  } catch (dbErr: any) {}
+
+  // 2. Tier 2: Cloud Firestore (with 2.5s timeout)
   try {
     const docRef = adminDb.collection("system_settings").doc("gmail_oauth");
-    const snap = await docRef.get();
-    if (snap.exists) {
+    const getPromise = docRef.get();
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500));
+    const snap = (await Promise.race([getPromise, timeoutPromise])) as any;
+    if (snap && snap.exists) {
       return snap.data() as GmailOAuthSettings;
     }
-  } catch (firestoreErr: any) {
-    // Fall through to Supabase Storage
-  }
+  } catch (firestoreErr: any) {}
 
-  // 2. Try Supabase Private Storage
+  // 3. Tier 3: Supabase Private Storage
   try {
     if (isSupabaseConfigured()) {
       const { data, error } = await supabaseAdmin.storage
         .from(GUEST_PRIVATE_BUCKET)
-        .download(".system_settings/gmail_oauth.enc");
+        .download("system_settings/gmail_oauth.enc");
       if (!error && data) {
         const text = await data.text();
         const decryptedJson = decryptToken(text);
@@ -111,11 +141,9 @@ export async function getGmailOAuthSettings(): Promise<GmailOAuthSettings | null
         }
       }
     }
-  } catch (supabaseErr: any) {
-    // Fall through to fallback file
-  }
+  } catch (supabaseErr: any) {}
 
-  // 3. Try Encrypted Fallback File
+  // 4. Tier 4: Try Encrypted Fallback File
   try {
     const filePath = getFallbackFilePath();
     if (fs.existsSync(filePath)) {
@@ -125,9 +153,7 @@ export async function getGmailOAuthSettings(): Promise<GmailOAuthSettings | null
         return JSON.parse(decryptedJson) as GmailOAuthSettings;
       }
     }
-  } catch (fsErr: any) {
-    console.warn("[SETTINGS STORAGE] Failed reading fallback file:", fsErr?.message);
-  }
+  } catch (fsErr: any) {}
 
   return null;
 }
@@ -153,28 +179,46 @@ const getDriveFallbackFilePath = (): string => {
 
 /**
  * Persists Google Drive OAuth settings across multi-tier storage:
- * 1. Cloud Firestore `system_settings/google_drive_oauth`
- * 2. Supabase Storage `.system_settings/google_drive_oauth.enc` (AES-256-GCM encrypted)
- * 3. Ephemeral local store `/tmp/.drive_settings.enc`
+ * 1. Supabase PostgreSQL `public.system_settings` (ACID persistent across all Vercel instances)
+ * 2. Cloud Firestore `system_settings/google_drive_oauth` (with 2.5s timeout)
+ * 3. Supabase Private Storage `system_settings/google_drive_oauth.enc` (AES-256-GCM encrypted)
+ * 4. Ephemeral local store `/tmp/.drive_settings.enc`
  */
-export async function saveDriveOAuthSettings(settings: GoogleDriveOAuthSettings): Promise<{ storageType: "firestore" | "supabase" | "encrypted_file" }> {
+export async function saveDriveOAuthSettings(settings: GoogleDriveOAuthSettings): Promise<{ storageType: "supabase_db" | "firestore" | "supabase" | "encrypted_file" }> {
+  let savedToSupabaseDb = false;
   let savedToFirestore = false;
-  let savedToSupabase = false;
+  let savedToSupabaseStorage = false;
 
-  // 1. Try Cloud Firestore
+  // 1. Tier 1: Supabase PostgreSQL Database (Global persistent store across all lambdas)
   try {
-    const docRef = adminDb.collection("system_settings").doc("google_drive_oauth");
-    await docRef.set(settings, { merge: true });
-    savedToFirestore = true;
-  } catch (firestoreErr: any) {
-    console.warn(
-      "[SETTINGS STORAGE] Firestore write failed (" +
-        (firestoreErr?.message || "PERMISSION_DENIED") +
-        ")."
-    );
+    if (isSupabaseConfigured()) {
+      const { error } = await supabaseAdmin.from("system_settings").upsert({
+        id: "google_drive_oauth",
+        data: settings,
+        updated_at: new Date().toISOString(),
+      });
+      if (!error) {
+        savedToSupabaseDb = true;
+      } else {
+        console.warn("[SETTINGS STORAGE] Supabase DB write failed for Drive:", error.message);
+      }
+    }
+  } catch (dbErr: any) {
+    console.warn("[SETTINGS STORAGE] Supabase DB exception for Drive:", dbErr?.message);
   }
 
-  // 2. Try Supabase Private Storage (Persistent across all Vercel instances)
+  // 2. Tier 2: Cloud Firestore (with 2.5s timeout)
+  try {
+    const docRef = adminDb.collection("system_settings").doc("google_drive_oauth");
+    const writePromise = docRef.set(settings, { merge: true });
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2500));
+    await Promise.race([writePromise, timeoutPromise]);
+    savedToFirestore = true;
+  } catch (firestoreErr: any) {
+    // Firestore write timed out or skipped
+  }
+
+  // 3. Tier 3: Supabase Private Storage (Persistent across all instances)
   try {
     if (isSupabaseConfigured()) {
       const rawPayload = JSON.stringify(settings);
@@ -182,19 +226,19 @@ export async function saveDriveOAuthSettings(settings: GoogleDriveOAuthSettings)
       const buffer = Buffer.from(encryptedPayload, "utf-8");
       const { error } = await supabaseAdmin.storage
         .from(GUEST_PRIVATE_BUCKET)
-        .upload(".system_settings/google_drive_oauth.enc", buffer, {
+        .upload("system_settings/google_drive_oauth.enc", buffer, {
           contentType: "application/octet-stream",
           upsert: true,
         });
       if (!error) {
-        savedToSupabase = true;
+        savedToSupabaseStorage = true;
       }
     }
   } catch (supabaseErr: any) {
     console.warn("[SETTINGS STORAGE] Supabase storage write skipped for Drive OAuth:", supabaseErr?.message);
   }
 
-  // 3. Fallback to AES-256-GCM encrypted local store
+  // 4. Tier 4: Fallback to AES-256-GCM encrypted local store
   try {
     const filePath = getDriveFallbackFilePath();
     const rawPayload = JSON.stringify(settings);
@@ -204,37 +248,59 @@ export async function saveDriveOAuthSettings(settings: GoogleDriveOAuthSettings)
     // Ephemeral write skipped
   }
 
+  if (savedToSupabaseDb) return { storageType: "supabase_db" };
   if (savedToFirestore) return { storageType: "firestore" };
-  if (savedToSupabase) return { storageType: "supabase" };
+  if (savedToSupabaseStorage) return { storageType: "supabase" };
   return { storageType: "encrypted_file" };
 }
 
 /**
  * Retrieves Google Drive OAuth settings with multi-tier failover.
+ * Checks Supabase PostgreSQL first, then Firestore, then Supabase Storage, then local store.
  */
 export async function getDriveOAuthSettings(): Promise<GoogleDriveOAuthSettings | null> {
-  // 1. Try Cloud Firestore
+  // 1. Tier 1: Supabase PostgreSQL Database (Fastest & Authoritative across all Vercel containers)
+  try {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabaseAdmin
+        .from("system_settings")
+        .select("data")
+        .eq("id", "google_drive_oauth")
+        .maybeSingle();
+
+      if (!error && data?.data) {
+        return data.data as GoogleDriveOAuthSettings;
+      }
+    }
+  } catch (dbErr: any) {}
+
+  // 2. Tier 2: Cloud Firestore (with 2.5s timeout)
   try {
     const docRef = adminDb.collection("system_settings").doc("google_drive_oauth");
-    const snap = await docRef.get();
-    if (snap.exists) {
+    const getPromise = docRef.get();
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500));
+    const snap = (await Promise.race([getPromise, timeoutPromise])) as any;
+    if (snap && snap.exists) {
       return snap.data() as GoogleDriveOAuthSettings;
     }
   } catch (firestoreErr: any) {
     // Fall through to Supabase Storage
   }
 
-  // 2. Try Supabase Private Storage
+  // 3. Tier 3: Supabase Private Storage
   try {
     if (isSupabaseConfigured()) {
-      const { data, error } = await supabaseAdmin.storage
-        .from(GUEST_PRIVATE_BUCKET)
-        .download(".system_settings/google_drive_oauth.enc");
-      if (!error && data) {
-        const text = await data.text();
-        const decryptedJson = decryptToken(text);
-        if (decryptedJson) {
-          return JSON.parse(decryptedJson) as GoogleDriveOAuthSettings;
+      // Check both new path and legacy path
+      for (const storagePath of ["system_settings/google_drive_oauth.enc", ".system_settings/google_drive_oauth.enc"]) {
+        const { data, error } = await supabaseAdmin.storage
+          .from(GUEST_PRIVATE_BUCKET)
+          .download(storagePath);
+        if (!error && data) {
+          const text = await data.text();
+          const decryptedJson = decryptToken(text);
+          if (decryptedJson) {
+            return JSON.parse(decryptedJson) as GoogleDriveOAuthSettings;
+          }
         }
       }
     }
@@ -242,7 +308,7 @@ export async function getDriveOAuthSettings(): Promise<GoogleDriveOAuthSettings 
     // Fall through to local fallback file
   }
 
-  // 3. Try Encrypted Fallback File
+  // 4. Tier 4: Try Encrypted Fallback File
   try {
     const filePath = getDriveFallbackFilePath();
     if (fs.existsSync(filePath)) {
@@ -258,4 +324,5 @@ export async function getDriveOAuthSettings(): Promise<GoogleDriveOAuthSettings 
 
   return null;
 }
+
 

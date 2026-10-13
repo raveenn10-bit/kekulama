@@ -328,25 +328,56 @@ export async function executeBackup(options?: {
     console.warn("[DRIVE ROTATION ASYNC WARNING]", rotErr?.message || rotErr);
   });
 
-  // 9. Store Record in Firestore & write audit log in parallel
-  await Promise.all([
-    adminDb.collection("backups").doc(backupId).set({
-      backupId,
-      filename,
-      sizeBytes: archiveBuffer.length,
-      sha256Checksum,
-      manifest,
-      driveFileId: driveFile.id,
-      driveFileName: driveFile.name,
-      driveMd5Checksum: driveFile.md5Checksum || null,
-      triggeredBy: options?.triggeredBy || "manual",
-      actorId: options?.actorId || "owner",
-      actorEmail: options?.actorEmail || null,
-      status: "success",
-      createdAt: now,
-    }).catch((dbErr) => {
-      console.warn("[BACKUP DB LOG WARNING] Could not persist backup record in Firestore:", dbErr);
-    }),
+  // 9. Store Record in Supabase PostgreSQL & Firestore & write audit log in parallel
+  const persistPromises: Promise<any>[] = [
+    // Supabase PostgreSQL (Global persistent store)
+    (async () => {
+      if (isSupabaseConfigured()) {
+        try {
+          await supabaseAdmin.from("backups").upsert({
+            id: backupId,
+            filename,
+            size_bytes: archiveBuffer.length,
+            sha256_checksum: sha256Checksum,
+            drive_file_id: driveFile.id,
+            drive_file_name: driveFile.name,
+            manifest,
+            status: "success",
+            triggered_by: options?.triggeredBy || "manual",
+            actor_id: options?.actorId || "owner",
+            actor_email: options?.actorEmail || null,
+            created_at: now,
+          });
+        } catch (sbErr) {
+          console.warn("[BACKUP SB WARNING] Could not persist backup record in Supabase:", sbErr);
+        }
+      }
+    })(),
+
+    // Cloud Firestore (with 2.5s timeout)
+    (async () => {
+      try {
+        const firestoreWrite = adminDb.collection("backups").doc(backupId).set({
+          backupId,
+          filename,
+          sizeBytes: archiveBuffer.length,
+          sha256Checksum,
+          manifest,
+          driveFileId: driveFile.id,
+          driveFileName: driveFile.name,
+          driveMd5Checksum: driveFile.md5Checksum || null,
+          triggeredBy: options?.triggeredBy || "manual",
+          actorId: options?.actorId || "owner",
+          actorEmail: options?.actorEmail || null,
+          status: "success",
+          createdAt: now,
+        });
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2500));
+        await Promise.race([firestoreWrite, timeoutPromise]);
+      } catch (dbErr) {
+        console.warn("[BACKUP DB LOG WARNING] Could not persist backup record in Firestore:", dbErr);
+      }
+    })(),
 
     logAuditEvent({
       actorId: options?.actorId || "owner",
@@ -366,7 +397,9 @@ export async function executeBackup(options?: {
     }).catch((auditErr) => {
       console.warn("[BACKUP AUDIT LOG WARNING] Write skipped:", auditErr);
     }),
-  ]);
+  ];
+
+  await Promise.all(persistPromises);
 
   return {
     success: true,

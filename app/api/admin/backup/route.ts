@@ -20,18 +20,86 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const snap = await adminDb
-      .collection("backups")
-      .orderBy("createdAt", "desc")
-      .limit(30)
-      .get();
+    const allBackups: any[] = [];
+    const seenIds = new Set<string>();
 
-    const backups = snap.docs.map((d) => ({
-      id: d.id,
-      ...d.data(),
-    }));
+    // 1. Tier 1: Supabase PostgreSQL (Fast, reliable, persistent across all serverless containers)
+    try {
+      const { supabaseAdmin, isSupabaseConfigured } = await import("@/lib/supabase/admin");
+      if (isSupabaseConfigured()) {
+        const { data: sbData, error: sbErr } = await supabaseAdmin
+          .from("backups")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(30);
 
-    return NextResponse.json({ success: true, backups });
+        if (!sbErr && sbData && Array.isArray(sbData)) {
+          for (const b of sbData) {
+            seenIds.add(b.id);
+            allBackups.push({
+              id: b.id,
+              backupId: b.id,
+              filename: b.filename,
+              sizeBytes: Number(b.size_bytes) || 0,
+              sha256Checksum: b.sha256_checksum,
+              driveFileId: b.drive_file_id,
+              driveFileName: b.drive_file_name,
+              triggeredBy: b.triggered_by,
+              status: b.status || "success",
+              createdAt: b.created_at,
+              manifest: b.manifest,
+            });
+          }
+        }
+      }
+    } catch (sbError: any) {
+      console.warn("[BACKUP LIST] Supabase fetch skipped:", sbError?.message);
+    }
+
+    // 2. Tier 2: Cloud Firestore (with 2.5s timeout)
+    try {
+      const getPromise = adminDb
+        .collection("backups")
+        .orderBy("createdAt", "desc")
+        .limit(30)
+        .get();
+      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500));
+      const snap = (await Promise.race([getPromise, timeoutPromise])) as any;
+
+      if (snap && snap.docs) {
+        for (const d of snap.docs) {
+          const docData = d.data();
+          const docId = d.id || docData.backupId;
+          if (!seenIds.has(docId)) {
+            seenIds.add(docId);
+            allBackups.push({
+              id: docId,
+              backupId: docData.backupId || docId,
+              filename: docData.filename,
+              sizeBytes: Number(docData.sizeBytes) || 0,
+              sha256Checksum: docData.sha256Checksum,
+              driveFileId: docData.driveFileId,
+              driveFileName: docData.driveFileName,
+              triggeredBy: docData.triggeredBy,
+              status: docData.status || "success",
+              createdAt: docData.createdAt,
+              manifest: docData.manifest,
+            });
+          }
+        }
+      }
+    } catch (fsError: any) {
+      console.warn("[BACKUP LIST] Firestore fetch timed out or failed:", fsError?.message);
+    }
+
+    // Sort by createdAt descending
+    allBackups.sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0).getTime();
+      const dateB = new Date(b.createdAt || 0).getTime();
+      return dateB - dateA;
+    });
+
+    return NextResponse.json({ success: true, backups: allBackups });
   } catch (err: any) {
     console.error("[BACKUP LIST ERROR]", err);
     return NextResponse.json(
