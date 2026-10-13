@@ -6,7 +6,7 @@ export type BookingStatus =
   | "checked_out"
   | "cancelled";
 
-export type BookingSource = "direct" | "manual" | "booking.com" | "airbnb";
+export type BookingSource = "direct" | "manual" | "booking.com" | "airbnb" | "website";
 
 export type PaymentStatus = "unpaid" | "partially_paid" | "paid" | "refunded";
 
@@ -20,6 +20,7 @@ export interface Booking {
   guestName: string;
   guestEmail: string;
   guestPhone: string;
+  country?: string;
   checkIn: string; // YYYY-MM-DD
   checkOut: string; // YYYY-MM-DD
   nights: number;
@@ -36,6 +37,11 @@ export interface Booking {
   notes?: string;
   registrationToken?: string;
   isRegistered?: boolean;
+  idType?: "nic" | "passport";
+  idNumber?: string;
+  idDocumentIds?: string[];
+  idVerificationStatus?: "pending" | "verified" | "rejected" | "resubmission_required";
+  notificationStatus?: "sent" | "failed" | "pending";
   actualCheckInTime?: string;
   actualCheckOutTime?: string;
   cancelledAt?: string;

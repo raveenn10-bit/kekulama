@@ -92,34 +92,49 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center gap-8">
-            <div className="flex items-center gap-7">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`relative font-body text-[11.5px] font-medium uppercase tracking-[0.18em] transition-colors duration-300 group py-1 ${
-                    isScrolled
-                      ? "text-sage-800 hover:text-mint-600"
-                      : "text-white/90 hover:text-mint-300"
-                  }`}
-                >
-                  <span>{link.label || link.name}</span>
-                  {/* Subtle underline trace on hover */}
-                  <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-mint-400 transition-all duration-300 ease-out group-hover:w-full" />
-                </Link>
-              ))}
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+            <div className="flex items-center gap-6 xl:gap-7">
+              {navLinks.map((link) => {
+                const targetHref = link.href.startsWith("#") ? `/${link.href}` : link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={targetHref}
+                    className={`relative font-body text-[11.5px] font-medium uppercase tracking-[0.18em] transition-colors duration-300 group py-1 ${
+                      isScrolled
+                        ? "text-sage-800 hover:text-mint-600"
+                        : "text-white/90 hover:text-mint-300"
+                    }`}
+                  >
+                    <span>{link.label || link.name}</span>
+                    {/* Subtle underline trace on hover */}
+                    <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-mint-400 transition-all duration-300 ease-out group-hover:w-full" />
+                  </Link>
+                );
+              })}
             </div>
 
+            <Link
+              href="/book"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-[11.5px] font-semibold uppercase tracking-[0.14em] bg-mint-500 hover:bg-mint-600 text-white shadow-glow transition-all active:scale-98"
+            >
+              <span>Book Your Stay</span>
+              <ArrowUpRight size={14} />
+            </Link>
+
             <Button
-              variant="mint"
+              variant="outline"
               size="sm"
               href="https://wa.me/94756657000"
               target="_blank"
               rel="noopener noreferrer"
-              className="gap-1.5 shadow-glow"
+              className={`gap-1.5 ${
+                isScrolled
+                  ? "border-mint-600/40 text-forest hover:bg-mint-50"
+                  : "border-white/30 text-white hover:bg-white/10"
+              }`}
             >
-              <span>Book via WhatsApp</span>
+              <span>WhatsApp</span>
             </Button>
 
             <Link
@@ -212,7 +227,7 @@ export function Navbar() {
                   transition={{ delay: 0.05 * index + 0.1, duration: 0.35, ease: LUXURY_EASING.quintOut }}
                 >
                   <Link
-                    href={link.href}
+                    href={link.href.startsWith("#") ? `/${link.href}` : link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="font-display text-2xl sm:text-3xl font-normal text-white/90 hover:text-mint-300 active:text-mint-400 transition-colors flex items-center justify-between py-2 border-b border-white/5 group"
                   >
@@ -232,20 +247,28 @@ export function Navbar() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.35, ease: LUXURY_EASING.quintOut }}
-              className="flex flex-col gap-3 pt-2"
+              className="flex flex-col gap-2.5 pt-2"
             >
+              <Link
+                href="/book"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full py-3.5 rounded-full text-center font-body text-xs font-semibold uppercase tracking-[0.15em] bg-mint-500 hover:bg-mint-600 text-white shadow-glow flex items-center justify-center gap-2 active:scale-98"
+              >
+                <span>Book Your Stay (Direct)</span>
+                <ArrowUpRight size={15} />
+              </Link>
               <a
                 href="https://wa.me/94756657000?text=Hello%20Kekulama%20Eco%20Cabana,%20I%20would%20like%20to%20reserve%20a%20stay."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3.5 rounded-full text-center font-body text-xs font-semibold uppercase tracking-[0.15em] bg-gradient-to-r from-mint-500 to-mint-600 text-white shadow-glow flex items-center justify-center gap-2 active:scale-98"
+                className="w-full py-3 rounded-full text-center font-body text-xs font-medium uppercase tracking-[0.15em] bg-white/10 hover:bg-white/20 text-white flex items-center justify-center gap-2 active:scale-98"
               >
                 <span>Book via WhatsApp</span>
-                <ArrowUpRight size={15} />
+                <ArrowUpRight size={14} />
               </a>
               <a
                 href="tel:+94756657000"
-                className="w-full py-3.5 rounded-full text-center font-body text-xs font-semibold uppercase tracking-[0.15em] border border-white/20 text-white/90 hover:bg-white/10 transition-colors flex items-center justify-center gap-2 active:scale-98"
+                className="w-full py-2.5 rounded-full text-center font-body text-xs font-medium tracking-[0.1em] border border-white/15 text-white/80 hover:bg-white/10 transition-colors flex items-center justify-center gap-2 active:scale-98"
               >
                 <PhoneCall size={14} />
                 <span>Call +94 75 665 7000</span>

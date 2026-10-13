@@ -28,7 +28,9 @@ export default function AdminReservationsPage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [viewingDocsBookingId, setViewingDocsBookingId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const { role } = useAdminAuth();
+  const [retryingEmails, setRetryingEmails] = useState(false);
+  const [sourceFilter, setSourceFilter] = useState<string>("all");
+  const { role, getIdToken } = useAdminAuth();
 
   useEffect(() => {
     const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
@@ -38,6 +40,10 @@ export default function AdminReservationsPage() {
     return () => unsubscribe();
   }, []);
 
+  const pendingWebsiteCount = bookings.filter(
+    (b) => (b.source === "website" || b.source === "direct") && b.status === "pending"
+  ).length;
+
   const filteredBookings = bookings.filter((b) => {
     const matchesSearch =
       b.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -46,45 +52,140 @@ export default function AdminReservationsPage() {
       b.guestEmail.toLowerCase().includes(search.toLowerCase());
 
     const matchesStatus = statusFilter === "all" || b.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesSource = sourceFilter === "all" || b.source === sourceFilter;
+    return matchesSearch && matchesStatus && matchesSource;
   });
 
   const handleUpdateStatus = async (bookingId: string, newStatus: BookingStatus) => {
     setActionLoading(true);
     try {
-      const ref = doc(db, "bookings", bookingId);
-      await updateDoc(ref, {
-        status: newStatus,
-        updatedAt: new Date().toISOString(),
+      const token = await getIdToken();
+      const res = await fetch("/api/admin/reservations/status", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ bookingId, status: newStatus }),
       });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData?.error || `Failed with status ${res.status}`);
+      }
+
       if (selectedBooking && selectedBooking.id === bookingId) {
         setSelectedBooking({ ...selectedBooking, status: newStatus });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error updating status:", err);
-      alert("Failed to update booking status.");
+      alert(`Status update failed: ${err.message}`);
     } finally {
       setActionLoading(false);
     }
   };
 
+  const handleRetryEmails = async () => {
+    setRetryingEmails(true);
+    try {
+      const token = await getIdToken();
+      const res = await fetch("/api/admin/notifications/retry", {
+        method: "POST",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await res.json();
+      alert(data.message || "Notification retry completed.");
+    } catch (err: any) {
+      alert(`Retry failed: ${err.message}`);
+    } finally {
+      setRetryingEmails(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Alert Banner for New Website Bookings */}
+      {pendingWebsiteCount > 0 && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-3">
+            <span className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm animate-pulse">
+              {pendingWebsiteCount}
+            </span>
+            <div>
+              <div className="font-bold text-sm text-emerald-950">
+                New Website Booking Request(s) Awaiting Review
+              </div>
+              <div className="text-[11px] text-emerald-700">
+                Review guest identity documents, confirm room availability, and approve bookings to notify guests.
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                setStatusFilter("pending");
+                setSourceFilter("all");
+              }}
+              className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs shadow-sm transition-all cursor-pointer"
+            >
+              Filter Pending
+            </button>
+            <button
+              disabled={retryingEmails}
+              onClick={handleRetryEmails}
+              className="px-3 py-1.5 rounded-xl bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-800 font-semibold text-xs transition-all cursor-pointer"
+              title="Retry any pending or failed Gmail notifications"
+            >
+              {retryingEmails ? "Retrying..." : "Retry Outbox"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Top Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="relative w-full sm:w-80">
-          <Search size={16} className="absolute left-3.5 top-3 text-slate-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search reference, guest, phone..."
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white text-slate-900"
-          />
+      <div className="space-y-3 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="relative w-full sm:w-80">
+            <Search size={16} className="absolute left-3.5 top-3 text-slate-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search reference, guest, phone, email..."
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white text-slate-900"
+            />
+          </div>
+
+          {/* Source Filter Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">Source:</span>
+            {[
+              { id: "all", label: "All Sources" },
+              { id: "website", label: "Website Direct" },
+              { id: "manual", label: "Manual" },
+              { id: "booking.com", label: "Booking.com" },
+              { id: "airbnb", label: "Airbnb" },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSourceFilter(tab.id)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  sourceFilter === tab.id
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-600"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto pt-2 border-t border-slate-100">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">Status:</span>
           {[
             { id: "all", label: "All" },
             { id: "pending", label: "Pending" },
@@ -135,10 +236,25 @@ export default function AdminReservationsPage() {
               ) : (
                 filteredBookings.map((b) => (
                   <tr key={b.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-slate-900">{b.id}</td>
+                    <td className="py-3.5 px-4 font-mono">
+                      <span className="font-bold text-slate-900 block">{b.id}</span>
+                      <span
+                        className={`inline-block mt-0.5 text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded ${
+                          b.source === "website" || b.source === "direct"
+                            ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                            : b.source === "manual"
+                            ? "bg-slate-100 text-slate-700"
+                            : "bg-blue-50 text-blue-700"
+                        }`}
+                      >
+                        {b.source === "website" ? "Website" : b.source}
+                      </span>
+                    </td>
                     <td className="py-3.5 px-4">
                       <span className="font-semibold text-slate-800 block">{b.guestName}</span>
-                      <span className="text-[11px] text-slate-400 block">{b.guestPhone}</span>
+                      <span className="text-[11px] text-slate-400 block">
+                        {b.guestPhone} {b.country ? `· ${b.country}` : ""}
+                      </span>
                       <span className="text-[10px] text-slate-400 block truncate max-w-xs">{b.guestEmail}</span>
                     </td>
                     <td className="py-3.5 px-4">
@@ -235,6 +351,21 @@ export default function AdminReservationsPage() {
                 <span className="font-bold text-slate-800">{selectedBooking.guestName}</span>
                 <span className="block text-slate-500">{selectedBooking.guestPhone}</span>
                 <span className="block text-slate-500 truncate">{selectedBooking.guestEmail}</span>
+                {selectedBooking.country && (
+                  <span className="block text-slate-500 text-[11px]">Country: {selectedBooking.country}</span>
+                )}
+                <div className="mt-2 pt-2 border-t border-slate-200/60">
+                  <span className="text-slate-400 block text-[9.5px] uppercase font-bold">ID Verification</span>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase mt-0.5 ${
+                    selectedBooking.idVerificationStatus === "verified"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : selectedBooking.idVerificationStatus === "rejected"
+                      ? "bg-rose-100 text-rose-800"
+                      : "bg-amber-100 text-amber-800"
+                  }`}>
+                    {selectedBooking.idVerificationStatus || "Pending Review"}
+                  </span>
+                </div>
               </div>
               <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Stay</span>
@@ -243,10 +374,17 @@ export default function AdminReservationsPage() {
                 </span>
                 <span className="block text-slate-500">
                   {selectedBooking.nights} Night(s) · {selectedBooking.adults} Adults
+                  {selectedBooking.children ? `, ${selectedBooking.children} Children` : ""}
                 </span>
-                <span className="block text-slate-500">
+                <span className="block text-slate-500 font-semibold">
                   Total: LKR {selectedBooking.totalAmount.toLocaleString()}
                 </span>
+                <div className="mt-2 pt-2 border-t border-slate-200/60">
+                  <span className="text-slate-400 block text-[9.5px] uppercase font-bold">Source</span>
+                  <span className="text-slate-700 font-semibold capitalize text-[11px] block mt-0.5">
+                    {selectedBooking.source === "website" ? "Website (Direct)" : selectedBooking.source}
+                  </span>
+                </div>
               </div>
             </div>
 

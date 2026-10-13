@@ -3,11 +3,13 @@
  * Integrates Booking.com, Airbnb, and Direct Website Reservations
  */
 
+import { BookingSource } from "@/types/booking";
+
 export interface BookingEvent {
   id: string;
   startDate: string; // YYYY-MM-DD
   endDate: string;   // YYYY-MM-DD
-  source: "booking.com" | "airbnb" | "direct" | "manual";
+  source: BookingSource;
   summary: string;
   guestName?: string;
 }

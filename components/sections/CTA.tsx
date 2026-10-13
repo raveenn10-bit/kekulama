@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { siteData } from "@/data/siteData";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 import { Sparkles, MessageCircle, Phone } from "lucide-react";
@@ -56,6 +57,14 @@ export default function CTA() {
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-8 sm:mt-10">
+            <Link
+              href="/book"
+              className="relative overflow-hidden bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full px-8 py-3.5 sm:py-4 hover:from-mint-600 hover:to-mint-700 transition-all font-body font-semibold text-xs 2xl:text-sm uppercase tracking-[0.15em] shadow-glow w-full sm:w-auto text-center flex items-center justify-center gap-2 group cursor-pointer active:scale-98"
+            >
+              <Sparkles size={15} />
+              <span>Book Online (Direct)</span>
+            </Link>
+
             {/* Shimmering Magnetic WhatsApp CTA */}
             <motion.a
               href={`https://wa.me/${contact.whatsappRaw}?text=Hello%20Kekulama%20Eco%20Cabana,%20I%20would%20like%20to%20reserve%20a%20stay.`}
@@ -63,10 +72,8 @@ export default function CTA() {
               rel="noreferrer"
               whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="relative overflow-hidden bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full px-8 py-3.5 sm:py-4 hover:from-mint-600 hover:to-mint-700 transition-all font-body font-semibold text-xs 2xl:text-sm uppercase tracking-[0.15em] shadow-glow w-full sm:w-auto text-center flex items-center justify-center gap-2 group cursor-pointer"
+              className="border border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-full px-8 py-3.5 sm:py-4 transition-all font-body font-semibold text-xs 2xl:text-sm uppercase tracking-[0.15em] w-full sm:w-auto text-center backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer"
             >
-              {/* Metallic Light Sheen Passing Across */}
-              <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out pointer-events-none" />
               <MessageCircle size={15} />
               <span>Book via WhatsApp</span>
             </motion.a>
@@ -75,7 +82,7 @@ export default function CTA() {
               href={`tel:${contact.phoneRaw}`}
               whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="border border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-full px-8 py-3.5 sm:py-4 transition-all font-body font-semibold text-xs 2xl:text-sm uppercase tracking-[0.15em] w-full sm:w-auto text-center backdrop-blur-sm flex items-center justify-center gap-2 cursor-pointer"
+              className="text-white/80 hover:text-white rounded-full px-6 py-3.5 sm:py-4 transition-all font-body font-medium text-xs 2xl:text-sm tracking-[0.1em] w-full sm:w-auto text-center flex items-center justify-center gap-2 cursor-pointer"
             >
               <Phone size={14} />
               <span>Call Directly</span>

@@ -38,12 +38,23 @@ export async function getActiveLocks(roomId: string = "cabana-01"): Promise<Room
   }
 }
 
+export const PACKAGE_RATES_LKR: Record<string, number> = {
+  "Day Out — Non A/C": 6000,
+  "Day Out — A/C": 8000,
+  "Night Stay — Non A/C": 8000,
+  "Night Stay — A/C": 9000,
+  "Bed & Breakfast (B/B)": 11000,
+  "Half Board (H/B)": 13000,
+  "Full Board (F/B)": 15000,
+};
+
 export interface ReservationParams {
   roomId?: string;
   roomName?: string;
   guestName: string;
   guestEmail: string;
   guestPhone: string;
+  country?: string;
   checkIn: string; // YYYY-MM-DD
   checkOut: string; // YYYY-MM-DD
   adults: number;
@@ -52,8 +63,11 @@ export interface ReservationParams {
   totalAmount?: number;
   specialRequests?: string;
   notes?: string;
-  source?: "direct" | "manual" | "booking.com" | "airbnb";
+  source?: "direct" | "manual" | "booking.com" | "airbnb" | "website";
   status?: "pending" | "confirmed";
+  idType?: "nic" | "passport";
+  idNumber?: string;
+  idDocumentIds?: string[];
   createdBy?: string;
   ipAddress?: string;
 }
@@ -77,7 +91,15 @@ export async function createReservationAtomic(
   const nowIso = new Date().toISOString();
   const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(); // 48 hours validity
 
-  const totalAmount = params.totalAmount || 11000 * nightsList.length; // default B/B package rate fallback
+  // Canonical server-side price calculation
+  const baseRate = PACKAGE_RATES_LKR[params.packagePlan] || 11000;
+  const canonicalTotal = baseRate * nightsList.length;
+  // If manual booking from admin has explicit total, allow it; for public website bookings enforce server price
+  const totalAmount = params.source === "manual" && typeof params.totalAmount === "number"
+    ? params.totalAmount
+    : canonicalTotal;
+
+  const hasDocs = Boolean(params.idDocumentIds && params.idDocumentIds.length > 0);
 
   const bookingRecord: Booking = {
     id: bookingId,
@@ -86,6 +108,7 @@ export async function createReservationAtomic(
     guestName: params.guestName,
     guestEmail: params.guestEmail,
     guestPhone: params.guestPhone,
+    country: params.country || "",
     checkIn: params.checkIn,
     checkOut: params.checkOut,
     nights: nightsList.length,
@@ -95,13 +118,18 @@ export async function createReservationAtomic(
     totalAmount,
     paidAmount: 0,
     balanceAmount: totalAmount,
-    source: params.source || "direct",
+    source: params.source || "website",
     status: params.status || "pending",
     paymentStatus: "unpaid",
     specialRequests: params.specialRequests || "",
     notes: params.notes || "",
     registrationToken: token,
     isRegistered: false,
+    idType: params.idType,
+    idNumber: params.idNumber,
+    idDocumentIds: params.idDocumentIds || [],
+    idVerificationStatus: hasDocs ? "pending" : undefined,
+    notificationStatus: "pending",
     createdBy: params.createdBy || "guest",
     createdAt: nowIso,
     updatedAt: nowIso,
@@ -177,6 +205,20 @@ export async function createReservationAtomic(
     timestamp: nowIso,
   });
 
+  // Associate uploaded documents to this booking
+  if (params.idDocumentIds && params.idDocumentIds.length > 0) {
+    try {
+      const docBatch = adminDb.batch();
+      for (const docId of params.idDocumentIds) {
+        const docRef = adminDb.collection("guestDocuments").doc(docId);
+        docBatch.set(docRef, { bookingId, guestName: params.guestName }, { merge: true });
+      }
+      await docBatch.commit();
+    } catch (docErr) {
+      console.warn("[BOOKING] Failed to associate document IDs with booking:", docErr);
+    }
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const registrationUrl = `${baseUrl}/guest/register?token=${token}`;
 
@@ -185,4 +227,37 @@ export async function createReservationAtomic(
     registrationToken: token,
     registrationUrl,
   };
+}
+
+/**
+ * Releases calendar locks when a booking is cancelled or rejected,
+ * making those dates available for new bookings immediately.
+ */
+export async function releaseReservationLocks(bookingId: string, roomId = "cabana-01"): Promise<number> {
+  try {
+    const locksSnap = await adminDb
+      .collection("room_calendar_locks")
+      .where("bookingId", "==", bookingId)
+      .get();
+
+    if (locksSnap.empty) return 0;
+
+    const batch = adminDb.batch();
+    locksSnap.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+
+    await logAuditEvent({
+      actorId: "system",
+      actorRole: "owner",
+      action: "BOOKING_CANCELLED",
+      targetResource: `bookings/${bookingId}`,
+      details: { releasedLocksCount: locksSnap.size, roomId },
+      timestamp: new Date().toISOString(),
+    });
+
+    return locksSnap.size;
+  } catch (err) {
+    console.error(`[LOCK RELEASE ERROR] Failed to release locks for ${bookingId}:`, err);
+    return 0;
+  }
 }

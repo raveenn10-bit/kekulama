@@ -228,6 +228,13 @@ export function Footer() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2 font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-400">
             <Link
+              href="/book"
+              className="hover:text-mint-700 transition-colors py-0.5 px-1.5 rounded hover:bg-mint-50/60 font-semibold text-forest"
+            >
+              Direct Booking
+            </Link>
+            <span>·</span>
+            <Link
               href="/privacy"
               className="hover:text-mint-700 transition-colors py-0.5 px-1.5 rounded hover:bg-mint-50/60"
             >

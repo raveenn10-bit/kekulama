@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Calendar as CalendarIcon,
@@ -386,26 +387,25 @@ export default function RealtimeBookingTable() {
               </a>
 
               {/* Instant Book Direct on Website */}
-              <button
-                type="button"
-                onClick={() => {
-                  if (isAvailable) {
-                    setIsBookingModalOpen(true);
-                  } else {
-                    alert("Selected dates are already booked. Please choose available dates.");
-                  }
-                }}
-                disabled={!isAvailable}
-                className={`w-full sm:w-auto px-6 py-3.5 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer ${
-                  isAvailable
-                    ? "bg-forest hover:bg-forest-dark text-white active:scale-98"
-                    : "bg-stone-300 text-stone-500 cursor-not-allowed"
-                }`}
-              >
-                <Lock size={13} />
-                <span>{isAvailable ? "Instant Book Direct" : "Dates Booked"}</span>
-                <ArrowRight size={13} />
-              </button>
+              {isAvailable ? (
+                <Link
+                  href={`/book?checkIn=${checkIn}&checkOut=${checkOut}&package=${encodeURIComponent(currentPkg.name)}&guests=${guests}`}
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer bg-forest hover:bg-forest-dark text-white active:scale-98"
+                >
+                  <Lock size={13} />
+                  <span>Instant Book Direct</span>
+                  <ArrowRight size={13} />
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] flex items-center justify-center gap-2 bg-stone-300 text-stone-500 cursor-not-allowed"
+                >
+                  <Lock size={13} />
+                  <span>Dates Booked</span>
+                </button>
+              )}
             </div>
           </div>
         </motion.div>

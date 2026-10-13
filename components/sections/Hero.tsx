@@ -2,10 +2,11 @@
 
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { siteData } from "@/data/siteData";
 import { Badge } from "@/components/ui/Badge";
-import { MapPin, Sparkles, Star, ChevronDown } from "lucide-react";
+import { MapPin, Sparkles, Star, ChevronDown, ArrowUpRight } from "lucide-react";
 import { LUXURY_EASING, LUXURY_DURATION } from "@/lib/motion";
 
 export default function Hero() {
@@ -170,6 +171,23 @@ export default function Hero() {
           >
             {hero.subtitle}
           </motion.p>
+
+          {/* Action CTAs */}
+          <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3 sm:gap-4 mb-2">
+            <Link
+              href="/book"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full font-body text-xs sm:text-sm font-semibold uppercase tracking-[0.14em] bg-mint-500 hover:bg-mint-600 text-white shadow-glow transition-all active:scale-98"
+            >
+              <span>Book Your Stay</span>
+              <ArrowUpRight size={16} />
+            </Link>
+            <a
+              href="#booking"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full font-body text-xs sm:text-sm font-medium tracking-[0.05em] bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/20 transition-all active:scale-98"
+            >
+              <span>Check Live Rates</span>
+            </a>
+          </motion.div>
         </motion.div>
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Check, Sparkles, ArrowRight, ShieldCheck, Heart, Globe2 } from "lucide-react";
 import { siteData } from "@/data/siteData";
@@ -246,23 +247,30 @@ function PackageCard({
         </ul>
       </div>
 
-      {/* CTA Button with Bold Typography */}
-      <motion.a
-        href={`https://wa.me/94756657000?text=Hello%20Kekulama%20Eco%20Cabana,%20I%20am%20interested%20in%20booking%20the%20${encodeURIComponent(
-          pkg.name
-        )}%20package.`}
-        target="_blank"
-        rel="noopener noreferrer"
-        whileTap={{ scale: 0.98 }}
-        className={`w-full py-4 2xl:py-4.5 px-6 rounded-full text-center font-body text-xs 2xl:text-sm uppercase tracking-[0.18em] font-bold transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer ${
-          pkg.popular
-            ? "bg-forest text-white hover:bg-forest-dark shadow-md"
-            : "bg-stone-100 text-forest hover:bg-forest hover:text-white border border-stone-300/80"
-        }`}
-      >
-        <span>RESERVE PACKAGE</span>
-        <ArrowRight size={14} strokeWidth={2.5} />
-      </motion.a>
+      {/* CTA Buttons */}
+      <div className="flex flex-col gap-2">
+        <Link
+          href={`/book?package=${encodeURIComponent(pkg.name)}`}
+          className={`w-full py-3.5 2xl:py-4 px-6 rounded-full text-center font-body text-xs 2xl:text-sm uppercase tracking-[0.16em] font-bold transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98 ${
+            pkg.popular
+              ? "bg-forest text-white hover:bg-forest-dark shadow-md"
+              : "bg-emerald-800 text-white hover:bg-forest"
+          }`}
+        >
+          <span>Book Online</span>
+          <ArrowRight size={14} strokeWidth={2.5} />
+        </Link>
+        <a
+          href={`https://wa.me/94756657000?text=Hello%20Kekulama%20Eco%20Cabana,%20I%20am%20interested%20in%20booking%20the%20${encodeURIComponent(
+            pkg.name
+          )}%20package.`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-center font-body text-[11px] text-sage-600 hover:text-forest transition-colors py-0.5 font-medium"
+        >
+          Or reserve via WhatsApp →
+        </a>
+      </div>
     </motion.div>
   );
 }

@@ -36,9 +36,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid document type" }, { status: 400 });
     }
 
-    // 3. Authorization Bridge: Must be authorized either via valid single-use registration token OR Staff/Owner Firebase auth
+    // 3. Authorization Bridge: Must be authorized via valid token, direct_booking intent, or Staff/Owner auth
     let authorizedBookingId = "";
     let uploaderIdentity = "anonymous";
+    const isDirectBooking = formData.get("intent") === "direct_booking";
 
     if (token) {
       // Guest self-registration flow with single-use token
@@ -51,6 +52,10 @@ export async function POST(req: NextRequest) {
       }
       authorizedBookingId = tokenData.bookingId;
       uploaderIdentity = `guest:${tokenData.guestName} (token:${token.slice(0, 8)}...)`;
+    } else if (isDirectBooking) {
+      // Direct booking identity document upload (rate-limited per IP)
+      authorizedBookingId = "pending_direct_booking";
+      uploaderIdentity = `guest:website_booking`;
     } else {
       // Authenticated staff or owner flow
       const authUser = await verifyFirebaseSessionOrToken(req);

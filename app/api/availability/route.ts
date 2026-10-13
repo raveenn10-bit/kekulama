@@ -4,6 +4,7 @@ import { createBookingSchema } from "@/lib/security/validation";
 import { createReservationAtomic, getActiveLocks } from "@/lib/booking/availabilityEngine";
 import { adminDb } from "@/lib/firebase/admin";
 import { Booking } from "@/types/booking";
+import { sendNotification } from "@/lib/notifications/emailService";
 
 export const dynamic = "force-dynamic";
 
@@ -84,11 +85,17 @@ export async function POST(req: Request) {
       guestName: body.guestName,
       guestEmail: body.guestEmail,
       guestPhone: body.guestPhone,
+      country: body.country,
       adults: body.adults !== undefined ? Number(body.adults) : 2,
       children: body.children !== undefined ? Number(body.children) : 0,
       packagePlan: body.packagePlan,
       specialRequests: body.specialRequests,
-      source: body.source || "direct",
+      notes: body.notes,
+      totalAmount: body.totalAmount ? Number(body.totalAmount) : undefined,
+      source: body.source || "website",
+      idType: body.idType,
+      idNumber: body.idNumber,
+      idDocumentIds: Array.isArray(body.idDocumentIds) ? body.idDocumentIds : [],
     };
 
     // Validate using Zod schema
@@ -105,16 +112,64 @@ export async function POST(req: Request) {
       guestName: validData.guestName,
       guestEmail: validData.guestEmail,
       guestPhone: validData.guestPhone,
+      country: validData.country,
       checkIn: validData.checkIn,
       checkOut: validData.checkOut,
       adults: validData.adults,
       children: validData.children,
       packagePlan: validData.packagePlan,
       specialRequests: validData.specialRequests,
-      source: "direct",
-      status: "pending",
+      notes: validData.notes,
+      totalAmount: validData.totalAmount,
+      source: validData.source as any,
+      status: (body.status as any) || "pending",
+      idType: validData.idType,
+      idNumber: validData.idNumber,
+      idDocumentIds: validData.idDocumentIds,
+      createdBy: body.createdBy || "guest",
       ipAddress: clientIp,
     });
+
+    // Fire Owner & Guest Email Notifications asynchronously via Gmail OAuth
+    const nightsCount = reservation.booking.nights;
+    const formattedDates = `${reservation.booking.checkIn} to ${reservation.booking.checkOut}`;
+    const guestsLabel = `${reservation.booking.adults} Adults${reservation.booking.children ? `, ${reservation.booking.children} Children` : ""}`;
+
+    // 1. Mandatory Owner Notification
+    sendNotification({
+      event: "NEW_ONLINE_BOOKING",
+      bookingId: reservation.booking.id,
+      guestName: reservation.booking.guestName,
+      guestPhone: reservation.booking.guestPhone,
+      guestEmail: reservation.booking.guestEmail,
+      dates: formattedDates,
+      checkIn: reservation.booking.checkIn,
+      checkOut: reservation.booking.checkOut,
+      nights: nightsCount,
+      guestsCount: guestsLabel,
+      packagePlan: reservation.booking.packagePlan,
+      totalPriceLkr: reservation.booking.totalAmount,
+      bookingStatus: reservation.booking.status,
+      idVerificationStatus: reservation.booking.idVerificationStatus || "Pending Review",
+    }).catch((err) => console.warn("[NOTIFICATION OWNER FAILED]", err));
+
+    // 2. Guest Acknowledgment Notification
+    if (reservation.booking.guestEmail) {
+      sendNotification({
+        event: "GUEST_BOOKING_ACKNOWLEDGMENT",
+        recipient: reservation.booking.guestEmail,
+        bookingId: reservation.booking.id,
+        guestName: reservation.booking.guestName,
+        guestEmail: reservation.booking.guestEmail,
+        dates: formattedDates,
+        checkIn: reservation.booking.checkIn,
+        checkOut: reservation.booking.checkOut,
+        nights: nightsCount,
+        guestsCount: guestsLabel,
+        packagePlan: reservation.booking.packagePlan,
+        totalPriceLkr: reservation.booking.totalAmount,
+      }).catch((err) => console.warn("[NOTIFICATION GUEST FAILED]", err));
+    }
 
     return NextResponse.json({
       success: true,
@@ -125,7 +180,7 @@ export async function POST(req: Request) {
         registrationToken: reservation.registrationToken,
       },
       registrationUrl: reservation.registrationUrl,
-      message: `Reservation #${reservation.booking.id} successfully requested! Please complete your guest registration.`,
+      message: `Reservation #${reservation.booking.id} successfully placed! We have emailed your booking reference and summary.`,
     });
   } catch (err: any) {
     const isConflict = err.message && err.message.includes("already reserved");

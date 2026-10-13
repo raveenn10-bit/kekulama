@@ -59,8 +59,12 @@ export const createBookingSchema = z
       .max(500)
       .optional()
       .transform((val) => (val ? sanitizeText(val, 500) : "")),
+    country: z.string().max(80).optional().transform((val) => (val ? sanitizeText(val, 80) : "")),
+    idType: z.enum(["nic", "passport"]).optional(),
+    idNumber: z.string().max(40).optional().transform((val) => (val ? sanitizeText(val, 40) : "")),
+    idDocumentIds: z.array(z.string().max(100)).max(5).optional(),
     totalAmount: z.number().nonnegative().optional(),
-    source: z.enum(["direct", "manual", "booking.com", "airbnb"]).default("direct"),
+    source: z.enum(["direct", "manual", "booking.com", "airbnb", "website"]).default("website"),
   })
   .refine((data) => data.checkOut > data.checkIn, {
     message: "Check-out date must be after check-in date",
