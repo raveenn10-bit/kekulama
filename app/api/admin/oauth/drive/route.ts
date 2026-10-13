@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
+import { createSignedOAuthState } from "@/lib/security/oauthState";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -29,8 +29,8 @@ export async function GET(req: NextRequest) {
       process.env.GOOGLE_REDIRECT_URI ||
       `${origin}/api/admin/oauth/drive/callback`;
 
-    // 1. Generate cryptographically random CSRF state nonce
-    const stateToken = crypto.randomBytes(24).toString("hex");
+    // 1. Generate cryptographically signed, timestamped CSRF state token
+    const stateToken = createSignedOAuthState("drive");
 
     // 2. Google OAuth 2.0 Authorization URL with minimum required Drive scope
     // https://www.googleapis.com/auth/drive.file allows creating and managing only files

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { logAuditEvent } from "@/lib/firebase/admin";
 import { encryptToken } from "@/lib/security/tokenEncryption";
 import { saveGmailOAuthSettings, getGmailOAuthSettings } from "@/lib/security/settingsStorage";
+import { verifySignedOAuthState } from "@/lib/security/oauthState";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -38,10 +39,14 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 2. CSRF Verification: Validate state parameter matches the secure cookie
+    // 2. CSRF Verification: Dual-layered defense
+    // Validates either (a) matching state cookie OR (b) authentic HMAC-SHA256 signature and fresh timestamp (< 15 mins)
     const stateCookie = req.cookies.get("gmail_oauth_state")?.value;
-    if (!stateCookie || stateCookie !== state) {
-      console.error("[GMAIL OAUTH CALLBACK] CSRF State mismatch detected.");
+    const isCookieMatch = Boolean(stateCookie && stateCookie === state);
+    const isSignatureValid = verifySignedOAuthState(state, "gmail");
+
+    if (!isCookieMatch && !isSignatureValid) {
+      console.error("[GMAIL OAUTH CALLBACK] CSRF State mismatch detected. Cookie matched:", isCookieMatch, "Signature valid:", isSignatureValid);
       return NextResponse.redirect(
         `${notificationSettingsUrl}?oauth=error&reason=csrf_state_mismatch`
       );

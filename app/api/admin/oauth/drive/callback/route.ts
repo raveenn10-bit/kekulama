@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { logAuditEvent } from "@/lib/firebase/admin";
 import { encryptToken, decryptToken } from "@/lib/security/tokenEncryption";
 import { saveDriveOAuthSettings, getDriveOAuthSettings } from "@/lib/security/settingsStorage";
+import { verifySignedOAuthState } from "@/lib/security/oauthState";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -40,10 +41,14 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 2. CSRF Verification: Validate state parameter matches the secure cookie
+    // 2. CSRF Verification: Dual-layered defense
+    // Validates either (a) matching state cookie OR (b) authentic HMAC-SHA256 signature and fresh timestamp (< 15 mins)
     const stateCookie = req.cookies.get("drive_oauth_state")?.value;
-    if (!stateCookie || stateCookie !== state) {
-      console.error("[DRIVE OAUTH CALLBACK] CSRF State mismatch detected.");
+    const isCookieMatch = Boolean(stateCookie && stateCookie === state);
+    const isSignatureValid = verifySignedOAuthState(state, "drive");
+
+    if (!isCookieMatch && !isSignatureValid) {
+      console.error("[DRIVE OAUTH CALLBACK] CSRF State mismatch detected. Cookie matched:", isCookieMatch, "Signature valid:", isSignatureValid);
       return NextResponse.redirect(
         `${backupConsoleUrl}?oauth=error&reason=csrf_state_mismatch`
       );

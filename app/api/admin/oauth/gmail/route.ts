@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
+import { createSignedOAuthState } from "@/lib/security/oauthState";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /**
  * Initiates the Google OAuth 2.0 flow for Gmail transactional notifications.
- * Generates a cryptographically random CSRF nonce and redirects to Google.
+ * Generates a cryptographically signed CSRF state token and redirects to Google.
  */
 export async function GET(req: NextRequest) {
   const origin = req.nextUrl.origin || "https://www.kekulamaecocabanagalle.com";
@@ -22,8 +22,8 @@ export async function GET(req: NextRequest) {
 
     const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}/api/admin/oauth/gmail/callback`;
 
-    // 1. Generate cryptographically random CSRF state nonce
-    const stateToken = crypto.randomBytes(24).toString("hex");
+    // 1. Generate cryptographically signed, timestamped CSRF state token
+    const stateToken = createSignedOAuthState("gmail");
 
     // 2. Google OAuth 2.0 Authorization URL (gmail.send scope only)
     const scopes = "https://www.googleapis.com/auth/gmail.send";

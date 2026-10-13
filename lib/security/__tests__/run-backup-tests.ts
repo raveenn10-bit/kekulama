@@ -1,6 +1,7 @@
 import assert from "assert";
 import crypto from "crypto";
 import { decryptBackupArchive, deriveKeyFromSecret, BackupManifest } from "../../backup/backupEngine";
+import { createSignedOAuthState, verifySignedOAuthState } from "../oauthState";
 
 console.log("=======================================================");
 console.log("  RUNNING GOOGLE DRIVE BACKUP & ENCRYPTION TESTS");
@@ -219,6 +220,33 @@ runTest("Rejects archive encrypted with completely unknown key", () => {
   assert.throws(() => {
     decryptBackupArchive(Buffer.from(envelope, "utf-8"));
   }, /Unable to authenticate ciphertext with any available encryption key/i);
+});
+
+// 8. Signed OAuth State Cryptographic Roundtrip
+runTest("Signed OAuth CSRF State generates and verifies authentic HMAC tokens", () => {
+  const state = createSignedOAuthState("drive");
+  assert(verifySignedOAuthState(state, "drive"), "Valid drive state verifies successfully");
+  assert(!verifySignedOAuthState(state, "gmail"), "Fails if verified for different purpose");
+});
+
+// 9. Signed OAuth State Tamper and Replay Rejection
+runTest("Rejects tampered, malformed, or fake OAuth CSRF State tokens", () => {
+  const validState = createSignedOAuthState("drive");
+  const parts = validState.split(".");
+  // Tamper with nonce
+  const tampered = `${parts[0]}.fake_nonce.${parts[2]}.${parts[3]}`;
+  assert(!verifySignedOAuthState(tampered, "drive"), "Rejects tampered payload");
+
+  // Completely fake token
+  assert(!verifySignedOAuthState("random_hacker_state_token", "drive"), "Rejects un-signed string");
+
+  // Expired token simulation (20 minutes ago)
+  const expiredTimestamp = (Date.now() - 20 * 60 * 1000).toString();
+  const expiredPayload = `${expiredTimestamp}.${parts[1]}.${parts[2]}`;
+  const secret = process.env.APP_SECRET || "kekulama-luxury-oauth-csrf-protection-secret-2026";
+  const expiredHmac = crypto.createHmac("sha256", secret).update(expiredPayload).digest("hex");
+  const expiredToken = `${expiredPayload}.${expiredHmac}`;
+  assert(!verifySignedOAuthState(expiredToken, "drive"), "Rejects expired token older than 15 minutes");
 });
 
 console.log("\n=======================================================");
