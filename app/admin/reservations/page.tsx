@@ -33,9 +33,46 @@ export default function AdminReservationsPage() {
   const { role, getIdToken } = useAdminAuth();
 
   useEffect(() => {
+    // 1. Fetch from Unified Backend API (Supabase PostgreSQL + Firestore)
+    const loadFromApi = async () => {
+      try {
+        const token = await getIdToken();
+        const res = await fetch("/api/admin/reservations", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.bookings && Array.isArray(data.bookings)) {
+            setBookings((prev) => {
+              const existingMap = new Map(prev.map((b) => [b.id, b]));
+              for (const b of data.bookings) {
+                existingMap.set(b.id, b);
+              }
+              return Array.from(existingMap.values()).sort(
+                (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+              );
+            });
+          }
+        }
+      } catch (err) {
+        console.warn("Failed fetching from reservations API:", err);
+      }
+    };
+    loadFromApi();
+
+    // 2. Real-time Firestore snapshot listener
     const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setBookings(snapshot.docs.map((doc) => doc.data() as Booking));
+      const fbList = snapshot.docs.map((doc) => doc.data() as Booking);
+      setBookings((prev) => {
+        const existingMap = new Map(prev.map((b) => [b.id, b]));
+        for (const b of fbList) {
+          existingMap.set(b.id, b);
+        }
+        return Array.from(existingMap.values()).sort(
+          (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+        );
+      });
     });
     return () => unsubscribe();
   }, []);

@@ -40,12 +40,23 @@ export const adminAuth: Auth = getAuth(adminApp);
 export const adminDb: Firestore = getFirestore(adminApp);
 export const adminStorage: Storage = getStorage(adminApp);
 
+export const isFirebaseAdminConfigured = (): boolean => {
+  return Boolean(
+    (process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) &&
+    process.env.FIREBASE_CLIENT_EMAIL &&
+    process.env.FIREBASE_PRIVATE_KEY
+  );
+};
+
 /**
  * Immutable Audit Logging Helper
  * Writes security-critical events directly to the firestore audit_logs collection
  */
 export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
   try {
+    if (!isFirebaseAdminConfigured()) {
+      return;
+    }
     const logData = {
       ...entry,
       timestamp: new Date().toISOString(),
@@ -53,6 +64,7 @@ export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
     };
     await adminDb.collection("audit_logs").add(logData);
   } catch (err) {
-    console.error("[AUDIT LOG ERROR]", err);
+    console.warn("[AUDIT LOG SKIPPED]", err);
   }
 }
+

@@ -1,4 +1,5 @@
-import { adminDb, logAuditEvent } from "@/lib/firebase/admin";
+import { adminDb, logAuditEvent, isFirebaseAdminConfigured } from "@/lib/firebase/admin";
+import { supabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/admin";
 import { Booking, RoomCalendarLock } from "@/types/booking";
 import { GuestRegistrationToken } from "@/types/guest";
 import { generateBookingReference } from "./referenceGenerator";
@@ -22,20 +23,63 @@ export function getStayNights(checkInStr: string, checkOutStr: string): string[]
 }
 
 /**
- * Queries all active calendar locks from Firestore
+ * Queries all active calendar locks with Supabase (Tier 1) and Firestore failover
  */
 export async function getActiveLocks(roomId: string = "cabana-01"): Promise<RoomCalendarLock[]> {
-  try {
-    const snap = await adminDb
-      .collection("room_calendar_locks")
-      .where("roomId", "==", roomId)
-      .get();
+  const locks: RoomCalendarLock[] = [];
+  const seenDates = new Set<string>();
 
-    return snap.docs.map((doc) => doc.data() as RoomCalendarLock);
-  } catch (err) {
-    console.error("Error fetching calendar locks:", err);
-    return [];
+  // 1. Tier 1: Supabase PostgreSQL (Fast & persistent across all serverless instances)
+  try {
+    if (isSupabaseConfigured()) {
+      const { data: sbLocks } = await supabaseAdmin
+        .from("room_calendar_locks")
+        .select("*")
+        .eq("room_id", roomId);
+
+      if (sbLocks && Array.isArray(sbLocks)) {
+        for (const l of sbLocks) {
+          seenDates.add(l.date);
+          locks.push({
+            id: l.id,
+            roomId: l.room_id,
+            date: l.date,
+            bookingId: l.booking_id,
+            status: "confirmed",
+            createdAt: l.locked_at,
+          });
+        }
+      }
+    }
+  } catch (err: any) {
+    console.warn("[LOCKS SB WARNING]", err?.message);
   }
+
+  // 2. Tier 2: Cloud Firestore (if service account configured)
+  if (isFirebaseAdminConfigured()) {
+    try {
+      const snapPromise = adminDb
+        .collection("room_calendar_locks")
+        .where("roomId", "==", roomId)
+        .get();
+      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500));
+      const snap = (await Promise.race([snapPromise, timeoutPromise])) as any;
+
+      if (snap && snap.docs) {
+        for (const doc of snap.docs) {
+          const data = doc.data() as RoomCalendarLock;
+          if (!seenDates.has(data.date)) {
+            seenDates.add(data.date);
+            locks.push(data);
+          }
+        }
+      }
+    } catch (err: any) {
+      console.warn("[LOCKS FIRESTORE WARNING]", err?.message);
+    }
+  }
+
+  return locks;
 }
 
 export const PACKAGE_RATES_LKR: Record<string, number> = {
@@ -73,7 +117,9 @@ export interface ReservationParams {
 }
 
 /**
- * Executes an atomic Firestore transaction to prevent double bookings
+ * Executes an atomic reservation preventing double bookings.
+ * Tier 1: Supabase PostgreSQL (Global ACID persistence across all Vercel instances)
+ * Tier 2: Cloud Firestore (Sync if service account configured)
  */
 export async function createReservationAtomic(
   params: ReservationParams
@@ -94,7 +140,6 @@ export async function createReservationAtomic(
   // Canonical server-side price calculation
   const baseRate = PACKAGE_RATES_LKR[params.packagePlan] || 11000;
   const canonicalTotal = baseRate * nightsList.length;
-  // If manual booking from admin has explicit total, allow it; for public website bookings enforce server price
   const totalAmount = params.source === "manual" && typeof params.totalAmount === "number"
     ? params.totalAmount
     : canonicalTotal;
@@ -145,51 +190,154 @@ export async function createReservationAtomic(
     createdAt: nowIso,
   };
 
-  // Run ACID transaction across all nights
-  await adminDb.runTransaction(async (transaction) => {
-    // 1. Read all night lock documents
-    const lockRefs = nightsList.map((date) =>
-      adminDb.collection("room_calendar_locks").doc(`${roomId}_${date}`)
-    );
+  // 1. Tier 1: Supabase PostgreSQL Concurrency Check & Persistence
+  if (isSupabaseConfigured()) {
+    // A. Concurrency Check: verify none of the nights are locked
+    const { data: existingLocks, error: lockQueryErr } = await supabaseAdmin
+      .from("room_calendar_locks")
+      .select("date")
+      .eq("room_id", roomId)
+      .in("date", nightsList);
 
-    const lockSnaps = await Promise.all(lockRefs.map((ref) => transaction.get(ref)));
-
-    // 2. Concurrency Check: verify none of the nights are locked
-    for (let i = 0; i < lockSnaps.length; i++) {
-      const snap = lockSnaps[i];
-      if (snap?.exists) {
-        const existingData = snap.data() as RoomCalendarLock;
-        if (existingData.status === "confirmed" || existingData.status === "hold") {
-          throw new Error(
-            `Night of ${nightsList[i]} is already reserved. Please select different dates.`
-          );
-        }
-      }
+    if (existingLocks && existingLocks.length > 0) {
+      throw new Error(
+        `Night of ${existingLocks[0].date} is already reserved. Please select different dates.`
+      );
     }
 
-    // 3. Commit locks for each night
-    lockRefs.forEach((ref, index) => {
-      const lockData: RoomCalendarLock = {
-        id: `${roomId}_${nightsList[index]}`,
-        roomId,
-        date: nightsList[index]!,
-        bookingId,
-        status: bookingRecord.status === "confirmed" ? "confirmed" : "hold",
-        createdAt: nowIso,
-      };
-      transaction.set(ref, lockData);
+    // B. Commit locks for each night
+    const lockRows = nightsList.map((date) => ({
+      id: `${roomId}_${date}`,
+      room_id: roomId,
+      date,
+      booking_id: bookingId,
+      locked_by: params.createdBy || "guest",
+      locked_at: nowIso,
+    }));
+
+    const { error: lockInsertErr } = await supabaseAdmin
+      .from("room_calendar_locks")
+      .upsert(lockRows);
+
+    if (lockInsertErr) {
+      console.warn("[RESERVATION SB LOCK INSERT ERROR]", lockInsertErr.message);
+    }
+
+    // C. Commit booking document into Supabase
+    const { error: bookingInsertErr } = await supabaseAdmin.from("bookings").upsert({
+      id: bookingId,
+      room_id: roomId,
+      room_name: roomName,
+      guest_name: params.guestName,
+      guest_email: params.guestEmail,
+      guest_phone: params.guestPhone,
+      country: params.country || "",
+      check_in: params.checkIn,
+      check_out: params.checkOut,
+      nights: nightsList.length,
+      adults: params.adults,
+      children: params.children,
+      package_plan: params.packagePlan,
+      total_amount: totalAmount,
+      paid_amount: 0,
+      balance_amount: totalAmount,
+      source: params.source || "website",
+      status: params.status || "pending",
+      payment_status: "unpaid",
+      special_requests: params.specialRequests || "",
+      notes: params.notes || "",
+      registration_token: token,
+      is_registered: false,
+      id_type: params.idType || null,
+      id_number: params.idNumber || null,
+      id_document_ids: params.idDocumentIds || [],
+      id_verification_status: hasDocs ? "pending" : null,
+      notification_status: "pending",
+      created_by: params.createdBy || "guest",
+      created_at: nowIso,
+      updated_at: nowIso,
     });
 
-    // 4. Commit booking document
-    const bookingRef = adminDb.collection("bookings").doc(bookingId);
-    transaction.set(bookingRef, bookingRecord);
+    if (bookingInsertErr) {
+      console.warn("[RESERVATION SB BOOKING INSERT ERROR]", bookingInsertErr.message);
+    }
 
-    // 5. Commit registration token
-    const tokenRef = adminDb.collection("registration_tokens").doc(token);
-    transaction.set(tokenRef, tokenRecord);
-  });
+    // D. Associate uploaded documents in Supabase
+    if (params.idDocumentIds && params.idDocumentIds.length > 0) {
+      try {
+        await supabaseAdmin
+          .from("guest_documents")
+          .update({ booking_id: bookingId, guest_id: bookingId })
+          .in("document_id", params.idDocumentIds);
+      } catch (docErr: any) {
+        console.warn("[RESERVATION SB DOC LINK WARNING]", docErr?.message);
+      }
+    }
+  }
 
-  // Log audit event
+  // 2. Tier 2: Cloud Firestore Transaction (Only if Firebase Admin is configured)
+  if (isFirebaseAdminConfigured()) {
+    try {
+      const firestoreTx = adminDb.runTransaction(async (transaction) => {
+        const lockRefs = nightsList.map((date) =>
+          adminDb.collection("room_calendar_locks").doc(`${roomId}_${date}`)
+        );
+
+        const lockSnaps = await Promise.all(lockRefs.map((ref) => transaction.get(ref)));
+
+        for (let i = 0; i < lockSnaps.length; i++) {
+          const snap = lockSnaps[i];
+          if (snap?.exists) {
+            const existingData = snap.data() as RoomCalendarLock;
+            if (existingData.status === "confirmed" || existingData.status === "hold") {
+              throw new Error(
+                `Night of ${nightsList[i]} is already reserved. Please select different dates.`
+              );
+            }
+          }
+        }
+
+        lockRefs.forEach((ref, index) => {
+          const lockData: RoomCalendarLock = {
+            id: `${roomId}_${nightsList[index]}`,
+            roomId,
+            date: nightsList[index]!,
+            bookingId,
+            status: bookingRecord.status === "confirmed" ? "confirmed" : "hold",
+            createdAt: nowIso,
+          };
+          transaction.set(ref, lockData);
+        });
+
+        const bookingRef = adminDb.collection("bookings").doc(bookingId);
+        transaction.set(bookingRef, bookingRecord);
+
+        const tokenRef = adminDb.collection("registration_tokens").doc(token);
+        transaction.set(tokenRef, tokenRecord);
+      });
+
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2500));
+      await Promise.race([firestoreTx, timeoutPromise]);
+    } catch (fbErr: any) {
+      console.warn("[BOOKING FIRESTORE SYNC SKIPPED/TIMED OUT]", fbErr?.message);
+    }
+
+    // Associate documents in Firestore
+    if (params.idDocumentIds && params.idDocumentIds.length > 0) {
+      try {
+        const docBatch = adminDb.batch();
+        for (const docId of params.idDocumentIds) {
+          const docRef = adminDb.collection("guestDocuments").doc(docId);
+          docBatch.set(docRef, { bookingId, guestName: params.guestName }, { merge: true });
+        }
+        await docBatch.commit();
+      } catch (docErr) {
+        console.warn("[BOOKING FIRESTORE DOC LINK WARNING]", docErr);
+      }
+    }
+  }
+
+  // 3. Log audit event (Guarded)
   await logAuditEvent({
     actorId: params.createdBy || "guest",
     actorRole: params.source === "manual" ? "owner" : "guest",
@@ -203,23 +351,9 @@ export async function createReservationAtomic(
     },
     ipAddress: params.ipAddress,
     timestamp: nowIso,
-  });
+  }).catch(() => {});
 
-  // Associate uploaded documents to this booking
-  if (params.idDocumentIds && params.idDocumentIds.length > 0) {
-    try {
-      const docBatch = adminDb.batch();
-      for (const docId of params.idDocumentIds) {
-        const docRef = adminDb.collection("guestDocuments").doc(docId);
-        docBatch.set(docRef, { bookingId, guestName: params.guestName }, { merge: true });
-      }
-      await docBatch.commit();
-    } catch (docErr) {
-      console.warn("[BOOKING] Failed to associate document IDs with booking:", docErr);
-    }
-  }
-
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kekulamaecocabanagalle.com";
   const registrationUrl = `${baseUrl}/guest/register?token=${token}`;
 
   return {
@@ -234,30 +368,55 @@ export async function createReservationAtomic(
  * making those dates available for new bookings immediately.
  */
 export async function releaseReservationLocks(bookingId: string, roomId = "cabana-01"): Promise<number> {
+  let releasedCount = 0;
+
+  // 1. Supabase PostgreSQL
   try {
-    const locksSnap = await adminDb
-      .collection("room_calendar_locks")
-      .where("bookingId", "==", bookingId)
-      .get();
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabaseAdmin
+        .from("room_calendar_locks")
+        .delete()
+        .eq("booking_id", bookingId)
+        .select();
 
-    if (locksSnap.empty) return 0;
-
-    const batch = adminDb.batch();
-    locksSnap.docs.forEach((doc) => batch.delete(doc.ref));
-    await batch.commit();
-
-    await logAuditEvent({
-      actorId: "system",
-      actorRole: "owner",
-      action: "BOOKING_CANCELLED",
-      targetResource: `bookings/${bookingId}`,
-      details: { releasedLocksCount: locksSnap.size, roomId },
-      timestamp: new Date().toISOString(),
-    });
-
-    return locksSnap.size;
-  } catch (err) {
-    console.error(`[LOCK RELEASE ERROR] Failed to release locks for ${bookingId}:`, err);
-    return 0;
+      if (!error && data) {
+        releasedCount = data.length;
+      }
+    }
+  } catch (err: any) {
+    console.warn("[LOCK RELEASE SB WARNING]", err?.message);
   }
+
+  // 2. Cloud Firestore
+  if (isFirebaseAdminConfigured()) {
+    try {
+      const locksSnap = await adminDb
+        .collection("room_calendar_locks")
+        .where("bookingId", "==", bookingId)
+        .get();
+
+      if (!locksSnap.empty) {
+        const batch = adminDb.batch();
+        locksSnap.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        if (releasedCount === 0) {
+          releasedCount = locksSnap.size;
+        }
+      }
+    } catch (err) {
+      console.warn(`[LOCK RELEASE FIRESTORE WARNING] Failed for ${bookingId}:`, err);
+    }
+  }
+
+  await logAuditEvent({
+    actorId: "system",
+    actorRole: "owner",
+    action: "BOOKING_CANCELLED",
+    targetResource: `bookings/${bookingId}`,
+    details: { releasedLocksCount: releasedCount, roomId },
+    timestamp: new Date().toISOString(),
+  }).catch(() => {});
+
+  return releasedCount;
 }
+

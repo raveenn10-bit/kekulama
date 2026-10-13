@@ -33,22 +33,47 @@ export async function POST(
       );
     }
 
-    const docRef = adminDb.collection("guestDocuments").doc(documentId);
-    const docSnap = await docRef.get();
+    const now = new Date().toISOString();
+    let updated = false;
 
-    if (!docSnap.exists) {
-      return NextResponse.json({ error: "Document not found." }, { status: 404 });
+    // 1. Tier 1: Supabase PostgreSQL (Global persistent store)
+    try {
+      const { supabaseAdmin, isSupabaseConfigured } = await import("@/lib/supabase/admin");
+      if (isSupabaseConfigured()) {
+        const { error: sbErr } = await supabaseAdmin
+          .from("guest_documents")
+          .update({
+            verification_status: status,
+          })
+          .or(`id.eq.${documentId},document_id.eq.${documentId}`);
+
+        if (!sbErr) {
+          updated = true;
+        }
+      }
+    } catch (sbErr: any) {
+      console.warn("[DOCUMENT VERIFY SB WARNING]", sbErr?.message);
     }
 
-    const docData = docSnap.data() as FirestoreGuestDocument;
-    const now = new Date().toISOString();
-
-    await docRef.update({
-      verificationStatus: status,
-      verifiedBy: owner.email,
-      verifiedAt: now,
-      rejectionReason: status === "rejected" ? rejectionReason || "Document does not match guest details" : null,
-    });
+    // 2. Tier 2: Cloud Firestore (if configured)
+    const { isFirebaseAdminConfigured } = await import("@/lib/firebase/admin");
+    if (isFirebaseAdminConfigured()) {
+      try {
+        const docRef = adminDb.collection("guestDocuments").doc(documentId);
+        const docSnap = await docRef.get();
+        if (docSnap.exists) {
+          await docRef.update({
+            verificationStatus: status,
+            verifiedBy: owner.email,
+            verifiedAt: now,
+            rejectionReason: status === "rejected" ? rejectionReason || "Document does not match guest details" : null,
+          });
+          updated = true;
+        }
+      } catch (fbErr: any) {
+        console.warn("[DOCUMENT VERIFY FIRESTORE WARNING]", fbErr?.message);
+      }
+    }
 
     // Immutable audit log
     await logAuditEvent({
@@ -58,8 +83,7 @@ export async function POST(
       action: status === "verified" ? "DOCUMENT_VERIFIED" : "DOCUMENT_REJECTED",
       targetResource: `guestDocuments/${documentId}`,
       details: {
-        documentType: docData.documentType,
-        bookingId: docData.bookingId,
+        documentId,
         status,
         rejectionReason: rejectionReason || null,
       },

@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 6. Write Document Metadata into Firestore 'guestDocuments'
+    // 6. Write Document Metadata into Supabase PostgreSQL 'guest_documents' (Tier 1)
     const documentId = `doc_${crypto.randomUUID()}`;
     const retentionDate = new Date();
     retentionDate.setFullYear(retentionDate.getFullYear() + 1); // 1-year retention
@@ -141,9 +141,44 @@ export async function POST(req: NextRequest) {
       retentionUntil: retentionDate.toISOString(),
     };
 
-    await adminDb.collection("guestDocuments").doc(documentId).set(docMetadata);
+    // Save to Supabase PostgreSQL table (Authoritative serverless vault)
+    const { supabaseAdmin, isSupabaseConfigured } = await import("@/lib/supabase/admin");
+    if (isSupabaseConfigured()) {
+      try {
+        await supabaseAdmin.from("guest_documents").upsert({
+          id: documentId,
+          document_id: documentId,
+          guest_id: authorizedBookingId,
+          booking_id: authorizedBookingId,
+          document_type: docType,
+          storage_provider: "supabase",
+          bucket_name: "guest-private-documents",
+          private_storage_path: storagePath,
+          mime_type: file.type,
+          file_size: file.size,
+          verification_status: "pending",
+          uploaded_by: uploaderIdentity,
+          uploaded_at: new Date().toISOString(),
+          retention_until: retentionDate.toISOString(),
+        });
+      } catch (sbErr: any) {
+        console.warn("[UPLOAD SB WARNING]", sbErr?.message);
+      }
+    }
 
-    // 7. Audit Logging
+    // Secondary sync: Cloud Firestore (only if service account credentials configured)
+    const { isFirebaseAdminConfigured } = await import("@/lib/firebase/admin");
+    if (isFirebaseAdminConfigured()) {
+      try {
+        const firestoreWrite = adminDb.collection("guestDocuments").doc(documentId).set(docMetadata);
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2500));
+        await Promise.race([firestoreWrite, timeoutPromise]);
+      } catch (fbErr: any) {
+        console.warn("[UPLOAD FIRESTORE WARNING]", fbErr?.message);
+      }
+    }
+
+    // 7. Audit Logging (Guarded)
     await logAuditEvent({
       actorId: uploaderIdentity,
       actorEmail: uploaderIdentity,
@@ -157,7 +192,7 @@ export async function POST(req: NextRequest) {
         size: file.size,
       },
       timestamp: new Date().toISOString(),
-    });
+    }).catch(() => {});
 
     return NextResponse.json({
       success: true,

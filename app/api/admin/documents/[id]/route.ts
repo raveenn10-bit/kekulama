@@ -25,13 +25,57 @@ export async function GET(
       return NextResponse.json({ error: "Missing document ID" }, { status: 400 });
     }
 
-    // 2. Fetch Document Metadata from Firestore 'guestDocuments'
-    const docSnap = await adminDb.collection("guestDocuments").doc(documentId).get();
-    if (!docSnap.exists) {
-      return NextResponse.json({ error: "Document not found" }, { status: 404 });
+    // 2. Fetch Document Metadata from Supabase (Tier 1) or Firestore
+    let documentData: FirestoreGuestDocument | null = null;
+
+    try {
+      const { supabaseAdmin, isSupabaseConfigured } = await import("@/lib/supabase/admin");
+      if (isSupabaseConfigured()) {
+        const { data: sbDoc } = await supabaseAdmin
+          .from("guest_documents")
+          .select("*")
+          .or(`id.eq.${documentId},document_id.eq.${documentId}`)
+          .maybeSingle();
+
+        if (sbDoc) {
+          documentData = {
+            documentId: sbDoc.document_id || sbDoc.id,
+            guestId: sbDoc.guest_id,
+            bookingId: sbDoc.booking_id,
+            documentType: sbDoc.document_type,
+            storageProvider: sbDoc.storage_provider || "supabase",
+            bucketName: sbDoc.bucket_name || "guest-private-documents",
+            privateStoragePath: sbDoc.private_storage_path,
+            mimeType: sbDoc.mime_type,
+            fileSize: Number(sbDoc.file_size) || 0,
+            verificationStatus: sbDoc.verification_status || "pending",
+            uploadedBy: sbDoc.uploaded_by,
+            uploadedAt: sbDoc.uploaded_at,
+            retentionUntil: sbDoc.retention_until,
+          };
+        }
+      }
+    } catch (sbErr: any) {
+      console.warn("[DOCUMENT GET SB WARNING]", sbErr?.message);
     }
 
-    const documentData = docSnap.data() as FirestoreGuestDocument;
+    if (!documentData) {
+      const { isFirebaseAdminConfigured } = await import("@/lib/firebase/admin");
+      if (isFirebaseAdminConfigured()) {
+        try {
+          const docSnap = await adminDb.collection("guestDocuments").doc(documentId).get();
+          if (docSnap.exists) {
+            documentData = docSnap.data() as FirestoreGuestDocument;
+          }
+        } catch (fbErr: any) {
+          console.warn("[DOCUMENT GET FIRESTORE WARNING]", fbErr?.message);
+        }
+      }
+    }
+
+    if (!documentData) {
+      return NextResponse.json({ error: "Document not found" }, { status: 404 });
+    }
 
     // 3. Generate a short-lived (5-minute / 300-second) signed URL from Supabase Private Storage
     const signedUrlRes = await createSignedDocumentUrl({

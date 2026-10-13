@@ -17,13 +17,76 @@ export async function GET() {
     // 1. Fetch active locks from Firestore
     const locks = await getActiveLocks("cabana-01");
 
-    // 2. Fetch active bookings from Firestore
-    const bookingsSnap = await adminDb
-      .collection("bookings")
-      .where("status", "in", ["pending", "confirmed", "registered", "checked_in"])
-      .get();
+    const bookings: Booking[] = [];
+    const seenIds = new Set<string>();
 
-    const bookings: Booking[] = bookingsSnap.docs.map((doc) => doc.data() as Booking);
+    // 1. Tier 1: Supabase PostgreSQL (Fast & persistent across all instances)
+    try {
+      const { supabaseAdmin, isSupabaseConfigured } = await import("@/lib/supabase/admin");
+      if (isSupabaseConfigured()) {
+        const { data: sbBookings } = await supabaseAdmin
+          .from("bookings")
+          .select("*")
+          .in("status", ["pending", "confirmed", "registered", "checked_in"]);
+
+        if (sbBookings && Array.isArray(sbBookings)) {
+          for (const b of sbBookings) {
+            seenIds.add(b.id);
+            bookings.push({
+              id: b.id,
+              roomId: b.room_id,
+              roomName: b.room_name,
+              guestName: b.guest_name,
+              guestEmail: b.guest_email,
+              guestPhone: b.guest_phone,
+              country: b.country,
+              checkIn: b.check_in,
+              checkOut: b.check_out,
+              nights: b.nights,
+              adults: b.adults,
+              children: b.children,
+              packagePlan: b.package_plan,
+              totalAmount: Number(b.total_amount),
+              paidAmount: Number(b.paid_amount),
+              balanceAmount: Number(b.balance_amount),
+              source: b.source,
+              status: b.status,
+              paymentStatus: b.payment_status,
+              specialRequests: b.special_requests,
+              notes: b.notes,
+              createdAt: b.created_at,
+              updatedAt: b.updated_at,
+            });
+          }
+        }
+      }
+    } catch (sbErr: any) {
+      console.warn("[AVAILABILITY GET SB WARNING]", sbErr?.message);
+    }
+
+    // 2. Tier 2: Cloud Firestore (if configured)
+    const { isFirebaseAdminConfigured } = await import("@/lib/firebase/admin");
+    if (isFirebaseAdminConfigured()) {
+      try {
+        const snapPromise = adminDb
+          .collection("bookings")
+          .where("status", "in", ["pending", "confirmed", "registered", "checked_in"])
+          .get();
+        const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500));
+        const bookingsSnap = (await Promise.race([snapPromise, timeoutPromise])) as any;
+        if (bookingsSnap && bookingsSnap.docs) {
+          for (const doc of bookingsSnap.docs) {
+            const data = doc.data() as Booking;
+            if (!seenIds.has(data.id)) {
+              seenIds.add(data.id);
+              bookings.push(data);
+            }
+          }
+        }
+      } catch (fbErr: any) {
+        console.warn("[AVAILABILITY GET FIRESTORE WARNING]", fbErr?.message);
+      }
+    }
 
     // Anonymize for public calendar table
     const anonymizedBookings = bookings.map((b) => ({
