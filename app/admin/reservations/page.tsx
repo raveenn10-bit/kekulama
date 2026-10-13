@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ShieldCheck,
   Calendar,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc } from "firebase/firestore";
@@ -30,37 +31,56 @@ export default function AdminReservationsPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [retryingEmails, setRetryingEmails] = useState(false);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
-  const { role, getIdToken } = useAdminAuth();
+  const [loadingBookings, setLoadingBookings] = useState(false);
+  const { role, user, loading: authLoading, getIdToken } = useAdminAuth();
 
-  useEffect(() => {
-    // 1. Fetch from Unified Backend API (Supabase PostgreSQL + Firestore)
-    const loadFromApi = async () => {
-      try {
-        const token = await getIdToken();
-        const res = await fetch("/api/admin/reservations", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.bookings && Array.isArray(data.bookings)) {
-            setBookings((prev) => {
-              const existingMap = new Map(prev.map((b) => [b.id, b]));
-              for (const b of data.bookings) {
-                existingMap.set(b.id, b);
-              }
-              return Array.from(existingMap.values()).sort(
-                (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-              );
-            });
-          }
+  // 1. Fetch from Unified Backend API (Supabase PostgreSQL + Firestore)
+  const loadFromApi = async () => {
+    try {
+      setLoadingBookings(true);
+      const token = await getIdToken();
+      const res = await fetch("/api/admin/reservations", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.bookings && Array.isArray(data.bookings)) {
+          setBookings((prev) => {
+            const existingMap = new Map(prev.map((b) => [b.id, b]));
+            for (const b of data.bookings) {
+              existingMap.set(b.id, b);
+            }
+            return Array.from(existingMap.values()).sort(
+              (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+            );
+          });
         }
-      } catch (err) {
-        console.warn("Failed fetching from reservations API:", err);
       }
-    };
-    loadFromApi();
+    } catch (err) {
+      console.warn("Failed fetching from reservations API:", err);
+    } finally {
+      setLoadingBookings(false);
+    }
+  };
 
-    // 2. Real-time Firestore snapshot listener
+  // Run whenever authenticated user is verified
+  useEffect(() => {
+    if (!authLoading && user) {
+      loadFromApi();
+    }
+  }, [user, authLoading]);
+
+  // Periodic polling every 10 seconds for real-time online bookings
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(() => {
+      loadFromApi();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  // 2. Real-time Firestore snapshot listener
+  useEffect(() => {
     const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fbList = snapshot.docs.map((doc) => doc.data() as Booking);
@@ -111,9 +131,18 @@ export default function AdminReservationsPage() {
         throw new Error(errData?.error || `Failed with status ${res.status}`);
       }
 
+      // 1. Update selected booking immediately
       if (selectedBooking && selectedBooking.id === bookingId) {
         setSelectedBooking({ ...selectedBooking, status: newStatus });
       }
+
+      // 2. Update bookings array state immediately for instant UI responsiveness
+      setBookings((prev) =>
+        prev.map((b) => (b.id === bookingId ? { ...b, status: newStatus } : b))
+      );
+
+      // 3. Trigger fresh synchronization with database
+      loadFromApi();
     } catch (err: any) {
       console.error("Error updating status:", err);
       alert(`Status update failed: ${err.message}`);
@@ -184,15 +213,26 @@ export default function AdminReservationsPage() {
       {/* Top Filter & Search Bar */}
       <div className="space-y-3 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="relative w-full sm:w-80">
-            <Search size={16} className="absolute left-3.5 top-3 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search reference, guest, phone, email..."
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white text-slate-900"
-            />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative w-full sm:w-80">
+              <Search size={16} className="absolute left-3.5 top-3 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search reference, guest, phone, email..."
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white text-slate-900"
+              />
+            </div>
+            <button
+              onClick={loadFromApi}
+              disabled={loadingBookings}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all shrink-0 cursor-pointer"
+              title="Refresh reservations from database"
+            >
+              <RefreshCw size={14} className={loadingBookings ? "animate-spin text-emerald-600" : ""} />
+              <span className="hidden sm:inline">{loadingBookings ? "Syncing..." : "Refresh"}</span>
+            </button>
           </div>
 
           {/* Source Filter Tabs */}

@@ -25,7 +25,7 @@ export default function AdminDashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { getIdToken } = useAdminAuth();
+  const { user, loading: authLoading, getIdToken } = useAdminAuth();
 
   const todayStr = new Date().toISOString().split("T")[0]!;
 
@@ -59,9 +59,22 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
-    loadFromApi();
+    if (!authLoading && user) {
+      loadFromApi();
+    }
+  }, [user, authLoading]);
 
-    // Listen for recent bookings in real-time from Firestore
+  // Periodic polling every 12 seconds for live dashboard updates
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(() => {
+      loadFromApi();
+    }, 12000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  useEffect(() => {
+    // Listen for recent bookings in real-time from Firestore (if client enabled)
     const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"), limit(50));
 
     const unsubscribe = onSnapshot(

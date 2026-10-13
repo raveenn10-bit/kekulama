@@ -41,14 +41,7 @@ export async function POST(req: NextRequest) {
     let guestName = "Guest";
     let roomId = "cabana-01";
 
-    const updatePayload: Record<string, any> = {
-      status,
-      updated_at: nowIso,
-    };
-
     if (status === "cancelled") {
-      updatePayload.cancelled_at = nowIso;
-      if (cancelReason) updatePayload.cancel_reason = cancelReason;
       await releaseReservationLocks(bookingId, roomId);
     }
 
@@ -58,7 +51,7 @@ export async function POST(req: NextRequest) {
       if (isSupabaseConfigured()) {
         const { data: bData } = await supabaseAdmin
           .from("bookings")
-          .select("guest_name, room_id")
+          .select("guest_name, room_id, notes")
           .eq("id", bookingId)
           .maybeSingle();
 
@@ -67,10 +60,26 @@ export async function POST(req: NextRequest) {
           roomId = bData.room_id || roomId;
         }
 
-        await supabaseAdmin
+        const sbPayload: Record<string, any> = {
+          status,
+          updated_at: nowIso,
+        };
+
+        if (status === "cancelled" && cancelReason) {
+          sbPayload.notes = bData?.notes
+            ? `${bData.notes}\n[Cancelled]: ${cancelReason}`
+            : `Cancelled: ${cancelReason}`;
+        }
+
+        const { error: sbUpdateErr } = await supabaseAdmin
           .from("bookings")
-          .update(updatePayload)
+          .update(sbPayload)
           .eq("id", bookingId);
+
+        if (sbUpdateErr) {
+          console.error("[RESERVATION STATUS SB UPDATE ERROR]", sbUpdateErr.message);
+          throw new Error(sbUpdateErr.message);
+        }
       }
     } catch (sbErr: any) {
       console.warn("[RESERVATION STATUS SB WARNING]", sbErr?.message);

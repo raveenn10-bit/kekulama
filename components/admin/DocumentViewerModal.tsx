@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { FirestoreGuestDocument } from "@/types/document";
 import { auth } from "@/lib/firebase/client";
+import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 
 interface DocumentViewerModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export function DocumentViewerModal({
   isOwner,
   onStatusChange,
 }: DocumentViewerModalProps) {
+  const { getIdToken } = useAdminAuth();
   const [documents, setDocuments] = useState<FirestoreGuestDocument[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<FirestoreGuestDocument | null>(null);
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
@@ -57,7 +59,7 @@ export function DocumentViewerModal({
       setLoading(true);
       setErrorMessage("");
       try {
-        const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : "";
+        const idToken = (await getIdToken()) || (auth.currentUser ? await auth.currentUser.getIdToken() : "");
         const headers: Record<string, string> = {};
         if (idToken) headers["Authorization"] = `Bearer ${idToken}`;
 
@@ -98,7 +100,7 @@ export function DocumentViewerModal({
   async function fetchSignedUrl(docId: string, customHeaders?: Record<string, string>) {
     setLoading(true);
     try {
-      const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : "";
+      const idToken = (await getIdToken()) || (auth.currentUser ? await auth.currentUser.getIdToken() : "");
       const headers: Record<string, string> = customHeaders || {};
       if (idToken && !headers["Authorization"]) headers["Authorization"] = `Bearer ${idToken}`;
 

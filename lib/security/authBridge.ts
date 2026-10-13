@@ -1,4 +1,4 @@
-import { adminAuth, adminDb, logAuditEvent } from "../firebase/admin";
+import { adminAuth, adminDb, logAuditEvent, isFirebaseAdminConfigured } from "../firebase/admin";
 import { UserRole } from "../../types/admin";
 
 /**
@@ -56,8 +56,11 @@ export async function verifyFirebaseSessionOrToken(req: Request): Promise<Authen
     const uid = decodedToken.uid;
     const email = (decodedToken.email || "").toLowerCase().trim();
 
-    // Strictly enforce Owner privileges for verified owner UIDs, token claims, or Firestore role
+    // Strictly enforce Owner privileges for verified owner UIDs, verified emails, token claims, or Firestore role
     const isApprovedUid = APPROVED_OWNER_UIDS.includes(uid as typeof APPROVED_OWNER_UIDS[number]);
+    const isOwnerEmail =
+      email === "kekulamaecocabana@gmail.com" ||
+      email === "chamilka.ch@gmail.com";
     const isTokenOwnerClaim =
       (typeof decodedToken.role === "string" && decodedToken.role.toLowerCase() === "owner") ||
       (decodedToken as any).admin === true;
@@ -65,14 +68,14 @@ export async function verifyFirebaseSessionOrToken(req: Request): Promise<Authen
     let role: UserRole = "reception";
     let roleLookupSource = "default_reception";
 
-    if (isApprovedUid) {
+    if (isApprovedUid || isOwnerEmail) {
       role = "owner";
-      roleLookupSource = "approved_owner_uid";
+      roleLookupSource = isOwnerEmail ? "approved_owner_email" : "approved_owner_uid";
     } else if (isTokenOwnerClaim) {
       role = "owner";
       roleLookupSource = "token_custom_claim";
-    } else {
-      // Check user record in Firestore
+    } else if (isFirebaseAdminConfigured()) {
+      // Check user record in Firestore (Only if Firebase Admin is configured to prevent 60s metadata hang on Vercel)
       try {
         const userDoc = await adminDb.collection("users").doc(uid).get();
         if (userDoc.exists) {

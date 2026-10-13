@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { adminDb, logAuditEvent } from "../firebase/admin";
+import { adminDb, logAuditEvent, isFirebaseAdminConfigured } from "../firebase/admin";
 import { supabaseAdmin, isSupabaseConfigured } from "../supabase/admin";
 import { GUEST_PRIVATE_BUCKET } from "../supabase/storage";
 import {
@@ -192,61 +192,98 @@ export async function executeBackup(options?: {
   const backupId = `bkp_${timestampClean}`;
   const filename = `kekulama_backup_${timestampClean}.enc`;
 
-  // 1. Export Cloud Firestore Collections in Parallel (Eliminates sequential roundtrip latency)
+  // 1. Export Data: Supabase PostgreSQL (Tier 1 authorative) and Firestore (if configured)
   const backupCollectionsData: Record<string, any[]> = {};
   const collectionStats: Record<string, CollectionBackupStats> = {};
 
-  await Promise.all(
-    BACKUP_COLLECTIONS.map(async (colName) => {
-      try {
-        const snap = await adminDb.collection(colName).get();
-        const docs = snap.docs.map((doc) => ({
-          _id: doc.id,
-          ...doc.data(),
-        }));
-        backupCollectionsData[colName] = docs;
-        collectionStats[colName] = {
-          count: docs.length,
-          sampleIds: docs.slice(0, 3).map((d) => d._id),
-        };
-      } catch (colErr: any) {
-        console.warn(`[BACKUP WARNING] Failed exporting collection ${colName}:`, colErr?.message || colErr);
-        backupCollectionsData[colName] = [];
-        collectionStats[colName] = { count: 0, sampleIds: [] };
-      }
-    })
-  );
+  // Export Supabase PostgreSQL tables
+  if (isSupabaseConfigured()) {
+    const sbTables = ["bookings", "room_calendar_locks", "guest_documents", "system_settings", "backups"];
+    await Promise.all(
+      sbTables.map(async (tableName) => {
+        try {
+          const { data, error } = await supabaseAdmin.from(tableName).select("*");
+          if (!error && data) {
+            const docs = data.map((d: any) => ({ _id: d.id, ...d }));
+            backupCollectionsData[tableName] = docs;
+            collectionStats[tableName] = {
+              count: docs.length,
+              sampleIds: docs.slice(0, 3).map((d: any) => d._id),
+            };
+          }
+        } catch (sbErr: any) {
+          console.warn(`[BACKUP SB EXPORT WARNING] ${tableName}:`, sbErr?.message);
+        }
+      })
+    );
+  }
+
+  // Export Firestore Collections (Only if credentials configured, with fast timeout)
+  if (isFirebaseAdminConfigured()) {
+    await Promise.all(
+      BACKUP_COLLECTIONS.map(async (colName) => {
+        try {
+          const snapPromise = adminDb.collection(colName).get();
+          const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500));
+          const snap = (await Promise.race([snapPromise, timeoutPromise])) as any;
+          if (snap && snap.docs) {
+            const docs = snap.docs.map((doc: any) => ({
+              _id: doc.id,
+              ...doc.data(),
+            }));
+            const existing = backupCollectionsData[colName] || [];
+            const merged = new Map(existing.map((item: any) => [item._id, item]));
+            for (const d of docs) {
+              merged.set(d._id, d);
+            }
+            const combined = Array.from(merged.values());
+            backupCollectionsData[colName] = combined;
+            collectionStats[colName] = {
+              count: combined.length,
+              sampleIds: combined.slice(0, 3).map((d: any) => d._id),
+            };
+          }
+        } catch (colErr: any) {
+          if (!backupCollectionsData[colName]) {
+            backupCollectionsData[colName] = [];
+            collectionStats[colName] = { count: 0, sampleIds: [] };
+          }
+        }
+      })
+    );
+  }
 
   // 2. Export Supabase Guest Storage Files in Parallel
   const storageFiles: StoredStorageFile[] = [];
   const filePaths: string[] = [];
   let totalFileSizeBytes = 0;
 
-  if (isSupabaseConfigured() && backupCollectionsData["guestDocuments"]) {
-    const guestDocs = backupCollectionsData["guestDocuments"];
+  if (isSupabaseConfigured()) {
+    const guestDocs = backupCollectionsData["guest_documents"] || backupCollectionsData["guestDocuments"] || [];
     const docsWithFiles = guestDocs.filter(
-      (doc) => doc.privateStoragePath && typeof doc.privateStoragePath === "string"
+      (doc) => (doc.privateStoragePath || doc.private_storage_path) && typeof (doc.privateStoragePath || doc.private_storage_path) === "string"
     );
 
     const downloadResults = await Promise.all(
       docsWithFiles.map(async (doc) => {
+        const path = doc.privateStoragePath || doc.private_storage_path;
         try {
           const { data, error } = await supabaseAdmin.storage
             .from(GUEST_PRIVATE_BUCKET)
-            .download(doc.privateStoragePath);
+            .download(path);
 
           if (!error && data) {
             const arrayBuffer = await data.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
             return {
-              path: doc.privateStoragePath as string,
-              mimeType: (doc.mimeType as string) || "application/octet-stream",
+              path: path as string,
+              mimeType: (doc.mimeType || doc.mime_type || "application/octet-stream") as string,
               size: buffer.length,
               dataBase64: buffer.toString("base64"),
             };
           }
         } catch (downloadErr: any) {
-          console.warn(`[BACKUP WARNING] Could not download storage file ${doc.privateStoragePath}:`, downloadErr?.message);
+          console.warn(`[BACKUP WARNING] Could not download storage file ${path}:`, downloadErr?.message);
         }
         return null;
       })
@@ -354,28 +391,30 @@ export async function executeBackup(options?: {
       }
     })(),
 
-    // Cloud Firestore (with 2.5s timeout)
+    // Cloud Firestore (with 2.5s timeout, only if configured)
     (async () => {
-      try {
-        const firestoreWrite = adminDb.collection("backups").doc(backupId).set({
-          backupId,
-          filename,
-          sizeBytes: archiveBuffer.length,
-          sha256Checksum,
-          manifest,
-          driveFileId: driveFile.id,
-          driveFileName: driveFile.name,
-          driveMd5Checksum: driveFile.md5Checksum || null,
-          triggeredBy: options?.triggeredBy || "manual",
-          actorId: options?.actorId || "owner",
-          actorEmail: options?.actorEmail || null,
-          status: "success",
-          createdAt: now,
-        });
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2500));
-        await Promise.race([firestoreWrite, timeoutPromise]);
-      } catch (dbErr) {
-        console.warn("[BACKUP DB LOG WARNING] Could not persist backup record in Firestore:", dbErr);
+      if (isFirebaseAdminConfigured()) {
+        try {
+          const firestoreWrite = adminDb.collection("backups").doc(backupId).set({
+            backupId,
+            filename,
+            sizeBytes: archiveBuffer.length,
+            sha256Checksum,
+            manifest,
+            driveFileId: driveFile.id,
+            driveFileName: driveFile.name,
+            driveMd5Checksum: driveFile.md5Checksum || null,
+            triggeredBy: options?.triggeredBy || "manual",
+            actorId: options?.actorId || "owner",
+            actorEmail: options?.actorEmail || null,
+            status: "success",
+            createdAt: now,
+          });
+          const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2500));
+          await Promise.race([firestoreWrite, timeoutPromise]);
+        } catch (dbErr) {
+          console.warn("[BACKUP DB LOG WARNING] Could not persist backup record in Firestore:", dbErr);
+        }
       }
     })(),
 

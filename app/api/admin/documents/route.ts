@@ -27,7 +27,25 @@ export async function GET(req: NextRequest) {
       const { supabaseAdmin, isSupabaseConfigured } = await import("@/lib/supabase/admin");
       if (isSupabaseConfigured()) {
         let sbQuery = supabaseAdmin.from("guest_documents").select("*");
-        if (bookingId) sbQuery = sbQuery.eq("booking_id", bookingId);
+        if (bookingId) {
+          // Check if booking exists in Supabase and has explicit id_document_ids
+          const { data: bData } = await supabaseAdmin
+            .from("bookings")
+            .select("id_document_ids")
+            .eq("id", bookingId)
+            .maybeSingle();
+
+          const explicitDocIds: string[] = Array.isArray(bData?.id_document_ids)
+            ? bData.id_document_ids
+            : [];
+
+          if (explicitDocIds.length > 0) {
+            const inList = explicitDocIds.map((id) => `id.eq.${id},document_id.eq.${id}`).join(",");
+            sbQuery = sbQuery.or(`booking_id.eq.${bookingId},guest_id.eq.${bookingId},${inList}`);
+          } else {
+            sbQuery = sbQuery.or(`booking_id.eq.${bookingId},guest_id.eq.${bookingId}`);
+          }
+        }
         if (status) sbQuery = sbQuery.eq("verification_status", status);
 
         const { data: sbDocs, error: sbErr } = await sbQuery.order("uploaded_at", { ascending: false });

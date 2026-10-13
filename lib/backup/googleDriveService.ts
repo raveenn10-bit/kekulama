@@ -12,10 +12,23 @@ export interface DriveUploadedFile {
 
 let cachedFolderId: string | null = null;
 
+interface TokenCache {
+  accessToken: string;
+  expiresAt: number;
+  lastVerifiedAt: number;
+}
+
+let driveTokenCache: TokenCache | null = null;
+
 /**
  * Obtains a fresh Google Drive access token using the encrypted refresh token.
  */
 export async function getDriveAccessToken(): Promise<string> {
+  const now = Date.now();
+  if (driveTokenCache && driveTokenCache.expiresAt > now + 60000) {
+    return driveTokenCache.accessToken;
+  }
+
   const clientId =
     process.env.GOOGLE_DRIVE_CLIENT_ID ||
     process.env.GOOGLE_CLIENT_ID ||
@@ -78,16 +91,15 @@ export async function getDriveAccessToken(): Promise<string> {
     throw new Error("Google token refresh did not return a valid access_token.");
   }
 
+  const ttlSeconds = typeof tokenData.expires_in === "number" ? tokenData.expires_in : 3500;
+  driveTokenCache = {
+    accessToken: tokenData.access_token,
+    expiresAt: now + ttlSeconds * 1000,
+    lastVerifiedAt: now,
+  };
+
   return tokenData.access_token;
 }
-
-interface TokenCache {
-  accessToken: string;
-  expiresAt: number;
-  lastVerifiedAt: number;
-}
-
-let driveTokenCache: TokenCache | null = null;
 
 /**
  * Validates Google Drive connection by actively verifying token refresh with Google.
@@ -105,12 +117,10 @@ export async function verifyDriveToken(options?: { forceCheck?: boolean }): Prom
   }
 
   try {
+    if (options?.forceCheck) {
+      driveTokenCache = null;
+    }
     const accessToken = await getDriveAccessToken();
-    driveTokenCache = {
-      accessToken,
-      expiresAt: now + 50 * 60 * 1000, // ~50 minutes
-      lastVerifiedAt: now,
-    };
     return { valid: true };
   } catch (err: any) {
     driveTokenCache = null;
