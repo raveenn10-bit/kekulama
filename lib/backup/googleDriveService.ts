@@ -90,9 +90,10 @@ export async function getOrCreateBackupFolder(accessToken: string): Promise<stri
     return cachedFolderId;
   }
 
-  // If explicitly configured in environment, use it
-  if (process.env.GOOGLE_DRIVE_FOLDER_ID) {
-    cachedFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+  // If explicitly configured in environment, use it (fallback to confirmed Kekulama Google Drive backup folder)
+  const defaultFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID || "1XEvQdwiNbc47u1z8xkwNpYE7ajy1XZEL";
+  if (defaultFolderId) {
+    cachedFolderId = defaultFolderId;
     return cachedFolderId;
   }
 

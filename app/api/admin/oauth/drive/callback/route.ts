@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
   const origin = req.nextUrl.origin || "https://www.kekulamaecocabanagalle.com";
   const redirectUri =
     process.env.GOOGLE_DRIVE_REDIRECT_URI ||
+    process.env.GOOGLE_REDIRECT_URI ||
     `${origin}/api/admin/oauth/drive/callback`;
   const backupConsoleUrl = `${origin}/admin/backup`;
 

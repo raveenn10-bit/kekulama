@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
 
     const redirectUri =
       process.env.GOOGLE_DRIVE_REDIRECT_URI ||
+      process.env.GOOGLE_REDIRECT_URI ||
       `${origin}/api/admin/oauth/drive/callback`;
 
     // 1. Generate cryptographically random CSRF state nonce
