@@ -17,7 +17,6 @@ export async function GET(req: NextRequest) {
   const origin = req.nextUrl.origin || "https://www.kekulamaecocabanagalle.com";
   const redirectUri =
     process.env.GOOGLE_DRIVE_REDIRECT_URI ||
-    process.env.GOOGLE_REDIRECT_URI ||
     `${origin}/api/admin/oauth/drive/callback`;
   const backupConsoleUrl = `${origin}/admin/backup`;
 
@@ -70,8 +69,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 4. Exchange authorization code for tokens
-    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+    // 4. Exchange authorization code for tokens (with candidate fallback for www/apex/forwarded URIs)
+    let tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -86,7 +85,39 @@ export async function GET(req: NextRequest) {
     });
 
     if (!tokenResponse.ok) {
-      console.error("[DRIVE OAUTH CALLBACK] Token exchange failed. Status:", tokenResponse.status);
+      const candidateUris = [
+        `https://www.kekulamaecocabanagalle.com/api/admin/oauth/drive/callback`,
+        `https://kekulamaecocabanagalle.com/api/admin/oauth/drive/callback`,
+        `${origin}/api/admin/oauth/drive/callback`,
+        process.env.GOOGLE_REDIRECT_URI,
+        `https://www.kekulamaecocabanagalle.com/api/admin/oauth/gmail/callback`,
+        `https://kekulamaecocabanagalle.com/api/admin/oauth/gmail/callback`,
+      ].filter((u): u is string => Boolean(u && u !== redirectUri));
+
+      for (const alt of candidateUris) {
+        const retryRes = await fetch("https://oauth2.googleapis.com/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            code,
+            client_id: clientId,
+            client_secret: clientSecret,
+            redirect_uri: alt,
+            grant_type: "authorization_code",
+          }),
+        });
+        if (retryRes.ok) {
+          tokenResponse = retryRes;
+          break;
+        }
+      }
+    }
+
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      console.error("[DRIVE OAUTH CALLBACK] Token exchange failed. Status:", tokenResponse.status, errorText);
       return NextResponse.redirect(
         `${backupConsoleUrl}?oauth=error&reason=token_exchange_failed`
       );
@@ -136,7 +167,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID || existingSettings?.folderId;
+    const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID || existingSettings?.folderId || "1XEvQdwiNbc47u1z8xkwNpYE7ajy1XZEL";
     const now = new Date().toISOString();
 
     const saveResult = await saveDriveOAuthSettings({

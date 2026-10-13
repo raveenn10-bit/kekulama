@@ -249,6 +249,24 @@ runTest("Rejects tampered, malformed, or fake OAuth CSRF State tokens", () => {
   assert(!verifySignedOAuthState(expiredToken, "drive"), "Rejects expired token older than 15 minutes");
 });
 
+// 10. OAuth Purpose Separation and Adaptive Detection
+runTest("Drive vs Gmail OAuth State isolation and adaptive detection", () => {
+  const driveState = createSignedOAuthState("drive");
+  const gmailState = createSignedOAuthState("gmail");
+
+  // Drive state is authentic for drive, but rejected for gmail
+  assert(verifySignedOAuthState(driveState, "drive") === true);
+  assert(verifySignedOAuthState(driveState, "gmail") === false);
+
+  // Gmail state is authentic for gmail, but rejected for drive
+  assert(verifySignedOAuthState(gmailState, "gmail") === true);
+  assert(verifySignedOAuthState(gmailState, "drive") === false);
+
+  // Adaptive detection identifies drive state correctly
+  const isDriveState = verifySignedOAuthState(driveState, "drive") || driveState.includes(".drive.");
+  assert(isDriveState === true, "Adaptive detector correctly catches drive state");
+});
+
 console.log("\n=======================================================");
 console.log(`  ALL ${passedTests}/${totalTests} BACKUP TESTS PASSED!`);
 console.log("=======================================================\n");

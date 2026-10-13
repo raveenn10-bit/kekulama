@@ -28,15 +28,34 @@ export async function GET(req: NextRequest) {
     // 1. Handle user cancellation or OAuth error
     if (errorParam) {
       console.warn("[GMAIL OAUTH CALLBACK] Google reported an error:", errorParam);
+      if (state && (verifySignedOAuthState(state, "drive") || state.includes(".drive."))) {
+        return NextResponse.redirect(
+          `${origin}/admin/backup?oauth=error&reason=${encodeURIComponent(errorParam)}`
+        );
+      }
       return NextResponse.redirect(
         `${notificationSettingsUrl}?oauth=error&reason=${encodeURIComponent(errorParam)}`
       );
     }
 
     if (!code) {
+      if (state && (verifySignedOAuthState(state, "drive") || state.includes(".drive."))) {
+        return NextResponse.redirect(
+          `${origin}/admin/backup?oauth=error&reason=missing_authorization_code`
+        );
+      }
       return NextResponse.redirect(
         `${notificationSettingsUrl}?oauth=error&reason=missing_authorization_code`
       );
+    }
+
+    // Adaptive Router: If Google redirected here with a Drive OAuth state token,
+    // seamlessly forward the request to the Drive callback route!
+    if (state && (verifySignedOAuthState(state, "drive") || state.includes(".drive.") || req.cookies.get("drive_oauth_state")?.value === state)) {
+      console.log("[GMAIL OAUTH CALLBACK] Detected Drive OAuth state. Seamlessly forwarding to Drive callback route...");
+      const driveCallbackUrl = new URL(`${origin}/api/admin/oauth/drive/callback`);
+      searchParams.forEach((val, key) => driveCallbackUrl.searchParams.set(key, val));
+      return NextResponse.redirect(driveCallbackUrl.toString());
     }
 
     // 2. CSRF Verification: Dual-layered defense
