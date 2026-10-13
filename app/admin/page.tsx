@@ -14,26 +14,69 @@ import {
   Bed,
   Hotel,
   Search,
+  RefreshCw,
 } from "lucide-react";
 import { collection, query, orderBy, limit, onSnapshot, where } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 import { Booking } from "@/types/booking";
+import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 
 export default function AdminDashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const { getIdToken } = useAdminAuth();
 
   const todayStr = new Date().toISOString().split("T")[0]!;
 
+  const loadFromApi = async () => {
+    try {
+      setRefreshing(true);
+      const token = await getIdToken();
+      const res = await fetch("/api/admin/reservations", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.bookings)) {
+          setBookings((prev) => {
+            const map = new Map(prev.map((b) => [b.id, b]));
+            for (const b of data.bookings) {
+              map.set(b.id, b);
+            }
+            return Array.from(map.values()).sort(
+              (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+            );
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("Failed fetching from reservations API:", err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    // Listen for recent bookings in real-time
-    const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"), limit(20));
+    loadFromApi();
+
+    // Listen for recent bookings in real-time from Firestore
+    const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"), limit(50));
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
         const list: Booking[] = snapshot.docs.map((doc) => doc.data() as Booking);
-        setBookings(list);
+        setBookings((prev) => {
+          const map = new Map(prev.map((b) => [b.id, b]));
+          for (const b of list) {
+            map.set(b.id, b);
+          }
+          return Array.from(map.values()).sort(
+            (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          );
+        });
         setLoading(false);
       },
       (error) => {
@@ -120,6 +163,15 @@ export default function AdminDashboardPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={loadFromApi}
+            disabled={refreshing}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer disabled:opacity-50"
+            title="Refresh bookings"
+          >
+            <RefreshCw size={13} className={refreshing ? "animate-spin text-blue-600" : ""} />
+            <span>{refreshing ? "Syncing..." : "Refresh"}</span>
+          </button>
           <Link
             href="/admin/manual-booking"
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"

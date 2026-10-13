@@ -450,21 +450,39 @@ export async function sendNotification(payload: EmailNotificationPayload): Promi
   const deliveryResult = await sendViaGmailApi(recipient, subject, plainBody, htmlBody);
 
   try {
-    // Record in notification_logs in Firestore
-    await adminDb.collection("notification_logs").add({
-      event: payload.event,
-      bookingId: payload.bookingId || null,
-      recipient,
-      subject,
-      body: plainBody,
-      status: deliveryResult.success ? "delivered" : "pending_or_logged",
-      provider: deliveryResult.success ? "gmail" : "local_log",
-      messageId: deliveryResult.messageId || null,
-      error: deliveryResult.error || null,
-      timestamp: nowIso,
-    });
+    const { isFirebaseAdminConfigured } = await import("@/lib/firebase/admin");
+    if (isFirebaseAdminConfigured()) {
+      await adminDb.collection("notification_logs").add({
+        event: payload.event,
+        bookingId: payload.bookingId || null,
+        recipient,
+        subject,
+        body: plainBody,
+        status: deliveryResult.success ? "delivered" : "pending_or_logged",
+        provider: deliveryResult.success ? "gmail" : "local_log",
+        messageId: deliveryResult.messageId || null,
+        error: deliveryResult.error || null,
+        timestamp: nowIso,
+      });
+    }
   } catch (err) {
     console.warn("[NOTIFICATION LOG WRITE SKIPPED]", err);
+  }
+
+  // Update notification status on booking record in Supabase
+  if (payload.bookingId) {
+    try {
+      const { supabaseAdmin, isSupabaseConfigured } = await import("@/lib/supabase/admin");
+      if (isSupabaseConfigured()) {
+        await supabaseAdmin
+          .from("bookings")
+          .update({
+            notification_status: deliveryResult.success ? "sent" : "pending_gmail_connection",
+            updated_at: nowIso,
+          })
+          .eq("id", payload.bookingId);
+      }
+    } catch {}
   }
 
   return deliveryResult.success;
@@ -475,6 +493,11 @@ export async function sendNotification(payload: EmailNotificationPayload): Promi
  */
 export async function retryPendingNotifications(limit = 10): Promise<{ retried: number; successful: number }> {
   try {
+    const { isFirebaseAdminConfigured } = await import("@/lib/firebase/admin");
+    if (!isFirebaseAdminConfigured()) {
+      return { retried: 0, successful: 0 };
+    }
+
     const pendingSnap = await adminDb
       .collection("notification_logs")
       .where("status", "==", "pending_or_logged")

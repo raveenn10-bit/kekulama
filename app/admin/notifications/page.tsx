@@ -26,6 +26,25 @@ function NotificationsContent() {
   const [testSuccess, setTestSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [gmailStatus, setGmailStatus] = useState<{ connected: boolean; email?: string } | null>(null);
+
+  React.useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const token = await getIdToken();
+        const res = await fetch("/api/admin/notifications/status", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setGmailStatus(data);
+        }
+      } catch (e) {
+        console.warn("Failed fetching notification status:", e);
+      }
+    };
+    fetchStatus();
+  }, [getIdToken]);
 
   const mockLogs: NotificationLog[] = [
     {
@@ -183,19 +202,37 @@ function NotificationsContent() {
 
         {/* Gmail OAuth 2.0 Integration */}
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-xs space-y-4">
-          <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-            <ShieldCheck size={16} className="text-blue-600" />
-            <span>Gmail Sender Account (Google Cloud OAuth)</span>
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <ShieldCheck size={16} className="text-blue-600" />
+              <span>Gmail Sender Account (Google Cloud OAuth)</span>
+            </h3>
+            {gmailStatus && (
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                  gmailStatus.connected
+                    ? "bg-emerald-100 text-emerald-800"
+                    : "bg-amber-100 text-amber-800"
+                }`}
+              >
+                {gmailStatus.connected ? "Connected" : "Disconnected"}
+              </span>
+            )}
+          </div>
           <p className="text-slate-500 text-xs">
             Authenticate the official Kekulama Gmail account via Google OAuth 2.0 with offline refresh token support to send system notifications.
           </p>
+          {gmailStatus?.connected && (
+            <div className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-2 font-mono">
+              ✓ Active Sender: {gmailStatus.email || "kekulamaecocabana@gmail.com"}
+            </div>
+          )}
           <div className="pt-1">
             <a
               href="/api/admin/oauth/gmail"
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-sm cursor-pointer"
             >
-              <span>Connect Gmail with Google OAuth</span>
+              <span>{gmailStatus?.connected ? "Reconnect Gmail OAuth" : "Connect Gmail with Google OAuth"}</span>
               <ExternalLink size={14} />
             </a>
           </div>

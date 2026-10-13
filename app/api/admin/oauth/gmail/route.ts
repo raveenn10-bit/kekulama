@@ -20,7 +20,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}/api/admin/oauth/gmail/callback`;
+    const envRedirect = process.env.GOOGLE_REDIRECT_URI;
+    const isLocalhostEnv = Boolean(envRedirect && envRedirect.includes("localhost"));
+    const isProductionOrigin = origin.includes("kekulama") || origin.includes("vercel.app");
+    const redirectUri = (isProductionOrigin && isLocalhostEnv)
+      ? `${origin}/api/admin/oauth/gmail/callback`
+      : (envRedirect || `${origin}/api/admin/oauth/gmail/callback`);
 
     // 1. Generate cryptographically signed, timestamped CSRF state token
     const stateToken = createSignedOAuthState("gmail");

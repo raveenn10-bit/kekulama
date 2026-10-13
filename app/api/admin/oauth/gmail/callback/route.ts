@@ -16,7 +16,12 @@ export const runtime = "nodejs";
  */
 export async function GET(req: NextRequest) {
   const origin = req.nextUrl.origin || "https://www.kekulamaecocabanagalle.com";
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}/api/admin/oauth/gmail/callback`;
+  const envRedirect = process.env.GOOGLE_REDIRECT_URI;
+  const isLocalhostEnv = Boolean(envRedirect && envRedirect.includes("localhost"));
+  const isProductionOrigin = origin.includes("kekulama") || origin.includes("vercel.app");
+  const redirectUri = (isProductionOrigin && isLocalhostEnv)
+    ? `${origin}/api/admin/oauth/gmail/callback`
+    : (envRedirect || `${origin}/api/admin/oauth/gmail/callback`);
   const notificationSettingsUrl = `${origin}/admin/notifications`;
 
   try {
