@@ -16,6 +16,7 @@ if (typeof window !== "undefined") {
 }
 
 const DEFAULT_SUPABASE_URL = "https://dsqxvnmdoebfkqxqwktc.supabase.co";
+const BUILD_PLACEHOLDER_KEY = "sb_secret_build_placeholder_key_kekulama";
 const FALLBACK_SUPABASE_SECRET_KEY = Buffer.from(
   "c2Jfc2VjcmV0X0xOVVp1VjlLS09hMmRLaHowci1kMEFfdHVzY3VmeEY=",
   "base64"
