@@ -46,17 +46,21 @@ export const metadata: Metadata = {
     "eco cabana galle",
     "cabana in galle",
     "best cabana in galle",
-    "honeymoon cabana galle sri lanka",
-    "romantic cabana in galle for couples",
+    "cabana in galle for couples",
     "couples day out galle cabana",
     "day out cabana galle",
-    "private cabin stay galle pinnaduwa",
+    "honeymoon cabana galle sri lanka",
+    "romantic cabana in galle for couples",
+    "pinnaduwa cabana galle",
+    "galle cabana price",
+    "private cabana booking galle",
+    "a-frame timber cabin galle",
     "eco lodge near galle fort",
     "sustainable travel sri lanka for foreigners",
-    "a-frame timber cabin galle",
     "tea estate resort galle",
     "best honeymoon stay in galle",
     "romantic getaway southern province sri lanka",
+    "cabana near unawatuna beach",
     "booking.com kekulama eco cabana galle",
     "airbnb superhost eco cabana galle",
     "galle southern expressway airport transfer stay",
@@ -155,7 +159,8 @@ const jsonLd = {
         "https://www.kekulamaecocabanagalle.com/images/cabana-side.jpg"
       ],
       telephone: "+94756657000",
-      email: "raveenn10@gmail.com",
+      email: "kekulamaecocabana@gmail.com",
+      accommodationCategory: "A-frame Timber Eco Cabana",
       priceRange: "LKR 6,000 - 15,000 / $20 - $50",
       currenciesAccepted: "USD, EUR, GBP, LKR",
       paymentAccepted: "Cash, Bank Transfer, WhatsApp Direct, Booking.com, Airbnb",
@@ -163,6 +168,22 @@ const jsonLd = {
       checkoutTime: "10:00",
       petsAllowed: false,
       smokingAllowed: false,
+      potentialAction: {
+        "@type": "ReserveAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: "https://www.kekulamaecocabanagalle.com/book",
+          inLanguage: "en",
+          actionPlatform: [
+            "http://schema.org/DesktopWebPlatform",
+            "http://schema.org/MobileWebPlatform"
+          ]
+        },
+        result: {
+          "@type": "LodgingReservation",
+          name: "Direct Cabana Reservation"
+        }
+      },
       audience: {
         "@type": "Audience",
         audienceType: "Couples, Honeymooners, International Travelers, Nature Enthusiasts, Digital Nomads"
@@ -416,6 +437,9 @@ export default function RootLayout({
         <meta name="city" content="Galle" />
         <meta name="state" content="Southern Province" />
         <meta name="country" content="Sri Lanka" />
+        <meta name="zipcode" content="80000" />
+        <meta name="geo.a1" content="Southern Province" />
+        <meta name="geo.a2" content="Galle District" />
 
         {/* Dublin Core & Semantic Meta Tags (SEO / AEO) */}
         <meta name="DC.title" content="Kekulama Eco Cabana Galle" />
