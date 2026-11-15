@@ -81,6 +81,31 @@ const romanticPackages = [
   },
 ];
 
+const honeymoonPackages = [
+  {
+    name: "Honeymoon Escape — Without Meals",
+    shortName: "Without Meals",
+    price: "20,000",
+    image: "/images/honeymoon-without-meals.webp",
+    imageAlt:
+      "Romantically prepared Kekulama loft bedroom with towel swans, rose petals, fruit basket and wine",
+    badge: "Private one-night stay",
+    mealNote: "Meals are not included",
+    featured: false,
+  },
+  {
+    name: "Honeymoon Escape — With Meals",
+    shortName: "With Meals",
+    price: "25,000",
+    image: "/images/honeymoon-with-meals.webp",
+    imageAlt:
+      "Romantic candlelit dinner for two prepared inside Kekulama Eco Cabana",
+    badge: "Complete romantic escape",
+    mealNote: "Meals included",
+    featured: true,
+  },
+];
+
 export default function RomanticEscape() {
   const shouldReduceMotion = useReducedMotion();
 
@@ -234,6 +259,142 @@ export default function RomanticEscape() {
             </motion.article>
           ))}
         </div>
+
+        <motion.div
+          {...reveal}
+          className="mb-5 overflow-hidden rounded-[2rem] border border-rose-100/15 bg-[#0d1c15] p-5 shadow-[0_28px_90px_rgba(0,0,0,0.24)] sm:p-7 lg:mb-6 lg:p-9"
+        >
+          <div className="mb-7 flex flex-col gap-4 border-b border-white/10 pb-7 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl">
+              <div className="mb-3 inline-flex items-center gap-2 font-eyebrow text-[10px] font-bold uppercase tracking-[0.24em] text-rose-200">
+                <Heart size={13} className="fill-rose-200/50" />
+                Romantic Honeymoon Packages
+              </div>
+              <h3 className="font-display text-3xl font-medium leading-[1.05] tracking-[-0.02em] text-white sm:text-4xl lg:text-5xl">
+                A Romantic Escape
+                <span className="font-serif italic text-amber-100"> for Two</span>
+              </h3>
+            </div>
+            <p className="max-w-md font-body text-sm leading-6 text-white/62">
+              Celebrate your love with an intimate one-night stay surrounded by
+              nature, thoughtfully prepared for just the two of you.
+            </p>
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            {honeymoonPackages.map((pkg, index) => (
+              <motion.article
+                key={pkg.name}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{
+                  duration: LUXURY_DURATION.slow,
+                  delay: index * 0.1,
+                  ease: LUXURY_EASING.editorial,
+                }}
+                className={`group overflow-hidden rounded-[1.75rem] border bg-white/[0.045] ${
+                  pkg.featured
+                    ? "border-amber-100/30 shadow-[0_24px_70px_rgba(235,196,122,0.08)]"
+                    : "border-white/10"
+                }`}
+              >
+                <figure className="relative aspect-[16/10] overflow-hidden">
+                  <Image
+                    src={pkg.image}
+                    alt={pkg.imageAlt}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.035]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#08120d]/90 via-black/5 to-transparent" />
+                  {pkg.featured && (
+                    <div className="absolute right-4 top-4 rounded-full border border-amber-100/30 bg-[#173123]/90 px-3 py-2 font-eyebrow text-[9px] font-bold uppercase tracking-[0.16em] text-amber-100 backdrop-blur-xl sm:right-5 sm:top-5">
+                      Most Romantic
+                    </div>
+                  )}
+                  <figcaption className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+                    <span className="font-eyebrow text-[9px] font-semibold uppercase tracking-[0.2em] text-rose-100/90">
+                      {pkg.badge}
+                    </span>
+                    <h4 className="mt-1 font-display text-2xl font-semibold leading-tight text-white sm:text-3xl">
+                      {pkg.shortName}
+                    </h4>
+                  </figcaption>
+                </figure>
+
+                <div className="p-5 sm:p-6">
+                  <div className="flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-5">
+                    <div>
+                      <span className="font-eyebrow text-[9px] font-semibold uppercase tracking-[0.18em] text-white/45">
+                        One night stay
+                      </span>
+                      <div className="mt-1 flex items-baseline gap-2">
+                        <span className="font-mono text-xs font-semibold uppercase text-amber-100/75">
+                          LKR
+                        </span>
+                        <span className="font-mono text-4xl font-semibold tabular-nums tracking-[-0.04em] text-white sm:text-5xl">
+                          {pkg.price}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 font-body text-[11px] font-medium text-white/65">
+                      {pkg.mealNote}
+                    </span>
+                  </div>
+
+                  <p className="mt-5 font-eyebrow text-[10px] font-bold uppercase tracking-[0.18em] text-amber-100">
+                    Package includes
+                  </p>
+                  <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {[
+                      "One Night Romantic Stay",
+                      "Wine",
+                      "Fruit Basket",
+                      "Romantic Room Decoration",
+                    ].map((feature) => (
+                      <li
+                        key={feature}
+                        className="flex items-start gap-2.5 font-body text-xs font-medium leading-5 text-white/72"
+                      >
+                        <span className="mt-0.5 flex h-4 w-4 flex-none items-center justify-center rounded-full bg-rose-100 text-forest">
+                          <Check size={10} strokeWidth={3} />
+                        </span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-6 grid gap-2.5 sm:grid-cols-2">
+                    <Link
+                      href={`/book?package=${encodeURIComponent(pkg.name)}`}
+                      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-amber-100 px-5 font-body text-xs font-semibold uppercase tracking-[0.1em] text-forest transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-100"
+                    >
+                      Book this package
+                      <ArrowUpRight size={15} />
+                    </Link>
+                    <a
+                      href={`https://wa.me/94756657000?text=${encodeURIComponent(
+                        `Hello Kekulama Eco Cabana, I'd like to reserve the ${pkg.name} package for LKR ${pkg.price}.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.05] px-5 font-body text-xs font-semibold uppercase tracking-[0.1em] text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    >
+                      <MessageCircle size={15} />
+                      WhatsApp reserve
+                    </a>
+                  </div>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+
+          <p className="mt-5 text-center font-body text-[10px] leading-4 text-white/42">
+            Romantic arrangements are confirmed with your reservation and are
+            subject to availability.
+          </p>
+        </motion.div>
 
         <div className="grid gap-5 lg:grid-cols-[1.35fr_0.65fr] lg:gap-6">
           <motion.figure
