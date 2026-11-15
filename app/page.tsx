@@ -19,6 +19,9 @@ const RealtimeBookingTable = dynamic(
   () => import("@/components/sections/RealtimeBookingTable")
 );
 const Amenities = dynamic(() => import("@/components/sections/Amenities"));
+const RomanticEscape = dynamic(
+  () => import("@/components/sections/RomanticEscape")
+);
 const Gallery = dynamic(() => import("@/components/sections/Gallery"));
 const Experiences = dynamic(() => import("@/components/sections/Experiences"));
 const LocationGuide = dynamic(() => import("@/components/sections/LocationGuide"));
@@ -37,6 +40,7 @@ export default function Home() {
       <Packages />
       <RealtimeBookingTable />
       <Amenities />
+      <RomanticEscape />
       <Gallery />
       <Experiences />
       <LocationGuide />
