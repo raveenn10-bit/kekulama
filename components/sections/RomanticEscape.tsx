@@ -4,13 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import {
+  Armchair,
   ArrowUpRight,
+  BadgeCheck,
+  Coffee,
   Heart,
   Leaf,
   MessageCircle,
+  Moon,
   MoonStar,
   Sparkles,
+  Sun,
   UtensilsCrossed,
+  Wifi,
 } from "lucide-react";
 import { LUXURY_DURATION, LUXURY_EASING } from "@/lib/motion";
 
@@ -190,6 +196,149 @@ export default function RomanticEscape() {
             </motion.div>
           </div>
         </div>
+
+        <motion.div
+          {...reveal}
+          className="mt-5 overflow-hidden rounded-[2rem] border border-amber-100/20 bg-[#0d1c15] shadow-[0_28px_90px_rgba(0,0,0,0.24)] lg:mt-6"
+        >
+          <div className="grid lg:grid-cols-[1.08fr_0.92fr]">
+            <motion.figure
+              className="group relative min-h-[360px] overflow-hidden sm:min-h-[480px] lg:min-h-[600px]"
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.008 }}
+              transition={{ duration: 0.7, ease: LUXURY_EASING.quintOut }}
+            >
+              <Image
+                src="/images/m3-tantra-chair-cabana.webp"
+                alt="Complimentary M3 Tantra Chair inside Kekulama Eco Cabana"
+                fill
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.025]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#07110c]/70 via-transparent to-black/5 lg:bg-gradient-to-r lg:from-transparent lg:to-[#07110c]/20" />
+
+              <motion.div
+                initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.85, rotate: -4 }}
+                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.55, ease: LUXURY_EASING.quintOut }}
+                className="absolute left-5 top-5 rounded-2xl border border-white/25 bg-[#173123]/90 px-4 py-3 text-white shadow-xl backdrop-blur-xl sm:left-7 sm:top-7"
+              >
+                <div className="flex items-center gap-2">
+                  <BadgeCheck size={18} className="text-amber-200" />
+                  <span className="font-eyebrow text-[10px] font-bold uppercase tracking-[0.2em] text-amber-100">
+                    Complimentary
+                  </span>
+                </div>
+                <strong className="mt-0.5 block font-display text-2xl font-medium">
+                  100% FREE
+                </strong>
+              </motion.div>
+            </motion.figure>
+
+            <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12 xl:p-14">
+              <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-amber-100/15 bg-amber-100/[0.07] px-3.5 py-2 font-eyebrow text-[10px] font-bold uppercase tracking-[0.22em] text-amber-100">
+                <Armchair size={14} />
+                A signature comfort feature
+              </div>
+
+              <h3 className="font-display text-4xl font-light leading-[1.05] tracking-[-0.025em] text-white sm:text-5xl">
+                M3 Tantra Chair,
+                <span className="block font-serif italic text-amber-100">
+                  included free.
+                </span>
+              </h3>
+
+              <p className="mt-5 max-w-xl font-body text-sm font-light leading-7 text-white/65 sm:text-base">
+                Enjoy the sculptural M3 relaxation chair inside your private
+                cabana at no additional charge. It is included with the A/C Day
+                Out and Night Out stays for a more comfortable, discreet escape.
+              </p>
+
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+                {[
+                  {
+                    icon: Sun,
+                    label: "A/C Day Out",
+                    price: "LKR 8,000",
+                  },
+                  {
+                    icon: Moon,
+                    label: "A/C Night Out",
+                    price: "LKR 9,000",
+                  },
+                ].map(({ icon: Icon, label, price }, index) => (
+                  <motion.div
+                    key={label}
+                    initial={shouldReduceMotion ? false : { opacity: 0, x: 14 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, amount: 0.7 }}
+                    transition={{
+                      delay: 0.12 + index * 0.08,
+                      duration: 0.5,
+                      ease: LUXURY_EASING.quintOut,
+                    }}
+                    className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 transition-colors hover:bg-white/[0.08]"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 text-white/75">
+                        <Icon size={16} className="text-amber-100" />
+                        <span className="font-body text-xs font-semibold uppercase tracking-[0.1em]">
+                          {label}
+                        </span>
+                      </div>
+                      <span className="rounded-full bg-amber-100 px-2.5 py-1 font-eyebrow text-[9px] font-bold uppercase tracking-[0.12em] text-forest">
+                        Chair Free
+                      </span>
+                    </div>
+                    <p className="mt-3 font-display text-2xl text-white">{price}</p>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="mt-5 grid grid-cols-3 gap-2">
+                {[
+                  { icon: Leaf, label: "All-day relaxation" },
+                  { icon: Coffee, label: "Unlimited tea & coffee" },
+                  { icon: Wifi, label: "Starlink connected" },
+                ].map(({ icon: Icon, label }) => (
+                  <div
+                    key={label}
+                    className="flex min-h-24 flex-col items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.035] p-3 text-center"
+                  >
+                    <Icon size={18} className="text-amber-100" />
+                    <span className="font-body text-[10px] font-medium leading-4 text-white/60 sm:text-[11px]">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-7 flex flex-col gap-2.5 sm:flex-row">
+                <Link
+                  href="/book?package=Day%20Out%20%E2%80%94%20A%2FC"
+                  className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-amber-100 px-5 font-body text-xs font-bold uppercase tracking-[0.14em] text-forest transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-100"
+                >
+                  Reserve with free chair
+                  <ArrowUpRight size={15} />
+                </Link>
+                <a
+                  href="https://wa.me/94756657000?text=Hello%20Kekulama%20Eco%20Cabana%2C%20I%27d%20like%20to%20book%20a%20package%20with%20the%20complimentary%20M3%20Tantra%20Chair."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.05] px-5 font-body text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  <MessageCircle size={15} />
+                  Ask on WhatsApp
+                </a>
+              </div>
+
+              <p className="mt-4 text-center font-body text-[10px] leading-4 text-white/40 sm:text-left">
+                Complimentary chair access is included with confirmed A/C Day
+                Out and Night Out reservations, subject to availability.
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
