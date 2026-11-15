@@ -17,6 +17,10 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "liga" 1, "calt" 1, "kern" 1;
     -webkit-text-size-adjust: 100%;
     touch-action: manipulation;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
   }
 
   body {
@@ -26,6 +30,15 @@
     padding-bottom: env(safe-area-inset-bottom, 0);
     font-synthesis: none;
     font-variant-ligatures: contextual common-ligatures;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+  }
+
+  img, video, canvas, svg {
+    max-width: 100%;
   }
 
   ::selection {

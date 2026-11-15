@@ -99,18 +99,18 @@ export default function LocationGuide() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: LUXURY_DURATION.medium, ease: LUXURY_EASING.quintOut }}
-          className="max-w-4xl mx-auto mb-10 bg-white/95 rounded-3xl border border-sage-200 shadow-sm p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+          className="max-w-4xl min-w-0 w-full mx-auto mb-10 bg-white/95 rounded-3xl border border-sage-200 shadow-sm p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
         >
-          <div className="flex items-start gap-4">
+          <div className="flex min-w-0 w-full items-start gap-4 md:w-auto">
             <div className="w-12 h-12 rounded-2xl bg-forest text-white flex items-center justify-center flex-shrink-0 shadow-sm">
               <MapPin size={24} />
             </div>
-            <div>
-              <div className="inline-flex items-center gap-2 mb-1">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
                 <span className="font-mono text-xs uppercase tracking-wider text-forest font-semibold">
                   Official GPS Coordinates:
                 </span>
-                <span className="font-mono text-xs bg-sage-100 text-forest-dark px-2 py-0.5 rounded-md font-medium">
+                <span className="max-w-full break-words font-mono text-xs bg-sage-100 text-forest-dark px-2 py-0.5 rounded-md font-medium">
                   6.0779352° N, 80.2623579° E
                 </span>
               </div>
@@ -136,7 +136,7 @@ export default function LocationGuide() {
         </motion.div>
 
         {/* Structured Distance & Transit Matrix (AEO & GEO citation friendly) */}
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+        <div className="max-w-4xl min-w-0 w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
           {transitPoints.map((point, index) => {
             const Icon = point.icon;
             return (
@@ -150,7 +150,7 @@ export default function LocationGuide() {
                   delay: index * 0.06,
                   ease: LUXURY_EASING.quintOut,
                 }}
-                className={`bg-white/80 hover:bg-white border border-sage-200/90 rounded-2xl p-5 sm:p-6 transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between ${
+                className={`min-w-0 w-full bg-white/80 hover:bg-white border border-sage-200/90 rounded-2xl p-5 sm:p-6 transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between ${
                   index === 4 ? "md:col-span-2 bg-gradient-to-r from-white via-white to-mint-50/50" : ""
                 }`}
               >
