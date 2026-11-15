@@ -153,12 +153,12 @@ export default function Hero() {
           {/* Bespoke Human-Crafted Editorial Headline */}
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl font-display text-white leading-[1.08] tracking-[-0.02em] mb-5 sm:mb-7 drop-shadow-sm"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl font-display font-medium text-white leading-[1.04] tracking-[-0.02em] mb-5 sm:mb-7 drop-shadow-sm"
           >
-            <span className="block font-light text-white/90 text-2xl sm:text-3xl md:text-4xl 2xl:text-5xl mb-1 sm:mb-2">
+            <span className="block font-normal text-white/90 text-2xl sm:text-3xl md:text-4xl 2xl:text-5xl mb-1 sm:mb-2">
               Disconnect & Recharge at
             </span>
-            <span className="font-serif italic font-normal text-amber-100 pr-2">
+            <span className="font-serif italic font-medium text-amber-100 pr-2">
               Kekulama
             </span>
             <span className="font-normal text-white">Eco Cabana</span>
@@ -167,7 +167,7 @@ export default function Hero() {
           {/* Understated Editorial Subtitle */}
           <motion.p
             variants={itemVariants}
-            className="text-base sm:text-lg md:text-xl text-white/85 font-body font-light max-w-xl 2xl:max-w-2xl leading-relaxed mb-6 sm:mb-8"
+            className="text-base sm:text-lg md:text-xl text-white/88 font-body font-normal max-w-xl 2xl:max-w-2xl leading-relaxed mb-6 sm:mb-8"
           >
             {hero.subtitle}
           </motion.p>

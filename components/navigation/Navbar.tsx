@@ -75,7 +75,7 @@ export function Navbar() {
             </motion.div>
             <div className="flex flex-col">
               <span
-                className={`font-display text-lg sm:text-2xl font-normal tracking-[0.16em] uppercase transition-colors duration-300 ${
+                className={`font-display text-lg sm:text-2xl font-semibold tracking-[0.09em] uppercase transition-colors duration-300 ${
                   isScrolled ? "text-forest" : "text-white"
                 }`}
               >
@@ -100,7 +100,7 @@ export function Navbar() {
                   <Link
                     key={link.href}
                     href={targetHref}
-                    className={`relative font-body text-[11.5px] font-medium uppercase tracking-[0.18em] transition-colors duration-300 group py-1 ${
+                    className={`relative font-body text-[11.5px] font-semibold uppercase tracking-[0.11em] transition-colors duration-300 group py-1 ${
                       isScrolled
                         ? "text-sage-800 hover:text-mint-600"
                         : "text-white/90 hover:text-mint-300"
@@ -202,7 +202,7 @@ export function Navbar() {
                   />
                 </div>
                 <div>
-                  <span className="font-display text-xl font-normal tracking-[0.16em] uppercase">Kekulama</span>
+                  <span className="font-display text-xl font-semibold tracking-[0.09em] uppercase">Kekulama</span>
                   <span className="block font-eyebrow text-[9px] uppercase tracking-[0.3em] text-mint-300">
                     Eco Sanctuary
                   </span>

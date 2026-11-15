@@ -26,7 +26,7 @@ export function Button({
   const shouldReduceMotion = useReducedMotion();
 
   const baseStyles =
-    "relative inline-flex items-center justify-center font-body font-semibold uppercase tracking-[0.15em] transition-colors duration-300 cursor-pointer overflow-hidden select-none";
+    "relative inline-flex items-center justify-center font-body font-semibold uppercase tracking-[0.11em] transition-colors duration-300 cursor-pointer overflow-hidden select-none";
 
   const variants = {
     primary:

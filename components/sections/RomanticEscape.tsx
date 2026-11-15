@@ -7,6 +7,8 @@ import {
   Armchair,
   ArrowUpRight,
   BadgeCheck,
+  Check,
+  Clock3,
   Coffee,
   Heart,
   Leaf,
@@ -35,6 +37,47 @@ const moments = [
     icon: Leaf,
     label: "Tea-estate slow mornings",
     copy: "Wake to birdsong, garden air, and an unhurried green horizon.",
+  },
+];
+
+const romanticPackages = [
+  {
+    eyebrow: "Private couple day experience",
+    name: "Couple Day Escape",
+    price: "8,000",
+    unit: "day · A/C",
+    timing: "Flexible daytime stay",
+    image: "/images/couple-day-escape.webp",
+    imageAlt:
+      "Couple Day Escape tea setting in the garden at Kekulama Eco Cabana",
+    bookingName: "Couple Day Escape — A/C",
+    features: [
+      "Private air-conditioned cabana for two",
+      "M3 Tantra Chair — complimentary",
+      "Unlimited tea & coffee",
+      "Starlink Wi-Fi, 45-inch Smart TV & JBL audio",
+      "Kitchenette, refrigerator & hot-water shower",
+      "Private tea-garden relaxation",
+    ],
+  },
+  {
+    eyebrow: "Romantic overnight experience",
+    name: "Honeymoon Night Escape",
+    price: "9,000",
+    unit: "night · A/C",
+    timing: "2:00 PM – 10:00 AM",
+    image: "/images/honeymoon-night-escape.webp",
+    imageAlt:
+      "Warmly prepared A-frame loft bedroom for the Honeymoon Night Escape at Kekulama",
+    bookingName: "Honeymoon Night Escape — A/C",
+    features: [
+      "Private A/C cabana and loft bedroom for two",
+      "M3 Tantra Chair — complimentary",
+      "Unlimited tea & coffee",
+      "Starlink Wi-Fi, 45-inch Smart TV & JBL audio",
+      "Kitchenette, refrigerator & hot-water shower",
+      "Quiet tea-estate morning experience",
+    ],
   },
 ];
 
@@ -74,7 +117,7 @@ export default function RomanticEscape() {
             </div>
             <h2
               id="romance-title"
-              className="max-w-2xl font-display text-4xl font-light leading-[1.02] tracking-[-0.03em] text-white sm:text-5xl lg:text-6xl"
+              className="max-w-2xl font-display text-4xl font-medium leading-[1.02] tracking-[-0.025em] text-white sm:text-5xl lg:text-6xl"
             >
               Just the two of you,
               <span className="block font-serif italic text-amber-100">
@@ -82,12 +125,115 @@ export default function RomanticEscape() {
               </span>
             </h2>
           </div>
-          <p className="max-w-md font-body text-sm font-light leading-7 text-white/68 sm:text-base">
+          <p className="max-w-md font-body text-sm font-normal leading-7 text-white/72 sm:text-base">
             Build a honeymoon, anniversary, or quiet couple&apos;s escape around
             the stay you want. We&apos;ll help you shape the little details before
             arrival.
           </p>
         </motion.div>
+
+        <div className="mb-5 grid gap-5 lg:mb-6 lg:grid-cols-2 lg:gap-6">
+          {romanticPackages.map((pkg, index) => (
+            <motion.article
+              key={pkg.name}
+              initial={{
+                opacity: 0,
+                y: shouldReduceMotion ? 0 : 24,
+              }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.18 }}
+              transition={{
+                duration: LUXURY_DURATION.slow,
+                delay: index * 0.09,
+                ease: LUXURY_EASING.editorial,
+              }}
+              className="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-[0_24px_70px_rgba(0,0,0,0.2)]"
+            >
+              <figure className="relative aspect-[16/10] overflow-hidden">
+                <Image
+                  src={pkg.image}
+                  alt={pkg.imageAlt}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.035]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0b1711]/90 via-black/5 to-transparent" />
+                <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#173123]/90 px-3.5 py-2 font-eyebrow text-[10px] font-semibold uppercase text-amber-100 shadow-lg backdrop-blur-xl sm:left-6 sm:top-6">
+                  <BadgeCheck size={14} />
+                  M3 Chair Free
+                </div>
+                <figcaption className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+                  <span className="font-eyebrow text-[10px] font-semibold uppercase text-amber-100/90">
+                    {pkg.eyebrow}
+                  </span>
+                  <h3 className="mt-1 font-display text-3xl font-semibold leading-none tracking-lux-snug text-white sm:text-4xl">
+                    {pkg.name}
+                  </h3>
+                </figcaption>
+              </figure>
+
+              <div className="p-5 sm:p-7">
+                <div className="flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-5">
+                  <div>
+                    <span className="font-eyebrow text-[10px] font-semibold uppercase text-white/45">
+                      Package rate
+                    </span>
+                    <div className="mt-1 flex items-baseline gap-2">
+                      <span className="font-mono text-sm font-semibold uppercase tracking-lux-wide text-amber-100/75">
+                        LKR
+                      </span>
+                      <span className="font-mono text-4xl font-semibold tabular-nums tracking-[-0.04em] text-white sm:text-5xl">
+                        {pkg.price}
+                      </span>
+                      <span className="font-body text-xs font-medium text-white/50">
+                        / {pkg.unit}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 font-body text-[11px] font-medium text-white/65">
+                    <Clock3 size={14} className="text-amber-100" />
+                    {pkg.timing}
+                  </div>
+                </div>
+
+                <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {pkg.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-start gap-2.5 font-body text-xs font-medium leading-5 text-white/72"
+                    >
+                      <span className="mt-0.5 flex h-4 w-4 flex-none items-center justify-center rounded-full bg-amber-100 text-forest">
+                        <Check size={10} strokeWidth={3} />
+                      </span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-6 grid gap-2.5 sm:grid-cols-2">
+                  <Link
+                    href={`/book?package=${encodeURIComponent(pkg.bookingName)}`}
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-amber-100 px-5 font-body text-xs font-semibold uppercase tracking-[0.1em] text-forest transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-100"
+                  >
+                    Book this package
+                    <ArrowUpRight size={15} />
+                  </Link>
+                  <a
+                    href={`https://wa.me/94756657000?text=${encodeURIComponent(
+                      `Hello Kekulama Eco Cabana, I'd like to reserve the ${pkg.name} package with the complimentary M3 Tantra Chair.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.05] px-5 font-body text-xs font-semibold uppercase tracking-[0.1em] text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  >
+                    <MessageCircle size={15} />
+                    WhatsApp reserve
+                  </a>
+                </div>
+              </div>
+            </motion.article>
+          ))}
+        </div>
 
         <div className="grid gap-5 lg:grid-cols-[1.35fr_0.65fr] lg:gap-6">
           <motion.figure
@@ -241,14 +387,14 @@ export default function RomanticEscape() {
                 A signature comfort feature
               </div>
 
-              <h3 className="font-display text-4xl font-light leading-[1.05] tracking-[-0.025em] text-white sm:text-5xl">
+              <h3 className="font-display text-4xl font-medium leading-[1.04] tracking-[-0.02em] text-white sm:text-5xl">
                 M3 Tantra Chair,
                 <span className="block font-serif italic text-amber-100">
                   included free.
                 </span>
               </h3>
 
-              <p className="mt-5 max-w-xl font-body text-sm font-light leading-7 text-white/65 sm:text-base">
+              <p className="mt-5 max-w-xl font-body text-sm font-normal leading-7 text-white/70 sm:text-base">
                 Enjoy the sculptural M3 relaxation chair inside your private
                 cabana at no additional charge. It is included with the A/C Day
                 Out and Night Out stays for a more comfortable, discreet escape.
@@ -290,7 +436,7 @@ export default function RomanticEscape() {
                         Chair Free
                       </span>
                     </div>
-                    <p className="mt-3 font-display text-2xl text-white">{price}</p>
+                    <p className="mt-3 font-mono text-2xl font-semibold tabular-nums tracking-[-0.03em] text-white">{price}</p>
                   </motion.div>
                 ))}
               </div>

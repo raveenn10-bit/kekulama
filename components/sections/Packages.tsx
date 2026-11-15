@@ -198,7 +198,7 @@ function PackageCard({
           <span className="font-eyebrow text-[10.5px] 2xl:text-xs uppercase tracking-[0.26em] text-emerald-800 font-bold block mb-1">
             {pkg.timing ? "OVERNIGHT STAY" : "DAY / NIGHT ACCESS"}
           </span>
-          <h3 className="font-display font-bold text-2xl sm:text-[28px] 2xl:text-3xl text-forest leading-[1.2] tracking-tight">
+          <h3 className="font-display font-semibold text-2xl sm:text-[28px] 2xl:text-3xl text-forest leading-[1.16] tracking-lux-snug">
             {pkg.name}
           </h3>
         </div>
@@ -209,7 +209,7 @@ function PackageCard({
             <span className="font-mono text-sm 2xl:text-base font-bold tracking-[0.16em] uppercase text-forest/70">
               {currency === "LKR" ? "LKR" : currInfo.symbol}
             </span>
-            <span className="font-display font-bold text-4xl sm:text-5xl 2xl:text-6xl text-forest tracking-tight">
+            <span className="font-mono font-semibold tabular-nums text-4xl sm:text-5xl 2xl:text-6xl text-forest tracking-[-0.04em]">
               {displayPrice}
             </span>
             <span className="font-body text-xs 2xl:text-sm font-semibold text-sage-600 ml-1">

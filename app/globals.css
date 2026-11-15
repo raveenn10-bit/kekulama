@@ -24,6 +24,8 @@
     text-wrap: pretty;
     min-height: 100dvh;
     padding-bottom: env(safe-area-inset-bottom, 0);
+    font-synthesis: none;
+    font-variant-ligatures: contextual common-ligatures;
   }
 
   ::selection {
@@ -31,8 +33,10 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display text-forest font-normal tracking-lux-tight;
+    @apply font-display text-forest font-medium tracking-lux-tight;
     text-wrap: balance;
+    font-kerning: normal;
+    font-synthesis: none;
   }
 
   /* Specific Heading Typography Defaults */
@@ -45,7 +49,7 @@
   }
 
   h3 {
-    @apply leading-[1.18] tracking-[-0.015em];
+    @apply leading-[1.16] tracking-[-0.01em];
   }
 
   p {
@@ -54,6 +58,10 @@
 
   button, a {
     touch-action: manipulation;
+  }
+
+  strong, b {
+    @apply font-semibold;
   }
 }
 
@@ -71,7 +79,7 @@
   }
 
   .luxury-eyebrow {
-    @apply font-eyebrow text-xs uppercase tracking-[0.25em] text-mint-700 font-normal;
+    @apply font-eyebrow text-[11px] uppercase tracking-lux-wider text-mint-700 font-semibold;
   }
 
   .glass {
@@ -109,6 +117,17 @@
 }
 
 @layer utilities {
+  .font-eyebrow {
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    font-variant-caps: all-small-caps;
+  }
+
+  .font-mono {
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }

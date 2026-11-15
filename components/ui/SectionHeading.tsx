@@ -50,7 +50,7 @@ export function SectionHeading({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: LUXURY_DURATION.slow, ease: LUXURY_EASING.editorial, delay: 0.05 }}
-        className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl 2xl:text-7xl text-forest font-normal leading-[1.12] tracking-lux-tight mb-4"
+        className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl 2xl:text-7xl text-forest font-medium leading-lux-heading tracking-lux-tight mb-4"
       >
         {title}{" "}
         {highlight && (
@@ -66,7 +66,7 @@ export function SectionHeading({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: LUXURY_DURATION.medium, ease: LUXURY_EASING.quintOut, delay: 0.1 }}
-          className="font-body font-light text-sm sm:text-base md:text-lg 2xl:text-xl text-sage-700 leading-lux-relaxed max-w-2xl 2xl:max-w-3xl mx-auto"
+          className="font-body font-normal text-sm sm:text-base md:text-lg 2xl:text-xl text-sage-700 leading-lux-relaxed max-w-2xl 2xl:max-w-3xl mx-auto"
         >
           {subtitle}
         </motion.p>

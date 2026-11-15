@@ -45,14 +45,14 @@ export default function CTA() {
             <Sparkles size={13} className="text-mint-300 animate-pulse" />
           </span>
 
-          <h2 className="font-display text-3xl sm:text-5xl md:text-6xl 2xl:text-7xl text-white font-normal leading-[1.08] tracking-lux-tight">
+          <h2 className="font-display text-3xl sm:text-5xl md:text-6xl 2xl:text-7xl text-white font-medium leading-[1.05] tracking-lux-tight">
             Ready to reconnect with{" "}
             <span className="italic font-normal bg-gradient-to-r from-mint-200 to-eucalyptus-200 bg-clip-text text-transparent underline decoration-mint-400/40 decoration-wavy decoration-1 underline-offset-8">
               nature
             </span>
             ?
           </h2>
-          <p className="font-body font-light text-sm sm:text-base md:text-lg 2xl:text-xl text-eucalyptus-100/90 mt-4 max-w-lg 2xl:max-w-xl mx-auto leading-lux-relaxed">
+          <p className="font-body font-normal text-sm sm:text-base md:text-lg 2xl:text-xl text-eucalyptus-100/90 mt-4 max-w-lg 2xl:max-w-xl mx-auto leading-lux-relaxed">
             Reserve your private eco-cabana directly via WhatsApp for guaranteed best rates, instant confirmation, and personalized hospitality.
           </p>
 
