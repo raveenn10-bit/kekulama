@@ -140,6 +140,7 @@ export function Navbar() {
 
             <Link
               href="/admin"
+              prefetch={false}
               className={`p-2 rounded-full transition-all duration-300 ${
                 isScrolled
                   ? "text-sage-700 hover:text-mint-700 hover:bg-mint-50"
@@ -277,6 +278,7 @@ export function Navbar() {
               </a>
               <Link
                 href="/admin"
+                prefetch={false}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="w-full py-2.5 rounded-full text-center font-body text-xs font-medium tracking-[0.1em] text-white/60 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-center gap-1.5"
               >

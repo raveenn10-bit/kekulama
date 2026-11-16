@@ -270,6 +270,7 @@ export function Footer({ showPhotoStrip = true }: FooterProps) {
             <span>·</span>
             <Link
               href="/admin"
+              prefetch={false}
               className="flex items-center gap-1 hover:text-mint-700 transition-colors py-0.5 px-2 rounded hover:bg-mint-50/60 cursor-pointer"
               title="Staff & Owner Admin Portal"
             >
