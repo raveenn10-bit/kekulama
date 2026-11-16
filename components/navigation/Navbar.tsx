@@ -68,6 +68,7 @@ export function Navbar() {
                 src="/images/logo.jpg"
                 alt="Kekulama Eco Cabana Logo"
                 fill
+                unoptimized
                 sizes="44px"
                 className="object-cover"
                 priority
@@ -198,6 +199,7 @@ export function Navbar() {
                     src="/images/logo.jpg"
                     alt="Logo"
                     fill
+                    unoptimized
                     className="object-cover"
                   />
                 </div>

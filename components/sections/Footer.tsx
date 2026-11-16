@@ -8,7 +8,11 @@ import { Facebook, Instagram, Music2, Home, MapPin, Lock } from "lucide-react";
 import { siteData } from "@/data/siteData";
 import { LUXURY_EASING } from "@/lib/motion";
 
-export function Footer() {
+interface FooterProps {
+  showPhotoStrip?: boolean;
+}
+
+export function Footer({ showPhotoStrip = true }: FooterProps) {
   const { contact, nav } = siteData;
   const shouldReduceMotion = useReducedMotion();
 
@@ -39,7 +43,9 @@ export function Footer() {
 
   return (
     <footer className="bg-sand-50/80 border-t border-sage-200/80 text-sage-900 overflow-hidden">
-      {/* Infinite Auto-Scrolling Photography Strip with Smooth Marquee */}
+      {/* The full photo marquee is reserved for the homepage and primary pages.
+          SEO intent pages use the compact footer to keep crawler requests lean. */}
+      {showPhotoStrip && (
       <div className="relative w-full overflow-hidden bg-forest-dark py-2 group cursor-pointer">
         {/* Soft edge gradient fades for luxury editorial feel */}
         <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-24 bg-gradient-to-r from-forest-dark to-transparent z-10 pointer-events-none" />
@@ -70,6 +76,7 @@ export function Footer() {
           ))}
         </div>
       </div>
+      )}
 
       <div className="container-custom py-14 sm:py-20 md:py-24 flex flex-col items-center text-center">
         {/* Brand Logo & Luxury Name */}
@@ -85,6 +92,7 @@ export function Footer() {
               src="/images/logo.jpg"
               alt="Kekulama Eco Cabana Logo"
               fill
+              unoptimized
               className="object-cover"
             />
           </div>

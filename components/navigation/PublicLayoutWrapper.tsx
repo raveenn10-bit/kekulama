@@ -13,6 +13,9 @@ interface PublicLayoutWrapperProps {
 export default function PublicLayoutWrapper({ children }: PublicLayoutWrapperProps) {
   const pathname = usePathname();
   const isAdminOrGuest = pathname?.startsWith("/admin") || pathname?.startsWith("/guest");
+  const isSeoLandingPage =
+    pathname === "/honeymoon-cabana-galle" ||
+    pathname === "/day-out-cabana-galle";
 
   if (isAdminOrGuest) {
     return <>{children}</>;
@@ -22,7 +25,7 @@ export default function PublicLayoutWrapper({ children }: PublicLayoutWrapperPro
     <>
       <Navbar />
       <main>{children}</main>
-      <Footer />
+      <Footer showPhotoStrip={!isSeoLandingPage} />
       <FloatingWhatsApp />
     </>
   );
