@@ -36,11 +36,11 @@ const luxuryMono = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.kekulamaecocabanagalle.com"),
   title: {
-    default: "Kekulama Eco Cabana Galle | #1 Romantic Eco Cabana & Boutique Stay in Galle",
+    default: "Kekulama Eco Cabana Galle | Romantic Private Stay for Couples",
     template: "%s | Kekulama Eco Cabana Galle",
   },
   description:
-    "Experience the #1 secluded eco cabana in Galle, Sri Lanka. Private A-frame timber loft, romantic honeymoon retreats, day outs, emerald tea estate views & authentic Ceylon hospitality.",
+    "Private A-frame eco cabana in Galle for couples, honeymoon stays and day outs. Tea-hill views, A/C options and direct packages from LKR 6,000.",
   keywords: [
     "kekulama eco cabana galle",
     "eco cabana galle",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     canonical: "https://www.kekulamaecocabanagalle.com",
   },
   openGraph: {
-    title: "Kekulama Eco Cabana Galle | #1 Romantic Eco Cabana & Nature Stay in Galle",
+    title: "Kekulama Eco Cabana Galle | Romantic Private Nature Stay",
     description:
       "A secluded tropical A-frame sanctuary for couples & international travelers in Pinnaduwa, Galle. Wake up to birdsong, tea hills, and pure serenity.",
     url: "https://www.kekulamaecocabanagalle.com",
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kekulama Eco Cabana Galle | #1 Romantic Eco Lodge in Galle, Sri Lanka",
+    title: "Kekulama Eco Cabana Galle | Private Couples Stay",
     description:
       "Secluded timber cabana in tranquil tea estate in Galle. Perfect romantic getaway for couples & foreign nature travelers.",
     images: ["/images/hero.jpg"],
@@ -161,7 +161,7 @@ const jsonLd = {
       telephone: "+94756657000",
       email: "kekulamaecocabana@gmail.com",
       accommodationCategory: "A-frame Timber Eco Cabana",
-      priceRange: "LKR 6,000 - 15,000 / $20 - $50",
+      priceRange: "LKR 6,000 - 25,000",
       currenciesAccepted: "USD, EUR, GBP, LKR",
       paymentAccepted: "Cash, Bank Transfer, WhatsApp Direct, Booking.com, Airbnb",
       checkinTime: "14:00",
@@ -241,6 +241,22 @@ const jsonLd = {
             priceCurrency: "LKR",
             description: "Air-conditioned cabana, overnight stay in loft, hot water booster shower, smart TV & kitchenette.",
             url: "https://www.kekulamaecocabanagalle.com/#packages"
+          },
+          {
+            "@type": "Offer",
+            name: "Honeymoon Package Without Meals",
+            price: "20000",
+            priceCurrency: "LKR",
+            description: "One-night romantic stay with wine, fruit basket and romantic room decoration.",
+            url: "https://www.kekulamaecocabanagalle.com/honeymoon-cabana-galle"
+          },
+          {
+            "@type": "Offer",
+            name: "Honeymoon Package With Meals",
+            price: "25000",
+            priceCurrency: "LKR",
+            description: "One-night romantic stay with meals, wine, fruit basket and romantic room decoration.",
+            url: "https://www.kekulamaecocabanagalle.com/honeymoon-cabana-galle"
           }
         ]
       },
@@ -364,6 +380,14 @@ const jsonLd = {
           acceptedAnswer: {
             "@type": "Answer",
             text: "Packages start from LKR 6,000/day for Day Out (Non-A/C), LKR 8,000/day for Day Out (A/C), LKR 8,000/night for Night Stay (Non-A/C), and LKR 9,000/night for Night Stay (A/C)."
+          }
+        },
+        {
+          "@type": "Question",
+          name: "How much is a romantic honeymoon package at Kekulama?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "The one-night romantic honeymoon package is LKR 20,000 without meals or LKR 25,000 with meals. Both include wine, a fruit basket and romantic room decoration, subject to availability."
           }
         },
         {

@@ -32,6 +32,12 @@ export const faqs: FAQItem[] = [
     category: "Booking & Pricing",
   },
   {
+    question: "How much is a romantic honeymoon package at Kekulama?",
+    answer:
+      "The one-night Romantic Honeymoon Package is LKR 20,000 without meals or LKR 25,000 with meals. Both options include wine, a fruit basket, and romantic room decoration. Arrangements are confirmed with your reservation and are subject to availability.",
+    category: "Booking & Pricing",
+  },
+  {
     question: "How far is the cabana from Galle Fort, Lighthouse, and beaches?",
     answer:
       "Kekulama Eco Cabana is situated approximately 6 km from Galle Fort (approx. 12 minutes drive), 15 minutes from Unawatuna Beach, and 20 minutes from Jungle Beach and Dalawella Beach. We can easily arrange reliable tuk-tuks, private scooter rentals, or taxi transfers.",

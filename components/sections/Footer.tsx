@@ -184,6 +184,18 @@ export function Footer() {
               {item.label || item.name}
             </Link>
           ))}
+          <Link
+            href="/honeymoon-cabana-galle"
+            className="hover:text-mint-600 transition-colors py-1 px-1.5"
+          >
+            Honeymoon Cabana
+          </Link>
+          <Link
+            href="/day-out-cabana-galle"
+            className="hover:text-mint-600 transition-colors py-1 px-1.5"
+          >
+            Couple Day Out
+          </Link>
         </nav>
 
         {/* Sub-highlights bulleted list */}
