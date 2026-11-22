@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -31,6 +31,67 @@ const reveal = (reduced: boolean | null) => ({
   viewport: { once: true, amount: 0.15 },
   transition: { duration: 0.75, ease: LUXURY_EASING.quintOut },
 });
+
+function ResponsiveCrabVideo({ reduceMotion }: { reduceMotion: boolean | null }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [mode, setMode] = useState<"mobile" | "desktop" | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const updateMode = () => setMode(media.matches ? "desktop" : "mobile");
+    updateMode();
+    media.addEventListener("change", updateMode);
+    return () => media.removeEventListener("change", updateMode);
+  }, []);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "350px 0px" }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const isDesktop = mode === "desktop";
+  const poster = isDesktop
+    ? "/images/lagoon-crab/lagoon-crab-hero.webp"
+    : "/images/lagoon-crab/lagoon-crab-vertical.webp";
+
+  return (
+    <div ref={containerRef} className="relative aspect-[9/16] max-h-[78svh] w-full md:aspect-video md:max-h-none">
+      {mode && shouldLoad ? (
+        <video
+          key={mode}
+          className="h-full w-full object-cover"
+          autoPlay={!reduceMotion}
+          muted
+          loop
+          playsInline
+          controls
+          poster={poster}
+          preload="none"
+          aria-label={isDesktop ? "Illustrative cinematic lagoon crab presentation" : "Vertical illustrative lagoon crab presentation"}
+        >
+          <source
+            src={isDesktop ? "/videos/lagoon-crab-gemini-desktop.mp4" : "/videos/lagoon-crab-gemini-mobile.mp4"}
+            type="video/mp4"
+          />
+        </video>
+      ) : (
+        <Image src={poster} alt="Illustrative lagoon crab video preview" fill sizes="100vw" className="object-cover" />
+      )}
+    </div>
+  );
+}
 
 export default function LagoonCrabExperience() {
   const shouldReduceMotion = useReducedMotion();
@@ -93,8 +154,7 @@ export default function LagoonCrabExperience() {
             <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-white/55"><Play size={15} aria-hidden="true" /> Short visual preview</div>
           </motion.div>
           <motion.div {...reveal(shouldReduceMotion)} className="overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-2xl">
-            <video className="hidden aspect-video w-full object-cover md:block" autoPlay={!shouldReduceMotion} muted loop playsInline controls poster="/images/lagoon-crab/lagoon-crab-hero.webp" preload="metadata" aria-label="Illustrative cinematic lagoon crab presentation"><source src="/videos/lagoon-crab-gemini-desktop.mp4" type="video/mp4" /></video>
-            <video className="aspect-[9/16] max-h-[78svh] w-full object-cover md:hidden" autoPlay={!shouldReduceMotion} muted loop playsInline controls poster="/images/lagoon-crab/lagoon-crab-vertical.webp" preload="metadata" aria-label="Vertical illustrative lagoon crab presentation"><source src="/videos/lagoon-crab-gemini-mobile.mp4" type="video/mp4" /></video>
+            <ResponsiveCrabVideo reduceMotion={shouldReduceMotion} />
           </motion.div>
           <p className="mt-4 text-center text-xs leading-5 text-white/50">Illustrative motion presentation; food appearance and arrangements may vary.</p>
         </div>
