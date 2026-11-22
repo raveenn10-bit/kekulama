@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Landmark, Mountain, Waves, Turtle, MapPin, Calendar } from "lucide-react";
 import { siteData } from "@/data/siteData";
@@ -97,6 +98,7 @@ export default function Experiences() {
         <div className="flex md:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] uppercase tracking-[0.2em] text-mint-200/60 mt-3">
           <span>👈 Swipe for all nearby excursions 👉</span>
         </div>
+        <div className="mt-9 flex justify-center"><Link href="/lagoon-crab-galle" className="inline-flex min-h-12 items-center justify-center rounded-full border border-mint-300/35 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:border-mint-300/60 hover:bg-white/15">Explore Lagoon Crab dining</Link></div>
       </div>
     </section>
   );

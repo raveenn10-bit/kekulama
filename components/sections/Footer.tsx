@@ -204,6 +204,7 @@ export function Footer({ showPhotoStrip = true }: FooterProps) {
           >
             Couple Day Out
           </Link>
+          <Link href="/lagoon-crab-galle" className="hover:text-mint-600 transition-colors py-1 px-1.5">Lagoon Crab Galle</Link>
         </nav>
 
         {/* Sub-highlights bulleted list */}

@@ -24,6 +24,7 @@ const RomanticEscape = dynamic(
 );
 const Gallery = dynamic(() => import("@/components/sections/Gallery"));
 const Experiences = dynamic(() => import("@/components/sections/Experiences"));
+const LagoonCrabFeature = dynamic(() => import("@/components/sections/LagoonCrabFeature"));
 const LocationGuide = dynamic(() => import("@/components/sections/LocationGuide"));
 const Reviews = dynamic(() => import("@/components/sections/Reviews"));
 const FAQ = dynamic(() => import("@/components/sections/FAQ"));
@@ -43,6 +44,7 @@ export default function Home() {
       <RomanticEscape />
       <Gallery />
       <Experiences />
+      <LagoonCrabFeature />
       <LocationGuide />
       <Reviews />
       <FAQ />

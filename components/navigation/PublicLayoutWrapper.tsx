@@ -15,7 +15,8 @@ export default function PublicLayoutWrapper({ children }: PublicLayoutWrapperPro
   const isAdminOrGuest = pathname?.startsWith("/admin") || pathname?.startsWith("/guest");
   const isSeoLandingPage =
     pathname === "/honeymoon-cabana-galle" ||
-    pathname === "/day-out-cabana-galle";
+    pathname === "/day-out-cabana-galle" ||
+    pathname === "/lagoon-crab-galle";
 
   if (isAdminOrGuest) {
     return <>{children}</>;

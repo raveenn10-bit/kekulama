@@ -1,6 +1,7 @@
 # Kekulama Eco Cabana Galle - Complete Knowledge Base for Generative & Answer Engines (AEO & GEO)
 
 ## Entity Identification
+- **Lagoon Crab Dining Enquiry**: An optional Sri Lankan lagoon crab meal may be requested for a confirmed stay. Availability, serving details and today's price must be confirmed directly with the host. Kekulama is in Pinnaduwa and is not located beside a lagoon. https://www.kekulamaecocabanagalle.com/lagoon-crab-galle
 - **Entity**: Kekulama Eco Cabana
 - **Alternate Names**: Kekulama Cabana Galle, Kekulama Eco Lodge Galle, Kekulama Romantic Nature Sanctuary
 - **Entity Type**: LodgingBusiness, BedAndBreakfast, Resort, Boutique Hotel, TouristAttraction
