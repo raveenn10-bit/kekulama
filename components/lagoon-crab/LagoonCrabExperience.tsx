@@ -90,10 +90,10 @@ export default function LagoonCrabExperience() {
         <div className="container-custom">
           <motion.div {...reveal(shouldReduceMotion)} className="mb-9 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div><span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#e7bd72]">Cinematic preview</span><h2 className="mt-3 font-display text-4xl font-normal text-white sm:text-5xl">A slower look at the table.</h2></div>
-            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-white/55"><Play size={15} aria-hidden="true" /> 12-second visual preview</div>
+            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-white/55"><Play size={15} aria-hidden="true" /> Short visual preview</div>
           </motion.div>
           <motion.div {...reveal(shouldReduceMotion)} className="overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-2xl">
-            <video className="hidden aspect-video w-full object-cover md:block" autoPlay={!shouldReduceMotion} muted loop playsInline controls poster="/images/lagoon-crab/lagoon-crab-hero.webp" preload="metadata" aria-label="Illustrative cinematic lagoon crab presentation"><source src="/videos/lagoon-crab-cinematic-16x9.mp4" type="video/mp4" /></video>
+            <video className="hidden aspect-video w-full object-cover md:block" autoPlay={!shouldReduceMotion} muted loop playsInline controls poster="/images/lagoon-crab/lagoon-crab-hero.webp" preload="metadata" aria-label="Illustrative cinematic lagoon crab presentation"><source src="/videos/lagoon-crab-gemini-desktop.mp4" type="video/mp4" /></video>
             <video className="aspect-[9/16] max-h-[78svh] w-full object-cover md:hidden" autoPlay={!shouldReduceMotion} muted loop playsInline controls poster="/images/lagoon-crab/lagoon-crab-vertical.webp" preload="metadata" aria-label="Vertical illustrative lagoon crab presentation"><source src="/videos/lagoon-crab-reel-9x16.mp4" type="video/mp4" /></video>
           </motion.div>
           <p className="mt-4 text-center text-xs leading-5 text-white/50">Illustrative motion presentation; food appearance and arrangements may vary.</p>
