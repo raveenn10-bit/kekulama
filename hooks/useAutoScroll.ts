@@ -74,13 +74,22 @@ export function useAutoScroll({
     const el = scrollRef.current;
     if (!el) return;
 
+    // Never auto-advance for users who asked the OS to reduce motion
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+
     let intervalId: ReturnType<typeof setInterval> | null = null;
     let isVisible = true;
+    let isHeld = false; // hovered or keyboard-focused: hold until the user leaves
 
     const startTimer = () => {
       if (intervalId) clearInterval(intervalId);
       intervalId = setInterval(() => {
-        if (isVisible && !isPausedRef.current) {
+        if (isVisible && !isHeld && !isPausedRef.current) {
           scrollToNext();
         }
       }, interval);
@@ -118,7 +127,27 @@ export function useAutoScroll({
     el.addEventListener("pointerdown", handleInteraction, { passive: true });
     el.addEventListener("wheel", handleInteraction, { passive: true });
 
+    // Hold rotation while the pointer is over the row or focus is inside it,
+    // so people can read a card or tab through it without it sliding away.
+    const hold = () => {
+      isHeld = true;
+    };
+    const release = () => {
+      isHeld = false;
+    };
+    const handleFocusOut = (e: FocusEvent) => {
+      if (!el.contains(e.relatedTarget as Node | null)) release();
+    };
+    el.addEventListener("mouseenter", hold);
+    el.addEventListener("mouseleave", release);
+    el.addEventListener("focusin", hold);
+    el.addEventListener("focusout", handleFocusOut);
+
     return () => {
+      el.removeEventListener("mouseenter", hold);
+      el.removeEventListener("mouseleave", release);
+      el.removeEventListener("focusin", hold);
+      el.removeEventListener("focusout", handleFocusOut);
       stopTimer();
       if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
       if (observer) observer.disconnect();

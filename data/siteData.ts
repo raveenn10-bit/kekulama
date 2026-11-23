@@ -68,7 +68,7 @@ export const siteData: SiteData = {
       name: "Day Out — Non A/C",
       price: "6,000",
       unit: "day (room only)",
-      features: ["Room access", "Tea garden views", "Kitchenette access", "Tea & coffee 🫖"],
+      features: ["Room access", "Tea garden views", "Kitchenette access", "Tea & coffee"],
     },
     {
       name: "Day Out — A/C",
@@ -78,7 +78,7 @@ export const siteData: SiteData = {
         "Air-conditioned cabana",
         "Garden views & verandah",
         "Full smart amenities",
-        "Tea & coffee 🫖",
+        "Tea & coffee",
       ],
     },
     {
@@ -146,7 +146,7 @@ export const siteData: SiteData = {
   amenities: [
     { icon: "Bath", label: "Bathroom Items", category: "Essentials" },
     { icon: "Shirt", label: "Fresh Towels", category: "Essentials" },
-    { icon: "Coffee", label: "Tea & Coffee 🫖", category: "Refreshment" },
+    { icon: "Coffee", label: "Tea & Coffee", category: "Refreshment" },
     { icon: "Tv", label: '45" Smart TV', category: "Entertainment" },
     { icon: "Speaker", label: "JBL Speaker", category: "Entertainment" },
     { icon: "Refrigerator", label: "Refrigerator", category: "Kitchen" },

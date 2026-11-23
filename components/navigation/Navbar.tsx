@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -14,6 +14,7 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const shouldReduceMotion = useReducedMotion();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,15 +29,21 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll, move focus into the drawer, and close on Escape
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
+    if (!isMobileMenuOpen) {
       document.body.style.overflow = "unset";
+      return;
     }
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [isMobileMenuOpen]);
 
@@ -46,18 +53,20 @@ export function Navbar() {
     <>
       {/* Dynamic top scroll progress bar */}
       <div
+        aria-hidden="true"
         className="fixed top-0 left-0 h-[2px] bg-gradient-to-r from-mint-400 via-mint-500 to-bark z-[70] transition-all duration-150"
         style={{ width: `${scrollProgress}%` }}
       />
 
       <nav
+        aria-label="Main navigation"
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 h-[72px] sm:h-[76px] flex items-center ${
           isScrolled
             ? "bg-white/90 backdrop-blur-2xl shadow-soft border-b border-mint-100/80"
             : "bg-gradient-to-b from-forest-dark/85 via-forest-dark/40 to-transparent"
         }`}
       >
-        <div className="container-custom w-full flex items-center justify-between">
+        <div className="container-custom w-full flex items-center justify-between gap-6">
           <Link href="/" className="flex items-center gap-3 sm:gap-3.5 group py-1">
             <motion.div
               whileHover={shouldReduceMotion ? {} : { scale: 1.04 }}
@@ -83,7 +92,7 @@ export function Navbar() {
                 Kekulama
               </span>
               <span
-                className={`font-eyebrow text-[8.5px] sm:text-[9px] uppercase tracking-[0.3em] font-normal -mt-0.5 transition-colors duration-300 ${
+                className={`font-eyebrow text-[11px] uppercase tracking-[0.2em] font-normal -mt-0.5 transition-colors duration-300 ${
                   isScrolled ? "text-mint-700" : "text-mint-200"
                 }`}
               >
@@ -93,15 +102,15 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-            <div className="flex items-center gap-6 xl:gap-7">
+          <div className="hidden xl:flex items-center gap-4 2xl:gap-7">
+            <div className="flex items-center gap-4 2xl:gap-6">
               {navLinks.map((link) => {
                 const targetHref = link.href.startsWith("#") ? `/${link.href}` : link.href;
                 return (
                   <Link
                     key={link.href}
                     href={targetHref}
-                    className={`relative font-body text-[11.5px] font-semibold uppercase tracking-[0.11em] transition-colors duration-300 group py-1 ${
+                    className={`relative whitespace-nowrap font-body text-[11.5px] font-semibold uppercase tracking-[0.1em] transition-colors duration-300 group py-1 ${
                       isScrolled
                         ? "text-sage-800 hover:text-mint-600"
                         : "text-white/90 hover:text-mint-300"
@@ -117,7 +126,7 @@ export function Navbar() {
 
             <Link
               href="/book"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-body text-[11.5px] font-semibold uppercase tracking-[0.14em] bg-mint-500 hover:bg-mint-600 text-white shadow-glow transition-all active:scale-98"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap min-h-[40px] px-4 py-2 rounded-full font-body text-[11.5px] font-semibold uppercase tracking-[0.14em] bg-mint-700 hover:bg-mint-800 text-white shadow-glow transition-all active:scale-98"
             >
               <span>Book Your Stay</span>
               <ArrowUpRight size={14} />
@@ -129,7 +138,7 @@ export function Navbar() {
               href="https://wa.me/94756657000"
               target="_blank"
               rel="noopener noreferrer"
-              className={`gap-1.5 ${
+              className={`hidden 2xl:inline-flex gap-1.5 ${
                 isScrolled
                   ? "border-mint-600/40 text-forest hover:bg-mint-50"
                   : "border-white/30 text-white hover:bg-white/10"
@@ -141,7 +150,7 @@ export function Navbar() {
             <Link
               href="/admin"
               prefetch={false}
-              className={`p-2 rounded-full transition-all duration-300 ${
+              className={`w-10 h-10 inline-flex items-center justify-center rounded-full transition-all duration-300 ${
                 isScrolled
                   ? "text-sage-700 hover:text-mint-700 hover:bg-mint-50"
                   : "text-white/80 hover:text-white hover:bg-white/10"
@@ -154,10 +163,10 @@ export function Navbar() {
           </div>
 
           {/* Mobile Actions (Phone Call + Menu Toggle with 44px touch targets) */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-2 xl:hidden">
             <a
               href="tel:+94756657000"
-              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${
+              className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${
                 isScrolled
                   ? "bg-mint-100 text-mint-800 hover:bg-mint-200"
                   : "bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm"
@@ -168,13 +177,15 @@ export function Navbar() {
             </a>
 
             <button
-              className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 active:scale-95 ${
+              className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors duration-300 active:scale-95 ${
                 isScrolled
                   ? "text-forest bg-sage-100/70 hover:bg-sage-200"
                   : "text-white bg-white/15 hover:bg-white/25 backdrop-blur-sm"
               }`}
               onClick={() => setIsMobileMenuOpen(true)}
               aria-label="Open navigation menu"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               <Menu size={22} />
             </button>
@@ -190,7 +201,11 @@ export function Navbar() {
             animate={{ opacity: 1, x: "0%" }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ duration: 0.4, ease: LUXURY_EASING.quintOut }}
-            className="fixed inset-0 z-[80] bg-forest-dark/95 backdrop-blur-3xl flex flex-col justify-between p-6 sm:p-8 text-white pt-[calc(1.25rem+env(safe-area-inset-top,0))] pb-[calc(1.5rem+env(safe-area-inset-bottom,0))]"
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
+            className="focus-on-dark fixed inset-0 z-[80] bg-forest-dark/95 backdrop-blur-3xl flex flex-col justify-between p-6 sm:p-8 text-white pt-[calc(1.25rem+env(safe-area-inset-top,0))] pb-[calc(1.5rem+env(safe-area-inset-bottom,0))]"
           >
             {/* Drawer Top Header */}
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
@@ -198,7 +213,7 @@ export function Navbar() {
                 <div className="relative w-10 h-10 rounded-full overflow-hidden border border-mint-300">
                   <Image
                     src="/images/logo.jpg"
-                    alt="Logo"
+                    alt=""
                     fill
                     unoptimized
                     className="object-cover"
@@ -206,12 +221,13 @@ export function Navbar() {
                 </div>
                 <div>
                   <span className="font-display text-xl font-semibold tracking-[0.09em] uppercase">Kekulama</span>
-                  <span className="block font-eyebrow text-[9px] uppercase tracking-[0.3em] text-mint-300">
+                  <span className="block font-eyebrow text-[11px] uppercase tracking-[0.3em] text-mint-300">
                     Eco Sanctuary
                   </span>
                 </div>
               </div>
               <button
+                ref={closeButtonRef}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="w-11 h-11 rounded-full bg-white/10 text-white/80 hover:text-white hover:bg-white/20 flex items-center justify-center transition-colors active:scale-95"
                 aria-label="Close navigation menu"
@@ -238,7 +254,7 @@ export function Navbar() {
                       {link.label || link.name}
                     </span>
                     <span className="font-mono text-xs text-mint-400/80 group-hover:text-mint-300">
-                      0{index + 1}
+                      {String(index + 1).padStart(2, "0")}
                     </span>
                   </Link>
                 </motion.div>
@@ -255,7 +271,7 @@ export function Navbar() {
               <Link
                 href="/book"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full py-3.5 rounded-full text-center font-body text-xs font-semibold uppercase tracking-[0.15em] bg-mint-500 hover:bg-mint-600 text-white shadow-glow flex items-center justify-center gap-2 active:scale-98"
+                className="w-full py-3.5 rounded-full text-center font-body text-xs font-semibold uppercase tracking-[0.15em] bg-mint-700 hover:bg-mint-800 text-white shadow-glow flex items-center justify-center gap-2 active:scale-98"
               >
                 <span>Book Your Stay (Direct)</span>
                 <ArrowUpRight size={15} />
@@ -280,12 +296,12 @@ export function Navbar() {
                 href="/admin"
                 prefetch={false}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full py-2.5 rounded-full text-center font-body text-xs font-medium tracking-[0.1em] text-white/60 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-full text-center font-body text-xs font-medium tracking-[0.1em] text-white/75 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-center gap-1.5"
               >
                 <Lock size={13} />
                 <span>Owner & Staff Portal</span>
               </Link>
-              <div className="pt-2 text-center font-eyebrow text-[9.5px] uppercase tracking-[0.25em] text-sage-400">
+              <div className="pt-2 text-center font-eyebrow text-[11px] uppercase tracking-[0.22em] text-sage-300">
                 Pinnaduwa, Galle · 100% Recommended
               </div>
             </motion.div>

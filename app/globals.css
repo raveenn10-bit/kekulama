@@ -247,3 +247,64 @@
 }
 
 
+
+/* ───────────── UI/UX Pro Max pass: accessibility & motion foundations ───────────── */
+
+/* Anchor jumps land below the fixed 72–76px navbar instead of under it */
+html {
+  scroll-padding-top: 88px;
+}
+
+/* Visible keyboard focus everywhere (mouse/touch users don't see it) */
+:where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid #1C6C62;
+  outline-offset: 3px;
+  border-radius: 9999px;
+}
+:where(input, select, textarea, [role="button"].rounded-3xl):focus-visible {
+  border-radius: inherit;
+}
+.focus-on-dark:focus-visible,
+.focus-on-dark :focus-visible {
+  outline-color: #B6EFE5;
+}
+
+/* Skip link for keyboard & screen-reader users */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  transform: translateY(-160%);
+  padding: 10px 18px;
+  border-radius: 9999px;
+  background: #1e2e24;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 0.2s ease-out;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Gentle nudge on swipe-hint chevrons */
+@keyframes swipeLeft { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-3px); } }
+@keyframes swipeRight { 0%,100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
+.animate-swipe-left { animation: swipeLeft 1.6s ease-in-out infinite; }
+.animate-swipe-right { animation: swipeRight 1.6s ease-in-out infinite; }
+
+/* Respect the OS "reduce motion" setting for every CSS animation & smooth scroll */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

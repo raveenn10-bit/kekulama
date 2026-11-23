@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { SwipeHint } from "@/components/ui/SwipeHint";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { siteData } from "@/data/siteData";
@@ -12,7 +13,8 @@ import { useAutoScroll } from "@/hooks/useAutoScroll";
 export default function Gallery() {
   const { gallery } = siteData;
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
+  const lightboxCloseRef = useRef<HTMLButtonElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const scrollRef = useAutoScroll({ interval: 3000 });
 
@@ -25,6 +27,7 @@ export default function Gallery() {
     if (lightboxImage) {
       document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
+      lightboxCloseRef.current?.focus();
     } else {
       document.body.style.overflow = "unset";
     }
@@ -66,14 +69,19 @@ export default function Gallery() {
         />
 
         {/* Filter Pills with Liquid Slider */}
-        <div className="flex items-center justify-center gap-2 mb-8 overflow-x-auto no-scrollbar pb-2">
+        <div
+          role="group"
+          aria-label="Filter photos by category"
+          className="flex items-center justify-start sm:justify-center gap-2 mb-8 overflow-x-auto no-scrollbar pb-2 px-1"
+        >
           {filters.map((filter) => {
             const isActive = selectedFilter === filter;
             return (
               <button
                 key={filter}
                 onClick={() => setSelectedFilter(filter)}
-                className={`relative px-4 py-1.5 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] transition-colors duration-300 cursor-pointer z-10 ${
+                aria-pressed={isActive}
+                className={`relative flex-shrink-0 min-h-[40px] px-4 py-2 rounded-full font-body text-xs font-semibold uppercase tracking-[0.14em] transition-colors duration-300 cursor-pointer z-10 ${
                   isActive ? "text-white" : "text-sage-700 hover:text-forest"
                 }`}
               >
@@ -85,7 +93,7 @@ export default function Gallery() {
                       stiffness: 400,
                       damping: 35,
                     }}
-                    className="absolute inset-0 bg-gradient-to-r from-mint-500 to-mint-600 rounded-full shadow-glow -z-10"
+                    className="absolute inset-0 bg-gradient-to-r from-mint-700 to-mint-800 rounded-full shadow-glow -z-10"
                   />
                 )}
                 {!isActive && (
@@ -116,7 +124,16 @@ export default function Gallery() {
                   ease: LUXURY_EASING.quintOut,
                   delay: index * 0.03,
                 }}
-                onClick={() => setLightboxImage(image.src)}
+                role="button"
+                tabIndex={0}
+                aria-label={`View larger: ${image.alt || "Kekulama Eco Cabana photo"}`}
+                onClick={() => setLightboxImage({ src: image.src, alt: image.alt || "Kekulama Eco Cabana photo" })}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setLightboxImage({ src: image.src, alt: image.alt || "Kekulama Eco Cabana photo" });
+                  }
+                }}
                 className={`snap-center flex-shrink-0 w-[78vw] h-[280px] md:w-auto md:h-auto rounded-3xl overflow-hidden relative group cursor-pointer border border-mint-100 shadow-soft hover:shadow-lifted transition-all ${getSpanClass(
                   image.span
                 )}`}
@@ -129,7 +146,7 @@ export default function Gallery() {
                   className="object-cover group-hover:scale-106 transition-transform duration-700 ease-out"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-5 text-white">
+                <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300 flex items-end justify-between p-5 text-white">
                   <span className="font-eyebrow text-xs uppercase tracking-wider font-normal drop-shadow-sm">{image.alt}</span>
                   <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                     <Maximize2 size={14} />
@@ -141,9 +158,7 @@ export default function Gallery() {
         </motion.div>
 
         {/* Mobile Swipe Hint */}
-        <div className="flex md:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] uppercase tracking-[0.2em] text-sage-400 mt-3">
-          <span>👈 Swipe to view photo gallery 👉</span>
-        </div>
+        <SwipeHint label="Swipe to view photo gallery" hideClass="md:hidden" tone="light" />
       </div>
 
       {/* Lightbox Modal with Keyboard Escape & Scroll Lock */}
@@ -154,10 +169,14 @@ export default function Gallery() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35, ease: LUXURY_EASING.quintOut }}
-            className="fixed inset-0 z-[100] bg-forest-dark/95 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-8"
+            role="dialog"
+            aria-modal="true"
+            aria-label={lightboxImage.alt}
+            className="focus-on-dark fixed inset-0 z-[100] bg-forest-dark/95 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-8"
             onClick={() => setLightboxImage(null)}
           >
             <button
+              ref={lightboxCloseRef}
               onClick={() => setLightboxImage(null)}
               className="absolute top-6 right-6 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-10 cursor-pointer"
               aria-label="Close photo preview (Escape)"
@@ -173,8 +192,9 @@ export default function Gallery() {
               onClick={(e) => e.stopPropagation()}
             >
               <Image
-                src={lightboxImage}
-                alt="Enlarged photo"
+                src={lightboxImage.src}
+                alt={lightboxImage.alt}
+                sizes="(max-width: 1024px) 100vw, 1024px"
                 fill
                 className="object-contain"
               />

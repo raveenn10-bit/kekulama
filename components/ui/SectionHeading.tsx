@@ -39,7 +39,7 @@ export function SectionHeading({
           transition={{ duration: LUXURY_DURATION.medium, ease: LUXURY_EASING.quintOut }}
           className={`mb-4 2xl:mb-5 ${isCenter ? "flex justify-center" : "flex justify-start"}`}
         >
-          <Badge dot variant="mint" className="bg-eucalyptus-100/90 text-forest font-medium tracking-[0.2em] text-[10px] sm:text-xs uppercase border border-eucalyptus-300/60 shadow-none">
+          <Badge dot variant="mint" className="bg-eucalyptus-100/90 text-forest font-medium tracking-[0.2em] text-[11px] sm:text-xs uppercase border border-eucalyptus-300/60 shadow-none">
             {badge}
           </Badge>
         </motion.div>

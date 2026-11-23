@@ -247,7 +247,7 @@ export default function RealtimeBookingTable() {
               className="p-1.5 rounded-lg text-sage-600 hover:text-forest hover:bg-stone-100 transition-all cursor-pointer"
               title="Refresh availability"
             >
-              <RefreshCw size={14} className={loadingSync ? "animate-spin text-mint-600" : ""} />
+              <RefreshCw size={14} className={loadingSync ? "animate-spin text-mint-700" : ""} />
             </button>
           </div>
         </div>
@@ -263,7 +263,7 @@ export default function RealtimeBookingTable() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {/* Check-in Date */}
             <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/70 focus-within:border-forest transition-colors">
-              <label className="block font-eyebrow text-[10px] uppercase tracking-wider text-sage-500 font-semibold mb-1">
+              <label className="block font-eyebrow text-[11px] uppercase tracking-wider text-sage-500 font-semibold mb-1">
                 Check-in Date
               </label>
               <div className="flex items-center gap-2">
@@ -280,7 +280,7 @@ export default function RealtimeBookingTable() {
 
             {/* Check-out Date */}
             <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/70 focus-within:border-forest transition-colors">
-              <label className="block font-eyebrow text-[10px] uppercase tracking-wider text-sage-500 font-semibold mb-1">
+              <label className="block font-eyebrow text-[11px] uppercase tracking-wider text-sage-500 font-semibold mb-1">
                 Check-out Date
               </label>
               <div className="flex items-center gap-2">
@@ -297,7 +297,7 @@ export default function RealtimeBookingTable() {
 
             {/* Guests Selection */}
             <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/70 focus-within:border-forest transition-colors">
-              <label className="block font-eyebrow text-[10px] uppercase tracking-wider text-sage-500 font-semibold mb-1">
+              <label className="block font-eyebrow text-[11px] uppercase tracking-wider text-sage-500 font-semibold mb-1">
                 Guests
               </label>
               <div className="flex items-center gap-2">
@@ -317,7 +317,7 @@ export default function RealtimeBookingTable() {
 
             {/* Package Choice */}
             <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/70 focus-within:border-forest transition-colors">
-              <label className="block font-eyebrow text-[10px] uppercase tracking-wider text-sage-500 font-semibold mb-1">
+              <label className="block font-eyebrow text-[11px] uppercase tracking-wider text-sage-500 font-semibold mb-1">
                 Selected Plan
               </label>
               <select
@@ -356,7 +356,7 @@ export default function RealtimeBookingTable() {
           {/* Pricing Calculation Summary & Actions */}
           <div className="bg-gradient-to-r from-stone-50 via-eucalyptus-50/50 to-stone-50 rounded-2xl p-5 border border-stone-200/80 flex flex-col md:flex-row items-center justify-between gap-5">
             <div>
-              <span className="font-eyebrow text-[10.5px] uppercase tracking-wider text-sage-600 block">
+              <span className="font-eyebrow text-[11px] uppercase tracking-wider text-sage-600 block">
                 Estimated Rate ({currentPkg.name.includes("Day Out") ? "Day Plan" : `${nights} Night${nights > 1 ? "s" : ""}`}, {guests} Guests)
               </span>
               <div className="flex items-baseline gap-2 mt-0.5">
@@ -379,7 +379,7 @@ export default function RealtimeBookingTable() {
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-[#003580] hover:bg-[#00224f] text-white font-body text-xs font-semibold uppercase tracking-[0.14em] transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
-                <div className="w-4 h-4 rounded-full bg-white text-[#003580] font-bold text-[10px] flex items-center justify-center">
+                <div className="w-4 h-4 rounded-full bg-white text-[#003580] font-bold text-[11px] flex items-center justify-center">
                   B.
                 </div>
                 <span>Booking.com</span>
@@ -499,11 +499,11 @@ export default function RealtimeBookingTable() {
                   </div>
 
                   {badgeText ? (
-                    <span className="text-[9px] font-eyebrow uppercase tracking-tight font-bold py-0.5 px-1 rounded truncate block">
+                    <span className="text-[11px] font-eyebrow uppercase tracking-tight font-bold py-0.5 px-1 rounded truncate block">
                       {badgeText}
                     </span>
                   ) : !day.isPast ? (
-                    <span className="text-[9px] font-body text-emerald-700 sm:block hidden">
+                    <span className="text-[11px] font-body text-emerald-700 sm:block hidden">
                       Available
                     </span>
                   ) : null}

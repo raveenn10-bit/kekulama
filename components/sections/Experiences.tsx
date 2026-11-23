@@ -1,5 +1,6 @@
 "use client";
 
+import { SwipeHint } from "@/components/ui/SwipeHint";
 import React from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
@@ -63,7 +64,7 @@ export default function Experiences() {
                       <Icon size={24} strokeWidth={1.5} />
                     </motion.div>
                     {exp.badge && (
-                      <span className="font-eyebrow text-[10px] uppercase tracking-[0.24em] font-normal bg-mint-500/20 text-mint-200 border border-mint-400/30 px-3.5 py-1 rounded-full">
+                      <span className="font-eyebrow text-[11px] uppercase tracking-[0.24em] font-normal bg-mint-500/20 text-mint-200 border border-mint-400/30 px-3.5 py-1 rounded-full">
                         {exp.badge}
                       </span>
                     )}
@@ -95,9 +96,7 @@ export default function Experiences() {
         </div>
 
         {/* Mobile Swipe Hint */}
-        <div className="flex md:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] uppercase tracking-[0.2em] text-mint-200/60 mt-3">
-          <span>👈 Swipe for all nearby excursions 👉</span>
-        </div>
+        <SwipeHint label="Swipe for all nearby excursions" hideClass="md:hidden" tone="dark" />
         <div className="mt-9 flex justify-center"><Link href="/lagoon-crab-galle" className="inline-flex min-h-12 items-center justify-center rounded-full border border-mint-300/35 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:border-mint-300/60 hover:bg-white/15">Explore Lagoon Crab dining</Link></div>
       </div>
     </section>

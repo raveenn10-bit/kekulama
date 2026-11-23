@@ -58,7 +58,7 @@ export default function SeoIntentPage({
         <div className="pointer-events-none absolute -left-32 top-20 h-80 w-80 rounded-full bg-mint-400/15 blur-[110px]" />
         <div className="container-custom relative z-10 grid items-center gap-9 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.07] px-4 py-2 font-eyebrow text-[10px] font-bold uppercase tracking-[0.2em] text-amber-100">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.07] px-4 py-2 font-eyebrow text-[11px] font-bold uppercase tracking-[0.2em] text-amber-100">
               <Heart size={13} className="fill-amber-100/50" />
               {eyebrow}
             </div>
@@ -68,7 +68,7 @@ export default function SeoIntentPage({
                 {accent}
               </span>
             </h1>
-            <p className="mt-6 max-w-xl font-body text-sm leading-7 text-white/72 sm:text-base">
+            <p className="mt-6 max-w-xl font-body text-sm leading-7 text-white/80 sm:text-base">
               {intro}
             </p>
 
@@ -91,7 +91,7 @@ export default function SeoIntentPage({
               </a>
             </div>
 
-            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 font-body text-[11px] text-white/58">
+            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 font-body text-[11px] text-white/70">
               <span className="inline-flex items-center gap-1.5">
                 <MapPin size={13} className="text-amber-100" />
                 Pinnaduwa, Galle
@@ -119,7 +119,7 @@ export default function SeoIntentPage({
             <div className="absolute inset-0 bg-gradient-to-t from-[#07110c]/80 via-transparent to-transparent" />
             <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-7">
               <div>
-                <span className="font-eyebrow text-[9px] font-semibold uppercase tracking-[0.18em] text-amber-100">
+                <span className="font-eyebrow text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-100">
                   {packageName}
                 </span>
                 <p className="mt-1 font-mono text-3xl font-semibold text-white sm:text-4xl">
@@ -135,7 +135,7 @@ export default function SeoIntentPage({
       <section className="section-padding">
         <div className="container-custom grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
           <div className="rounded-[2rem] border border-sage-200 bg-white p-6 shadow-soft sm:p-8">
-            <span className="font-eyebrow text-[10px] font-bold uppercase tracking-[0.2em] text-mint-700">
+            <span className="font-eyebrow text-[11px] font-bold uppercase tracking-[0.2em] text-mint-700">
               Package includes
             </span>
             <h2 className="mt-2 font-display text-3xl font-medium text-forest sm:text-4xl">
@@ -171,7 +171,7 @@ export default function SeoIntentPage({
       <section className="border-y border-sage-200/80 bg-white/70 py-14 sm:py-20">
         <div className="container-custom">
           <div className="mx-auto max-w-3xl text-center">
-            <span className="font-eyebrow text-[10px] font-bold uppercase tracking-[0.22em] text-mint-700">
+            <span className="font-eyebrow text-[11px] font-bold uppercase tracking-[0.22em] text-mint-700">
               Helpful booking answers
             </span>
             <h2 className="mt-2 font-display text-3xl font-medium text-forest sm:text-4xl">
@@ -195,7 +195,7 @@ export default function SeoIntentPage({
             <h2 className="font-display text-3xl font-medium text-white sm:text-4xl">
               Ready to plan your Galle escape?
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-white/68">
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-white/75">
               Check your preferred date online or message the host directly for availability and arrangement details.
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">

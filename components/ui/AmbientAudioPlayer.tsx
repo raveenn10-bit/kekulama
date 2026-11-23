@@ -137,12 +137,13 @@ export default function AmbientAudioPlayer() {
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
           transition={{ duration: 0.3, ease: LUXURY_EASING.quintOut }}
-          className={`flex items-center gap-2.5 px-3.5 sm:px-4 py-2.5 rounded-full backdrop-blur-xl shadow-lifted border transition-all duration-300 cursor-pointer ${
+          className={`flex items-center gap-2.5 min-h-[44px] px-3.5 sm:px-4 py-2.5 rounded-full backdrop-blur-xl shadow-lifted border transition-all duration-300 cursor-pointer ${
             isPlaying
               ? "bg-forest/90 text-white border-mint-400/40 shadow-glow"
               : "bg-white/90 text-forest border-eucalyptus-200/90 hover:border-mint-400"
           }`}
           aria-label={isPlaying ? "Mute nature sounds" : "Play nature sounds"}
+          aria-pressed={isPlaying}
         >
           {/* Animated Equalizer Waveform */}
           <div className="flex items-end gap-[2px] h-3.5 w-3.5 justify-center">
@@ -177,7 +178,7 @@ export default function AmbientAudioPlayer() {
             <span className="hidden sm:inline">Forest Ambience</span>
             <span className="sm:hidden">Nature Sound</span>
             <span
-              className={`text-[10px] font-eyebrow uppercase tracking-[0.16em] px-1.5 py-0.5 rounded-full ${
+              className={`text-[11px] font-eyebrow uppercase tracking-[0.16em] px-1.5 py-0.5 rounded-full ${
                 isPlaying
                   ? "bg-mint-400/30 text-mint-200"
                   : "bg-sage-100 text-sage-600"

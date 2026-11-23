@@ -53,7 +53,7 @@ export default function PrivacyPolicyPage() {
           {/* Section 1 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-3">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">01.</span>
+              <span className="text-mint-700 font-mono text-sm">01.</span>
               <span>Operator & Contact Identity</span>
             </h2>
             <p>
@@ -76,7 +76,7 @@ export default function PrivacyPolicyPage() {
           {/* Section 2 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-4">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">02.</span>
+              <span className="text-mint-700 font-mono text-sm">02.</span>
               <span>Information We Collect</span>
             </h2>
             <p>
@@ -128,7 +128,7 @@ export default function PrivacyPolicyPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               <div className="p-4 bg-sand-50/80 rounded-xl border border-sage-200 space-y-2">
                 <div className="font-bold text-forest text-xs uppercase tracking-wider flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className="text-mint-600" />
+                  <CheckCircle2 size={14} className="text-mint-700" />
                   <span>Google Drive API (`drive.file`)</span>
                 </div>
                 <p className="text-xs text-sage-700 leading-relaxed">
@@ -138,7 +138,7 @@ export default function PrivacyPolicyPage() {
 
               <div className="p-4 bg-sand-50/80 rounded-xl border border-sage-200 space-y-2">
                 <div className="font-bold text-forest text-xs uppercase tracking-wider flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className="text-mint-600" />
+                  <CheckCircle2 size={14} className="text-mint-700" />
                   <span>Gmail API (`gmail.send`)</span>
                 </div>
                 <p className="text-xs text-sage-700 leading-relaxed">
@@ -155,7 +155,7 @@ export default function PrivacyPolicyPage() {
           {/* Section 4 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-3">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">04.</span>
+              <span className="text-mint-700 font-mono text-sm">04.</span>
               <span>Data Encryption & Storage Security</span>
             </h2>
             <p>
@@ -180,7 +180,7 @@ export default function PrivacyPolicyPage() {
           {/* Section 5 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-3">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">05.</span>
+              <span className="text-mint-700 font-mono text-sm">05.</span>
               <span>Your Rights & Data Portability</span>
             </h2>
             <p>
@@ -202,7 +202,7 @@ export default function PrivacyPolicyPage() {
           {/* Section 6 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-3">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">06.</span>
+              <span className="text-mint-700 font-mono text-sm">06.</span>
               <span>Policy Updates</span>
             </h2>
             <p>

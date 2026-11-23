@@ -1,5 +1,6 @@
 "use client";
 
+import { SwipeHint } from "@/components/ui/SwipeHint";
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -95,7 +96,7 @@ export default function Packages() {
 
           {/* Foreign Traveler International Currency Switcher */}
           <div className="flex items-center gap-1.5 bg-white p-1.5 rounded-full border border-stone-200 shadow-sm self-center">
-            <span className="font-eyebrow text-[10.5px] uppercase tracking-wider text-sage-600 px-2.5 font-bold flex items-center gap-1">
+            <span className="font-eyebrow text-[11px] uppercase tracking-wider text-sage-600 px-2.5 font-bold flex items-center gap-1">
               <Globe2 size={13} className="text-forest" />
               <span>Currency:</span>
             </span>
@@ -135,9 +136,7 @@ export default function Packages() {
         </motion.div>
 
         {/* Mobile Swipe Hint Indicator */}
-        <div className="flex sm:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] font-bold uppercase tracking-[0.2em] text-sage-600 mt-3">
-          <span>👈 Swipe horizontally for all packages 👉</span>
-        </div>
+        <SwipeHint label="Swipe for all packages" hideClass="sm:hidden" tone="light" />
       </div>
     </section>
   );
@@ -183,19 +182,19 @@ function PackageCard({
       <div>
         {/* Popular / Honeymoon Highlight Badge */}
         {pkg.popular ? (
-          <div className="absolute -top-3.5 right-6 bg-forest text-white font-eyebrow text-[10.5px] 2xl:text-xs font-bold uppercase tracking-[0.22em] px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
+          <div className="absolute -top-3.5 right-6 bg-forest text-white font-eyebrow text-[11px] 2xl:text-xs font-bold uppercase tracking-[0.22em] px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
             <Sparkles size={12} className="text-amber-300" />
             <span>TOP CHOICE</span>
           </div>
         ) : isCoupleFavorite ? (
-          <div className="absolute -top-3.5 right-6 bg-red-600 text-white font-eyebrow text-[10px] 2xl:text-xs font-bold uppercase tracking-[0.2em] px-3.5 py-1 rounded-full shadow-md flex items-center gap-1">
+          <div className="absolute -top-3.5 right-6 bg-red-600 text-white font-eyebrow text-[11px] 2xl:text-xs font-bold uppercase tracking-[0.2em] px-3.5 py-1 rounded-full shadow-md flex items-center gap-1">
             <Heart size={11} className="fill-white" />
             <span>COUPLES PICK</span>
           </div>
         ) : null}
 
         <div className="mb-4">
-          <span className="font-eyebrow text-[10.5px] 2xl:text-xs uppercase tracking-[0.26em] text-emerald-800 font-bold block mb-1">
+          <span className="font-eyebrow text-[11px] 2xl:text-xs uppercase tracking-[0.26em] text-emerald-800 font-bold block mb-1">
             {pkg.timing ? "OVERNIGHT STAY" : "DAY / NIGHT ACCESS"}
           </span>
           <h3 className="font-display font-semibold text-2xl sm:text-[28px] 2xl:text-3xl text-forest leading-[1.16] tracking-lux-snug">
@@ -227,7 +226,7 @@ function PackageCard({
                 <span>⏱ {pkg.timing}</span>
               </span>
             )}
-            <span className="inline-flex items-center gap-1 font-eyebrow text-[10px] 2xl:text-[11px] uppercase tracking-wider text-emerald-900 bg-emerald-100/90 px-2.5 py-1 rounded-md font-bold">
+            <span className="inline-flex items-center gap-1 font-eyebrow text-[11px] 2xl:text-[11px] uppercase tracking-wider text-emerald-900 bg-emerald-100/90 px-2.5 py-1 rounded-md font-bold">
               <ShieldCheck size={12} className="text-emerald-700" />
               <span>Direct Best Rate</span>
             </span>

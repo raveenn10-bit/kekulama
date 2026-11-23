@@ -53,7 +53,7 @@ export default function TermsOfServicePage() {
           {/* Section 1 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-3">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">01.</span>
+              <span className="text-mint-700 font-mono text-sm">01.</span>
               <span>The Sanctuary Contract</span>
             </h2>
             <p>
@@ -67,7 +67,7 @@ export default function TermsOfServicePage() {
           {/* Section 2 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-4">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">02.</span>
+              <span className="text-mint-700 font-mono text-sm">02.</span>
               <span>Reservations, Pricing & Payment</span>
             </h2>
             <ul className="space-y-2 pl-4 list-disc marker:text-mint-600">
@@ -86,13 +86,13 @@ export default function TermsOfServicePage() {
           {/* Section 3 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-4">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">03.</span>
+              <span className="text-mint-700 font-mono text-sm">03.</span>
               <span>Check-In & Check-Out Times</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 bg-sand-50/70 rounded-xl border border-sage-200">
                 <div className="flex items-center gap-2 font-bold text-forest text-xs uppercase tracking-wider mb-1">
-                  <Clock size={15} className="text-mint-600" />
+                  <Clock size={15} className="text-mint-700" />
                   <span>Check-In</span>
                 </div>
                 <div className="text-base sm:text-lg font-display text-forest">From 2:00 PM</div>
@@ -103,7 +103,7 @@ export default function TermsOfServicePage() {
 
               <div className="p-4 bg-sand-50/70 rounded-xl border border-sage-200">
                 <div className="flex items-center gap-2 font-bold text-forest text-xs uppercase tracking-wider mb-1">
-                  <Clock size={15} className="text-mint-600" />
+                  <Clock size={15} className="text-mint-700" />
                   <span>Check-Out</span>
                 </div>
                 <div className="text-base sm:text-lg font-display text-forest">Until 11:00 AM</div>
@@ -117,7 +117,7 @@ export default function TermsOfServicePage() {
           {/* Section 4 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-3">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">04.</span>
+              <span className="text-mint-700 font-mono text-sm">04.</span>
               <span>Guest Identification & Tourism Compliance</span>
             </h2>
             <p>
@@ -133,7 +133,7 @@ export default function TermsOfServicePage() {
           {/* Section 5 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-3">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">05.</span>
+              <span className="text-mint-700 font-mono text-sm">05.</span>
               <span>Sanctuary Guidelines & Nature Preservation</span>
             </h2>
             <p>
@@ -155,7 +155,7 @@ export default function TermsOfServicePage() {
           {/* Section 6 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-3">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">06.</span>
+              <span className="text-mint-700 font-mono text-sm">06.</span>
               <span>Cancellation & Date Amendments</span>
             </h2>
             <p>
@@ -171,7 +171,7 @@ export default function TermsOfServicePage() {
           {/* Section 7 */}
           <section className="bg-white p-6 sm:p-8 rounded-2xl border border-sage-200/80 shadow-sm space-y-3">
             <h2 className="font-display text-xl sm:text-2xl text-forest flex items-center gap-2">
-              <span className="text-mint-600 font-mono text-sm">07.</span>
+              <span className="text-mint-700 font-mono text-sm">07.</span>
               <span>Governing Law & Jurisdiction</span>
             </h2>
             <p>

@@ -1,5 +1,6 @@
 "use client";
 
+import { SwipeHint } from "@/components/ui/SwipeHint";
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
@@ -71,7 +72,7 @@ export default function Amenities() {
                 <motion.div
                   whileHover={shouldReduceMotion ? {} : { scale: 1.08 }}
                   transition={{ duration: 0.25, ease: LUXURY_EASING.quintOut }}
-                  className="w-12 h-12 rounded-2xl bg-mint-100/90 text-mint-700 flex items-center justify-center mb-3.5 group-hover:bg-mint-500 group-hover:text-white transition-colors duration-300 shadow-sm"
+                  className="w-12 h-12 rounded-2xl bg-mint-100/90 text-mint-700 flex items-center justify-center mb-3.5 group-hover:bg-mint-700 group-hover:text-white transition-colors duration-300 shadow-sm"
                 >
                   <Icon size={24} strokeWidth={1.5} />
                 </motion.div>
@@ -79,7 +80,7 @@ export default function Amenities() {
                   {amenity.label}
                 </span>
                 {amenity.category && (
-                  <span className="font-eyebrow text-[9.5px] uppercase tracking-[0.22em] text-sage-400 font-normal mt-1.5">
+                  <span className="font-eyebrow text-[11px] uppercase tracking-[0.22em] text-sage-400 font-normal mt-1.5">
                     {amenity.category}
                   </span>
                 )}
@@ -89,9 +90,7 @@ export default function Amenities() {
         </div>
 
         {/* Mobile Swipe Hint */}
-        <div className="flex sm:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] uppercase tracking-[0.2em] text-sage-400 mt-3">
-          <span>👈 Swipe horizontally for all amenities 👉</span>
-        </div>
+        <SwipeHint label="Swipe for all amenities" hideClass="sm:hidden" tone="light" />
       </div>
     </section>
   );

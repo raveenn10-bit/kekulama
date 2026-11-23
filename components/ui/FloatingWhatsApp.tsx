@@ -39,7 +39,7 @@ export function FloatingWhatsApp() {
                 e.stopPropagation();
                 setShowTooltip(false);
               }}
-              className="text-sage-400 hover:text-sage-700 ml-1 p-0.5 rounded-full hover:bg-sage-100 transition-colors"
+              className="text-sage-600 hover:text-sage-800 ml-1 w-7 h-7 inline-flex items-center justify-center rounded-full hover:bg-sage-100 transition-colors"
               aria-label="Close tooltip"
             >
               <X size={12} />

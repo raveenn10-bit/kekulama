@@ -2,6 +2,7 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
+import { MotionConfig } from "framer-motion";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/sections/Footer";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
@@ -23,11 +24,17 @@ export default function PublicLayoutWrapper({ children }: PublicLayoutWrapperPro
   }
 
   return (
-    <>
+    // reducedMotion="user": every framer-motion animation follows the OS setting
+    <MotionConfig reducedMotion="user">
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
       <Navbar />
-      <main>{children}</main>
+      <main id="main-content" tabIndex={-1} className="outline-none">
+        {children}
+      </main>
       <Footer showPhotoStrip={!isSeoLandingPage} />
       <FloatingWhatsApp />
-    </>
+    </MotionConfig>
   );
 }

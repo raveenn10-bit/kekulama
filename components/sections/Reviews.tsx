@@ -1,5 +1,6 @@
 "use client";
 
+import { SwipeHint } from "@/components/ui/SwipeHint";
 import React, { useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Star, CheckCircle, ExternalLink, RefreshCw, MessageSquarePlus, Sparkles, Heart } from "lucide-react";
@@ -139,7 +140,7 @@ export default function Reviews() {
                     ))}
                   </div>
                 </div>
-                <span className="font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-700 font-bold block">
+                <span className="font-eyebrow text-[11px] uppercase tracking-[0.2em] text-sage-700 font-bold block">
                   Google Maps · {syncedData.allReviewsCount}+ Verified Reviews
                 </span>
               </div>
@@ -187,7 +188,7 @@ export default function Reviews() {
                     ))}
                   </div>
                 </div>
-                <span className="font-eyebrow text-[10px] uppercase tracking-[0.2em] text-[#00875A] font-bold block">
+                <span className="font-eyebrow text-[11px] uppercase tracking-[0.2em] text-[#00875A] font-bold block">
                   TripAdvisor · Top Rated Eco Stay
                 </span>
               </div>
@@ -215,7 +216,7 @@ export default function Reviews() {
             className="max-w-4xl mx-auto mb-8 bg-gradient-to-r from-emerald-900 to-forest rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden"
           >
             <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10.5px] font-eyebrow uppercase tracking-wider font-bold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-eyebrow uppercase tracking-wider font-bold">
                 <Sparkles size={13} className="text-amber-300" />
                 <span>Featured 2-Day Guest Highlight</span>
               </span>
@@ -333,7 +334,7 @@ export default function Reviews() {
                 </blockquote>
               </div>
 
-              <div className="mt-6 pt-3.5 border-t border-stone-100 flex items-center justify-between font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-500 font-bold">
+              <div className="mt-6 pt-3.5 border-t border-stone-100 flex items-center justify-between font-eyebrow text-[11px] uppercase tracking-[0.2em] text-sage-500 font-bold">
                 <span>Verified Google Review</span>
                 <span className="text-emerald-800 font-bold">5.0 Star Experience</span>
               </div>
@@ -342,9 +343,7 @@ export default function Reviews() {
         </div>
 
         {/* Mobile Swipe Hint */}
-        <div className="flex md:hidden items-center justify-center gap-1.5 font-eyebrow text-[11px] font-bold uppercase tracking-[0.2em] text-sage-500 mt-3">
-          <span>👈 Swipe for all synced Google reviews 👉</span>
-        </div>
+        <SwipeHint label="Swipe for all synced Google reviews" hideClass="md:hidden" tone="light" />
       </div>
     </section>
   );
