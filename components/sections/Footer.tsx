@@ -68,7 +68,7 @@ export function Footer({ showPhotoStrip = true }: FooterProps) {
               
               {/* Subtle caption reveal on hover */}
               <div className="absolute bottom-2.5 left-2.5 right-2.5 text-left">
-                <span className="font-eyebrow text-[9px] sm:text-[9.5px] uppercase tracking-[0.24em] text-white/90 font-medium block drop-shadow-sm">
+                <span className="font-eyebrow text-[11px] sm:text-[11px] uppercase tracking-[0.24em] text-white/90 font-medium block drop-shadow-sm">
                   {photo.caption}
                 </span>
               </div>
@@ -99,7 +99,7 @@ export function Footer({ showPhotoStrip = true }: FooterProps) {
           <h2 className="font-display text-2xl sm:text-4xl tracking-[0.22em] text-forest font-normal uppercase">
             Kekulama
           </h2>
-          <span className="font-eyebrow text-[10px] sm:text-xs uppercase tracking-[0.34em] text-mint-700 font-normal mt-1">
+          <span className="font-eyebrow text-[11px] sm:text-xs uppercase tracking-[0.34em] text-mint-700 font-normal mt-1">
             Eco Sanctuary · Galle
           </span>
         </motion.div>
@@ -137,7 +137,7 @@ export function Footer({ showPhotoStrip = true }: FooterProps) {
             className="h-10 px-3.5 rounded-full bg-[#003580]/10 border border-[#003580]/30 text-[#003580] hover:text-white hover:bg-[#003580] hover:border-[#003580] flex items-center gap-1.5 shadow-sm transition-colors active:scale-95 text-xs font-semibold uppercase tracking-wider"
             aria-label="Booking.com"
           >
-            <div className="w-4 h-4 rounded-full bg-[#003580] text-white text-[9px] font-bold flex items-center justify-center">
+            <div className="w-4 h-4 rounded-full bg-[#003580] text-white text-[11px] font-bold flex items-center justify-center">
               B.
             </div>
             <span>Booking.com</span>
@@ -227,7 +227,7 @@ export function Footer({ showPhotoStrip = true }: FooterProps) {
           transition={{ duration: 0.6, ease: LUXURY_EASING.quintOut }}
           className="flex flex-col items-center mb-10"
         >
-          <span className="font-eyebrow text-[10px] sm:text-[11px] font-normal uppercase tracking-[0.28em] text-bark-dark mb-2">
+          <span className="font-eyebrow text-[11px] sm:text-[11px] font-normal uppercase tracking-[0.28em] text-bark-dark mb-2">
             Direct Inquiries
           </span>
           <a
@@ -237,7 +237,7 @@ export function Footer({ showPhotoStrip = true }: FooterProps) {
             {contact.phoneDisplay || contact.phone}
           </a>
           <div className="flex items-center justify-center gap-1.5 font-body font-light text-xs text-sage-600 mt-1 px-4 text-center">
-            <MapPin size={13} className="text-mint-600 flex-shrink-0" />
+            <MapPin size={13} className="text-mint-700 flex-shrink-0" />
             <span>{contact.address}</span>
           </div>
         </motion.div>
@@ -247,7 +247,7 @@ export function Footer({ showPhotoStrip = true }: FooterProps) {
           <p>
             Copyright &copy; {new Date().getFullYear()} Kekulama Eco Cabana. All Rights Reserved.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-2 font-eyebrow text-[10px] uppercase tracking-[0.2em] text-sage-400">
+          <div className="flex flex-wrap items-center justify-center gap-2 font-eyebrow text-[11px] uppercase tracking-[0.2em] text-sage-400">
             <Link
               href="/book"
               className="hover:text-mint-700 transition-colors py-0.5 px-1.5 rounded hover:bg-mint-50/60 font-semibold text-forest"

@@ -26,13 +26,13 @@ export function Button({
   const shouldReduceMotion = useReducedMotion();
 
   const baseStyles =
-    "relative inline-flex items-center justify-center font-body font-semibold uppercase tracking-[0.11em] transition-colors duration-300 cursor-pointer overflow-hidden select-none";
+    "relative inline-flex items-center justify-center font-body font-semibold uppercase tracking-[0.11em] transition-colors duration-200 cursor-pointer overflow-hidden select-none disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
     primary:
-      "bg-bark text-white rounded-full hover:bg-bark-dark shadow-soft hover:shadow-lifted",
+      "bg-bark-dark text-white rounded-full hover:bg-forest shadow-soft hover:shadow-lifted",
     mint:
-      "bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full hover:from-mint-600 hover:to-mint-700 shadow-glow",
+      "bg-gradient-to-r from-mint-700 to-mint-800 text-white rounded-full hover:from-mint-800 hover:to-mint-900 shadow-glow",
     outline:
       "border border-mint-500/70 text-mint-800 bg-white/90 backdrop-blur-sm rounded-full hover:bg-mint-100 hover:border-mint-600 shadow-sm",
     ghost: "text-sage-700 hover:text-mint-700 rounded-full hover:bg-mint-50/60",
@@ -41,9 +41,9 @@ export function Button({
   };
 
   const sizes = {
-    sm: "px-4 py-2 text-[11px]",
-    md: "px-6 py-2.5 text-xs",
-    lg: "px-8 py-3.5 text-xs sm:text-sm",
+    sm: "min-h-[40px] px-4 py-2 text-[11px]",
+    md: "min-h-[44px] px-6 py-2.5 text-xs",
+    lg: "min-h-[48px] px-8 py-3.5 text-xs sm:text-sm",
   };
 
   const classes = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;

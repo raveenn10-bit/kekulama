@@ -38,7 +38,7 @@ export default function Contact() {
                   <Phone size={19} strokeWidth={1.75} />
                 </div>
                 <div>
-                  <span className="font-eyebrow text-[10px] sm:text-[10.5px] uppercase tracking-[0.2em] font-normal text-mint-700 block">Direct Call</span>
+                  <span className="font-eyebrow text-[11px] sm:text-[11px] uppercase tracking-[0.2em] font-normal text-mint-700 block">Direct Call</span>
                   <span className="font-body text-forest font-semibold text-sm sm:text-base">{contact.phoneDisplay || contact.phone}</span>
                 </div>
               </a>
@@ -51,7 +51,7 @@ export default function Contact() {
                   <Mail size={19} strokeWidth={1.75} />
                 </div>
                 <div>
-                  <span className="font-eyebrow text-[10px] sm:text-[10.5px] uppercase tracking-[0.2em] font-normal text-eucalyptus-700 block">Email Inquiries</span>
+                  <span className="font-eyebrow text-[11px] sm:text-[11px] uppercase tracking-[0.2em] font-normal text-eucalyptus-700 block">Email Inquiries</span>
                   <span className="font-body text-forest font-semibold text-xs sm:text-sm break-all">{contact.email}</span>
                 </div>
               </a>
@@ -61,7 +61,7 @@ export default function Contact() {
                   <MapPin size={19} strokeWidth={1.75} />
                 </div>
                 <div>
-                  <span className="font-eyebrow text-[10px] sm:text-[10.5px] uppercase tracking-[0.2em] font-normal text-sage-600 block">Location Address</span>
+                  <span className="font-eyebrow text-[11px] sm:text-[11px] uppercase tracking-[0.2em] font-normal text-sage-600 block">Location Address</span>
                   <span className="font-body font-light text-sage-800 text-xs sm:text-sm">{contact.address}</span>
                 </div>
               </div>
@@ -71,7 +71,7 @@ export default function Contact() {
                   <Clock size={19} strokeWidth={1.75} />
                 </div>
                 <div>
-                  <span className="font-eyebrow text-[10px] sm:text-[10.5px] uppercase tracking-[0.2em] font-normal text-sage-600 block">Hours</span>
+                  <span className="font-eyebrow text-[11px] sm:text-[11px] uppercase tracking-[0.2em] font-normal text-sage-600 block">Hours</span>
                   <span className="font-body font-light text-sage-800 text-xs sm:text-sm">Check-in: From 2:00 PM · Check-out: By 10:00 AM</span>
                 </div>
               </div>
@@ -79,12 +79,12 @@ export default function Contact() {
               {/* Social & Review Channels */}
               <div className="pt-2.5 border-t border-sage-100 flex items-center justify-between flex-wrap gap-2">
                 <span className="font-eyebrow text-xs uppercase tracking-wider text-sage-600">Review & Social:</span>
-                <div className="flex gap-2 items-center">
+                <div className="flex flex-wrap gap-2 items-center">
                   <a
                     href={contact.social.tripadvisor || "https://www.tripadvisor.com/Hotel_Review-g297896-d34099769-Reviews-Kekulama_Eco_Cabana-Galle_Galle_District_Southern_Province.html"}
                     target="_blank"
                     rel="noreferrer"
-                    className="h-9 px-3 rounded-full bg-[#00AA6C]/15 text-[#00875A] hover:bg-[#00AA6C] hover:text-white flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase transition-all active:scale-95 border border-[#00AA6C]/30"
+                    className="min-h-[44px] h-9 px-3 rounded-full bg-[#00AA6C]/15 text-[#00875A] hover:bg-[#00AA6C] hover:text-white flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase transition-all active:scale-95 border border-[#00AA6C]/30"
                     aria-label="TripAdvisor"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
@@ -101,7 +101,7 @@ export default function Contact() {
                     href={contact.bookingcomUrl || "https://www.booking.com/searchresults.html?ss=Kekulama+Eco+Cabana+Galle"}
                     target="_blank"
                     rel="noreferrer"
-                    className="h-9 px-3 rounded-full bg-[#003580]/15 text-[#003580] hover:bg-[#003580] hover:text-white flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase transition-all active:scale-95 border border-[#003580]/30"
+                    className="min-h-[44px] h-9 px-3 rounded-full bg-[#003580]/15 text-[#003580] hover:bg-[#003580] hover:text-white flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase transition-all active:scale-95 border border-[#003580]/30"
                     aria-label="Booking.com"
                   >
                     <span className="font-bold text-xs">B.</span>
@@ -111,7 +111,7 @@ export default function Contact() {
                     href={contact.social.facebook}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-9 h-9 rounded-full bg-sage-100 text-forest hover:bg-mint-500 hover:text-white flex items-center justify-center transition-all active:scale-95"
+                    className="w-11 h-11 rounded-full bg-sage-100 text-forest hover:bg-mint-700 hover:text-white flex items-center justify-center transition-all active:scale-95"
                     aria-label="Facebook"
                   >
                     <Facebook size={16} />
@@ -120,7 +120,7 @@ export default function Contact() {
                     href={contact.social.instagram}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-9 h-9 rounded-full bg-sage-100 text-forest hover:bg-mint-500 hover:text-white flex items-center justify-center transition-all active:scale-95"
+                    className="w-11 h-11 rounded-full bg-sage-100 text-forest hover:bg-mint-700 hover:text-white flex items-center justify-center transition-all active:scale-95"
                     aria-label="Instagram"
                   >
                     <Instagram size={16} />
@@ -129,7 +129,7 @@ export default function Contact() {
                     href={contact.social.airbnb}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-9 h-9 rounded-full bg-sage-100 text-forest hover:bg-mint-500 hover:text-white flex items-center justify-center transition-all active:scale-95"
+                    className="w-11 h-11 rounded-full bg-sage-100 text-forest hover:bg-mint-700 hover:text-white flex items-center justify-center transition-all active:scale-95"
                     aria-label="Airbnb"
                   >
                     <Home size={16} />
@@ -177,7 +177,7 @@ export default function Contact() {
               href={contact.googleMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="absolute top-3.5 right-3.5 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold text-forest shadow-md hover:bg-mint-500 hover:text-white transition-all flex items-center gap-1.5 active:scale-95"
+              className="absolute top-3.5 right-3.5 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold text-forest shadow-md hover:bg-mint-700 hover:text-white transition-all flex items-center gap-1.5 active:scale-95"
             >
               <span>Google Maps</span>
               <ExternalLink size={12} />

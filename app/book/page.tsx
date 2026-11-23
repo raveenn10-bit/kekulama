@@ -388,7 +388,7 @@ function DirectBookingContent() {
                     {step > s ? <Check size={14} /> : `0${s}`}
                   </div>
                   <span
-                    className={`text-[10px] sm:text-xs font-medium uppercase tracking-wider ${
+                    className={`text-[11px] sm:text-xs font-medium uppercase tracking-wider ${
                       step === s ? "text-white font-bold" : "text-white/50"
                     }`}
                   >
@@ -424,7 +424,7 @@ function DirectBookingContent() {
                     className="object-cover"
                     priority
                   />
-                  <div className="absolute top-2.5 left-2.5 bg-forest-dark/85 backdrop-blur-sm border border-mint-300/40 px-2.5 py-1 rounded-full text-[10px] font-bold text-mint-300 uppercase tracking-widest">
+                  <div className="absolute top-2.5 left-2.5 bg-forest-dark/85 backdrop-blur-sm border border-mint-300/40 px-2.5 py-1 rounded-full text-[11px] font-bold text-mint-300 uppercase tracking-widest">
                     Single Exclusive Unit
                   </div>
                 </div>
@@ -486,7 +486,7 @@ function DirectBookingContent() {
                     onChange={(e) => setCheckIn(e.target.value)}
                     className="w-full px-4 py-2.5 bg-black/40 border border-white/20 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-mint-400"
                   />
-                  <span className="text-[10px] text-white/50 mt-1 block">Check-in from 2:00 PM</span>
+                  <span className="text-[11px] text-white/50 mt-1 block">Check-in from 2:00 PM</span>
                 </div>
 
                 <div>
@@ -500,7 +500,7 @@ function DirectBookingContent() {
                     onChange={(e) => setCheckOut(e.target.value)}
                     className="w-full px-4 py-2.5 bg-black/40 border border-white/20 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-mint-400"
                   />
-                  <span className="text-[10px] text-white/50 mt-1 block">Check-out by 11:00 AM</span>
+                  <span className="text-[11px] text-white/50 mt-1 block">Check-out by 11:00 AM</span>
                 </div>
               </div>
 
@@ -573,13 +573,13 @@ function DirectBookingContent() {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-bold text-xs text-white">{pkg.name}</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-mint-300">
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-mint-300">
                           {pkg.tag}
                         </span>
                       </div>
                       <p className="text-[11px] text-sage-300 leading-relaxed mb-3">{pkg.desc}</p>
                       <div className="flex items-baseline justify-between pt-2 border-t border-white/5">
-                        <span className="text-[10px] text-white/50 uppercase">Rate per night</span>
+                        <span className="text-[11px] text-white/50 uppercase">Rate per night</span>
                         <span className="font-mono text-sm font-bold text-mint-300">
                           {formatPrice(pkg.rateLkr)}
                         </span>
@@ -607,7 +607,7 @@ function DirectBookingContent() {
                 onClick={() => {
                   if (!dateConflictError) setStep(2);
                 }}
-                className="w-full sm:w-auto px-7 py-3.5 bg-gradient-to-r from-mint-500 to-mint-600 hover:from-mint-400 hover:to-mint-500 text-forest-dark font-bold text-xs uppercase tracking-wider rounded-full shadow-glow flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+                className="w-full sm:w-auto px-7 py-3.5 bg-gradient-to-r from-mint-700 to-mint-800 hover:from-mint-800 hover:to-mint-900 text-forest-dark font-bold text-xs uppercase tracking-wider rounded-full shadow-glow flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
               >
                 <span>Continue to Guest Details</span>
                 <ArrowRight size={14} />
@@ -655,7 +655,7 @@ function DirectBookingContent() {
                     placeholder="e.g. guest@example.com"
                     className="w-full px-4 py-2.5 bg-black/40 border border-white/20 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-mint-400"
                   />
-                  <span className="text-[10px] text-white/50 mt-1 block">
+                  <span className="text-[11px] text-white/50 mt-1 block">
                     Your booking reference and stay details will be sent here.
                   </span>
                 </div>
@@ -715,7 +715,7 @@ function DirectBookingContent() {
               <button
                 disabled={!guestName.trim() || !guestEmail.trim() || guestPhone.length < 9}
                 onClick={() => setStep(3)}
-                className="px-7 py-3 bg-gradient-to-r from-mint-500 to-mint-600 hover:from-mint-400 hover:to-mint-500 text-forest-dark font-bold text-xs uppercase tracking-wider rounded-full shadow-glow flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+                className="px-7 py-3 bg-gradient-to-r from-mint-700 to-mint-800 hover:from-mint-800 hover:to-mint-900 text-forest-dark font-bold text-xs uppercase tracking-wider rounded-full shadow-glow flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50"
               >
                 <span>Continue to Identity Verification</span>
                 <ArrowRight size={14} />
@@ -756,7 +756,7 @@ function DirectBookingContent() {
                   }`}
                 >
                   <span className="block text-sm">Sri Lankan Citizen</span>
-                  <span className="text-[10px] text-mint-300 uppercase tracking-wider mt-0.5 block">
+                  <span className="text-[11px] text-mint-300 uppercase tracking-wider mt-0.5 block">
                     National Identity Card (NIC)
                   </span>
                 </div>
@@ -770,7 +770,7 @@ function DirectBookingContent() {
                   }`}
                 >
                   <span className="block text-sm">International Guest</span>
-                  <span className="text-[10px] text-mint-300 uppercase tracking-wider mt-0.5 block">
+                  <span className="text-[11px] text-mint-300 uppercase tracking-wider mt-0.5 block">
                     Passport Photo Page
                   </span>
                 </div>
@@ -903,7 +903,7 @@ function DirectBookingContent() {
 
               <button
                 onClick={() => setStep(4)}
-                className="px-7 py-3 bg-gradient-to-r from-mint-500 to-mint-600 hover:from-mint-400 hover:to-mint-500 text-forest-dark font-bold text-xs uppercase tracking-wider rounded-full shadow-glow flex items-center gap-2 cursor-pointer transition-all"
+                className="px-7 py-3 bg-gradient-to-r from-mint-700 to-mint-800 hover:from-mint-800 hover:to-mint-900 text-forest-dark font-bold text-xs uppercase tracking-wider rounded-full shadow-glow flex items-center gap-2 cursor-pointer transition-all"
               >
                 <span>Review Booking & Pricing</span>
                 <ArrowRight size={14} />
@@ -927,7 +927,7 @@ function DirectBookingContent() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-body">
                 <div className="p-4 bg-black/30 rounded-xl space-y-2 border border-white/5">
-                  <span className="text-[10px] uppercase font-bold text-mint-200 tracking-wider block">
+                  <span className="text-[11px] uppercase font-bold text-mint-200 tracking-wider block">
                     Stay Details
                   </span>
                   <div>
@@ -955,7 +955,7 @@ function DirectBookingContent() {
                 </div>
 
                 <div className="p-4 bg-black/30 rounded-xl space-y-2 border border-white/5">
-                  <span className="text-[10px] uppercase font-bold text-mint-200 tracking-wider block">
+                  <span className="text-[11px] uppercase font-bold text-mint-200 tracking-wider block">
                     Guest & Security
                   </span>
                   <div>
@@ -1068,7 +1068,7 @@ function DirectBookingContent() {
               <button
                 disabled={!termsAgreed || submitting}
                 onClick={handleFinalSubmit}
-                className="px-8 py-4 bg-gradient-to-r from-mint-500 to-mint-600 hover:from-mint-400 hover:to-mint-500 text-forest-dark font-bold text-xs uppercase tracking-wider rounded-full shadow-glow flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+                className="px-8 py-4 bg-gradient-to-r from-mint-700 to-mint-800 hover:from-mint-800 hover:to-mint-900 text-forest-dark font-bold text-xs uppercase tracking-wider rounded-full shadow-glow flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50"
               >
                 {submitting ? (
                   <>
@@ -1113,7 +1113,7 @@ function DirectBookingContent() {
 
               {/* Reference Card */}
               <div className="bg-black/40 border border-white/10 rounded-2xl p-5 max-w-md mx-auto space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-white/50 block">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-white/50 block">
                   Your Booking Reference
                 </span>
                 <div className="font-mono text-2xl sm:text-3xl font-bold text-mint-300 tracking-wider">

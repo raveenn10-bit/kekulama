@@ -59,7 +59,7 @@ export default function CTA() {
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-8 sm:mt-10">
             <Link
               href="/book"
-              className="relative overflow-hidden bg-gradient-to-r from-mint-500 to-mint-600 text-white rounded-full px-8 py-3.5 sm:py-4 hover:from-mint-600 hover:to-mint-700 transition-all font-body font-semibold text-xs 2xl:text-sm uppercase tracking-[0.15em] shadow-glow w-full sm:w-auto text-center flex items-center justify-center gap-2 group cursor-pointer active:scale-98"
+              className="relative overflow-hidden bg-gradient-to-r from-mint-700 to-mint-800 text-white rounded-full px-8 py-3.5 sm:py-4 hover:from-mint-800 hover:to-mint-900 transition-all font-body font-semibold text-xs 2xl:text-sm uppercase tracking-[0.15em] shadow-glow w-full sm:w-auto text-center flex items-center justify-center gap-2 group cursor-pointer active:scale-98"
             >
               <Sparkles size={15} />
               <span>Book Online (Direct)</span>

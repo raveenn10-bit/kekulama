@@ -160,7 +160,7 @@ export default function LocationGuide() {
                       <Icon size={20} strokeWidth={1.75} />
                     </div>
                     {point.badge && (
-                      <span className="font-eyebrow text-[9.5px] uppercase tracking-[0.2em] font-medium bg-forest/10 text-forest px-3 py-1 rounded-full border border-forest/15">
+                      <span className="font-eyebrow text-[11px] uppercase tracking-[0.2em] font-medium bg-forest/10 text-forest px-3 py-1 rounded-full border border-forest/15">
                         {point.badge}
                       </span>
                     )}

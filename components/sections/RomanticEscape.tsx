@@ -136,7 +136,7 @@ export default function RomanticEscape() {
           className="mb-8 flex flex-col gap-5 sm:mb-12 md:flex-row md:items-end md:justify-between"
         >
           <div className="max-w-3xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.07] px-3.5 py-2 font-eyebrow text-[10px] font-bold uppercase tracking-[0.24em] text-amber-100 backdrop-blur-xl sm:text-[11px]">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.07] px-3.5 py-2 font-eyebrow text-[11px] font-bold uppercase tracking-[0.24em] text-amber-100 backdrop-blur-xl sm:text-[11px]">
               <Heart size={13} className="fill-amber-100/70" />
               Romantic escapes, thoughtfully arranged
             </div>
@@ -150,7 +150,7 @@ export default function RomanticEscape() {
               </span>
             </h2>
           </div>
-          <p className="max-w-md font-body text-sm font-normal leading-7 text-white/72 sm:text-base">
+          <p className="max-w-md font-body text-sm font-normal leading-7 text-white/80 sm:text-base">
             Build a honeymoon, anniversary, or quiet couple&apos;s escape around
             the stay you want. We&apos;ll help you shape the little details before
             arrival.
@@ -183,12 +183,12 @@ export default function RomanticEscape() {
                   className="object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.035]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0b1711]/90 via-black/5 to-transparent" />
-                <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#173123]/90 px-3.5 py-2 font-eyebrow text-[10px] font-semibold uppercase text-amber-100 shadow-lg backdrop-blur-xl sm:left-6 sm:top-6">
+                <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#173123]/90 px-3.5 py-2 font-eyebrow text-[11px] font-semibold uppercase text-amber-100 shadow-lg backdrop-blur-xl sm:left-6 sm:top-6">
                   <BadgeCheck size={14} />
                   M3 Chair Free
                 </div>
                 <figcaption className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-                  <span className="font-eyebrow text-[10px] font-semibold uppercase text-amber-100/90">
+                  <span className="font-eyebrow text-[11px] font-semibold uppercase text-amber-100/90">
                     {pkg.eyebrow}
                   </span>
                   <h3 className="mt-1 font-display text-3xl font-semibold leading-none tracking-lux-snug text-white sm:text-4xl">
@@ -200,7 +200,7 @@ export default function RomanticEscape() {
               <div className="p-5 sm:p-7">
                 <div className="flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-5">
                   <div>
-                    <span className="font-eyebrow text-[10px] font-semibold uppercase text-white/45">
+                    <span className="font-eyebrow text-[11px] font-semibold uppercase text-white/45">
                       Package rate
                     </span>
                     <div className="mt-1 flex items-baseline gap-2">
@@ -225,7 +225,7 @@ export default function RomanticEscape() {
                   {pkg.features.map((feature) => (
                     <li
                       key={feature}
-                      className="flex items-start gap-2.5 font-body text-xs font-medium leading-5 text-white/72"
+                      className="flex items-start gap-2.5 font-body text-xs font-medium leading-5 text-white/80"
                     >
                       <span className="mt-0.5 flex h-4 w-4 flex-none items-center justify-center rounded-full bg-amber-100 text-forest">
                         <Check size={10} strokeWidth={3} />
@@ -266,7 +266,7 @@ export default function RomanticEscape() {
         >
           <div className="mb-7 flex flex-col gap-4 border-b border-white/10 pb-7 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
-              <div className="mb-3 inline-flex items-center gap-2 font-eyebrow text-[10px] font-bold uppercase tracking-[0.24em] text-rose-200">
+              <div className="mb-3 inline-flex items-center gap-2 font-eyebrow text-[11px] font-bold uppercase tracking-[0.24em] text-rose-200">
                 <Heart size={13} className="fill-rose-200/50" />
                 Romantic Honeymoon Packages
               </div>
@@ -275,7 +275,7 @@ export default function RomanticEscape() {
                 <span className="font-serif italic text-amber-100"> for Two</span>
               </h3>
             </div>
-            <p className="max-w-md font-body text-sm leading-6 text-white/62">
+            <p className="max-w-md font-body text-sm leading-6 text-white/75">
               Celebrate your love with an intimate one-night stay surrounded by
               nature, thoughtfully prepared for just the two of you.
             </p>
@@ -309,12 +309,12 @@ export default function RomanticEscape() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#08120d]/90 via-black/5 to-transparent" />
                   {pkg.featured && (
-                    <div className="absolute right-4 top-4 rounded-full border border-amber-100/30 bg-[#173123]/90 px-3 py-2 font-eyebrow text-[9px] font-bold uppercase tracking-[0.16em] text-amber-100 backdrop-blur-xl sm:right-5 sm:top-5">
+                    <div className="absolute right-4 top-4 rounded-full border border-amber-100/30 bg-[#173123]/90 px-3 py-2 font-eyebrow text-[11px] font-bold uppercase tracking-[0.16em] text-amber-100 backdrop-blur-xl sm:right-5 sm:top-5">
                       Most Romantic
                     </div>
                   )}
                   <figcaption className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                    <span className="font-eyebrow text-[9px] font-semibold uppercase tracking-[0.2em] text-rose-100/90">
+                    <span className="font-eyebrow text-[11px] font-semibold uppercase tracking-[0.2em] text-rose-100/90">
                       {pkg.badge}
                     </span>
                     <h4 className="mt-1 font-display text-2xl font-semibold leading-tight text-white sm:text-3xl">
@@ -326,7 +326,7 @@ export default function RomanticEscape() {
                 <div className="p-5 sm:p-6">
                   <div className="flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-5">
                     <div>
-                      <span className="font-eyebrow text-[9px] font-semibold uppercase tracking-[0.18em] text-white/45">
+                      <span className="font-eyebrow text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">
                         One night stay
                       </span>
                       <div className="mt-1 flex items-baseline gap-2">
@@ -343,7 +343,7 @@ export default function RomanticEscape() {
                     </span>
                   </div>
 
-                  <p className="mt-5 font-eyebrow text-[10px] font-bold uppercase tracking-[0.18em] text-amber-100">
+                  <p className="mt-5 font-eyebrow text-[11px] font-bold uppercase tracking-[0.18em] text-amber-100">
                     Package includes
                   </p>
                   <ul className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -355,7 +355,7 @@ export default function RomanticEscape() {
                     ].map((feature) => (
                       <li
                         key={feature}
-                        className="flex items-start gap-2.5 font-body text-xs font-medium leading-5 text-white/72"
+                        className="flex items-start gap-2.5 font-body text-xs font-medium leading-5 text-white/80"
                       >
                         <span className="mt-0.5 flex h-4 w-4 flex-none items-center justify-center rounded-full bg-rose-100 text-forest">
                           <Check size={10} strokeWidth={3} />
@@ -390,7 +390,7 @@ export default function RomanticEscape() {
             ))}
           </div>
 
-          <p className="mt-5 text-center font-body text-[10px] leading-4 text-white/42">
+          <p className="mt-5 text-center font-body text-[11px] leading-4 text-white/60">
             Romantic arrangements are confirmed with your reservation and are
             subject to availability.
           </p>
@@ -411,7 +411,7 @@ export default function RomanticEscape() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#0e1c16]/90 via-transparent to-black/10" />
             <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-6 sm:p-8">
               <div>
-                <span className="font-eyebrow text-[10px] font-bold uppercase tracking-[0.24em] text-amber-100/90">
+                <span className="font-eyebrow text-[11px] font-bold uppercase tracking-[0.24em] text-amber-100/90">
                   Golden-hour ritual
                 </span>
                 <p className="mt-1 max-w-md font-display text-2xl leading-tight text-white sm:text-3xl">
@@ -441,7 +441,7 @@ export default function RomanticEscape() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0c1712]/75 via-transparent to-transparent" />
               <figcaption className="absolute bottom-0 left-0 p-6">
-                <span className="font-eyebrow text-[10px] font-bold uppercase tracking-[0.22em] text-amber-100">
+                <span className="font-eyebrow text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100">
                   A warmer welcome
                 </span>
                 <p className="mt-1 font-display text-2xl text-white">
@@ -469,7 +469,7 @@ export default function RomanticEscape() {
                       <h3 className="font-body text-sm font-semibold text-white">
                         {label}
                       </h3>
-                      <p className="mt-1 text-xs leading-5 text-white/58">
+                      <p className="mt-1 text-xs leading-5 text-white/70">
                         {copy}
                       </p>
                     </div>
@@ -496,7 +496,7 @@ export default function RomanticEscape() {
                 </a>
               </div>
 
-              <p className="mt-4 text-center font-body text-[10px] leading-4 text-white/42">
+              <p className="mt-4 text-center font-body text-[11px] leading-4 text-white/60">
                 Welcome styling and meal arrangements are available on request
                 and confirmed with your reservation.
               </p>
@@ -532,7 +532,7 @@ export default function RomanticEscape() {
               >
                 <div className="flex items-center gap-2">
                   <BadgeCheck size={18} className="text-amber-200" />
-                  <span className="font-eyebrow text-[10px] font-bold uppercase tracking-[0.2em] text-amber-100">
+                  <span className="font-eyebrow text-[11px] font-bold uppercase tracking-[0.2em] text-amber-100">
                     Complimentary
                   </span>
                 </div>
@@ -543,7 +543,7 @@ export default function RomanticEscape() {
             </motion.figure>
 
             <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12 xl:p-14">
-              <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-amber-100/15 bg-amber-100/[0.07] px-3.5 py-2 font-eyebrow text-[10px] font-bold uppercase tracking-[0.22em] text-amber-100">
+              <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-amber-100/15 bg-amber-100/[0.07] px-3.5 py-2 font-eyebrow text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100">
                 <Armchair size={14} />
                 A signature comfort feature
               </div>
@@ -593,7 +593,7 @@ export default function RomanticEscape() {
                           {label}
                         </span>
                       </div>
-                      <span className="rounded-full bg-amber-100 px-2.5 py-1 font-eyebrow text-[9px] font-bold uppercase tracking-[0.12em] text-forest">
+                      <span className="rounded-full bg-amber-100 px-2.5 py-1 font-eyebrow text-[11px] font-bold uppercase tracking-[0.12em] text-forest">
                         Chair Free
                       </span>
                     </div>
@@ -613,7 +613,7 @@ export default function RomanticEscape() {
                     className="flex min-h-24 flex-col items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.035] p-3 text-center"
                   >
                     <Icon size={18} className="text-amber-100" />
-                    <span className="font-body text-[10px] font-medium leading-4 text-white/60 sm:text-[11px]">
+                    <span className="font-body text-[11px] font-medium leading-4 text-white/60 sm:text-[11px]">
                       {label}
                     </span>
                   </div>
@@ -639,7 +639,7 @@ export default function RomanticEscape() {
                 </a>
               </div>
 
-              <p className="mt-4 text-center font-body text-[10px] leading-4 text-white/40 sm:text-left">
+              <p className="mt-4 text-center font-body text-[11px] leading-4 text-white/40 sm:text-left">
                 Complimentary chair access is included with confirmed A/C Day
                 Out and Night Out reservations, subject to availability.
               </p>
